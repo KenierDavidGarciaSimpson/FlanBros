@@ -1,0 +1,133 @@
+package com.example.demo.Controlador.api;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Modelo.Pedido;
+import com.example.demo.Modelo.dto.NuevoPedido;
+import com.example.demo.Modelo.dto.RespuestaApi;
+import com.example.demo.Persistencia.PedidoRepositorio;
+import com.example.demo.Persistencia.StockInsuficienteException;
+import com.example.demo.Seguridad.UsuarioActual;
+
+/**
+ * PedidosApiControlador — capa 3 (Controlador), API de pedidos.
+ *
+ * <p>Sustituye a {@code backend/api/pedidos.php}. Tres usos:</p>
+ * <ul>
+ *   <li>{@code checkout.js} hace POST y solo lee {@code datos.numero_factura}.</li>
+ *   <li>{@code cuenta.js} hace GET con {@code id_cliente} y pinta el historial
+ *       ({@code total_pedido}, {@code estado_pedido}, {@code numero_factura}).</li>
+ *   <li>{@code admin-pedidos.js} hace GET sin filtro y PUT para mover el estado.</li>
+ * </ul>
+ *
+ * <p>El controlador NO calcula precios ni stock: valida la forma de la peticion y
+ * delega. Toda la transaccion vive en la capa 2, para que no haya dos sitios donde
+ * se pueda cobrar mal.</p>
+ *
+ * <p>Capa: Controlador (API REST).</p>
+ */
+@RestController
+@RequestMapping("/api/pedidos")
+public class PedidosApiControlador {
+
+    private final PedidoRepositorio pedidos;
+
+    public PedidosApiControlador(PedidoRepositorio pedidos) {
+        this.pedidos = pedidos;
+    }
+
+    /**
+     * GET /api/pedidos                     -> ultimos pedidos (panel)
+     * GET /api/pedidos?id_cliente=2        -> historial de un cliente (cuenta)
+     * GET /api/pedidos?id=5                -> un pedido con sus lineas
+     */
+    @GetMapping
+    public RespuestaApi listar(@RequestParam(required = false) Integer id,
+                               @RequestParam(name = "id_cliente", required = false) Integer idCliente) {
+        // Un cliente solo ve SUS pedidos, sin importar que id mande el navegador.
+        Optional<Integer> propio = UsuarioActual.clientePropio();
+        if (propio.isPresent()) {
+            int idPropio = propio.get();
+            if (id != null) {
+                return pedidos.buscarPorId(id)
+                        .filter(pedido -> pedido.id_cliente == idPropio)
+                        .<RespuestaApi>map(RespuestaApi::ok)
+                        .orElseGet(() -> RespuestaApi.error("Pedido no encontrado"));
+            }
+            return RespuestaApi.ok(pedidos.listarPorCliente(idPropio));
+        }
+        if (id != null) {
+            return pedidos.buscarPorId(id)
+                    .<RespuestaApi>map(RespuestaApi::ok)
+                    .orElseGet(() -> RespuestaApi.error("Pedido no encontrado"));
+        }
+        if (idCliente != null) {
+            return RespuestaApi.ok(pedidos.listarPorCliente(idCliente));
+        }
+        return RespuestaApi.ok(pedidos.listarRecientes(0));
+    }
+
+    /** POST /api/pedidos — confirma el carrito y emite la factura. */
+    @PostMapping
+    public ResponseEntity<RespuestaApi> crear(@RequestBody NuevoPedido solicitud) {
+        // El pedido se asigna al cliente de la sesion, no al id_cliente que mande el navegador.
+        UsuarioActual.clientePropio().ifPresent(idPropio -> solicitud.id_cliente = idPropio);
+        if (!solicitud.estaCompleto()) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(
+                    "Faltan datos obligatorios: id_cliente, items y direccion_entrega"));
+        }
+        try {
+            Pedido pedido = pedidos.crear(solicitud);
+
+            Map<String, Object> datos = new LinkedHashMap<>();
+            datos.put("id_pedido", pedido.id_pedido);
+            datos.put("numero_factura", pedido.numero_factura);
+            datos.put("estado_pedido", pedido.estado_pedido);
+            datos.put("subtotal", pedido.total_pedido);
+            datos.put("total", pedido.total_factura);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(RespuestaApi.ok(datos, "Pedido creado correctamente"));
+        } catch (StockInsuficienteException e) {
+            // 400 con la misma forma de respuesta: el toast del checkout muestra
+            // tal cual el texto de e.getMessage().
+            return ResponseEntity.badRequest().body(RespuestaApi.error(e.getMessage()));
+        }
+    }
+
+    /** PUT /api/pedidos — mueve el estado y aplica los efectos en cascada. */
+    @PutMapping
+    public ResponseEntity<RespuestaApi> cambiarEstado(@RequestBody Map<String, Object> cuerpo) {
+        int idPedido = PeticionUtil.entero(cuerpo, "id_pedido");
+        String estado = PeticionUtil.texto(cuerpo, "estado_pedido", PeticionUtil.texto(cuerpo, "estado"));
+        if (estado == null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error("Falta el nuevo estado"));
+        }
+        // El repartidor solo puede poner el pedido en camino (listo) o entregarlo.
+        if (UsuarioActual.domiciliarioPropio().isPresent()
+                && !List.of("listo", "entregado").contains(estado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(RespuestaApi.error("No tienes permiso para cambiar a ese estado"));
+        }
+        if (!pedidos.cambiarEstado(idPedido, estado)) {
+            return ResponseEntity.badRequest()
+                    .body(RespuestaApi.error("No se pudo cambiar el estado del pedido"));
+        }
+        return ResponseEntity.ok(RespuestaApi.ok(pedidos.buscarPorId(idPedido).orElse(null),
+                "Estado actualizado a " + estado));
+    }
+}

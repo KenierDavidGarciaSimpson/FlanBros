@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>:root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }</style>
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <a href="index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="carrito.html" class="btn-carrito">🛒<span class="carrito-badge" style="display:none">0</span></a>
+      <a href="login.html" class="btn-secundario">Ingresar</a>
+    </div>
+    <!-- Botón hamburguesa (solo móvil) -->
+  <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<!-- Menú móvil desplegable -->
+<div class="nav-menu-movil" id="nav-menu-movil">
+  <a href="index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
+  <a href="carrito.html">🛒 Carrito</a>
+</div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="contenido-pagina pagina-interior">
+    <div class="etiqueta-seccion">Tu selección</div>
+    <h1 class="titulo-seccion">Mi <em>carrito</em></h1>
+
+    <!-- Layout de 2 columnas: lista izquierda + resumen derecha -->
+    <div class="carrito-layout">
+
+      <!-- COLUMNA IZQUIERDA: Lista de items -->
+      <div>
+        <!-- Cabecera de la lista -->
+        <div style="background:white; border-radius:var(--radio); border:1px solid var(--borde); overflow:hidden">
+          <div style="padding:18px 24px; border-bottom:1px solid var(--borde); display:flex; justify-content:space-between; align-items:center">
+            <span style="font-family:var(--fuente-titulo); font-size:18px; color:var(--chocolate)">
+              Productos en el carrito
+            </span>
+            <button class="btn-eliminar" onclick="vaciarCarrito()">Vaciar carrito</button>
+          </div>
+          <!-- Aquí JavaScript inserta los items del carrito -->
+          <div id="lista-carrito" style="padding:0 24px">
+            Cargando...
+          </div>
+        </div>
+
+        <!-- Cupón de descuento -->
+        <div style="margin-top:14px; padding:16px 18px; background:var(--crema-2); border-radius:var(--radio); border:1px solid var(--borde)">
+          <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--texto-claro); margin-bottom:10px">
+            Código de descuento
+          </div>
+          <div class="cupon-row">
+            <input id="input-cupon" type="text" placeholder="Ej: FLANBROSS10">
+            <button onclick="aplicarCupon()">Aplicar</button>
+          </div>
+          <div style="font-size:12px; color:var(--texto-claro)">
+            Códigos disponibles para demo: FLANBROSS10 · BIENVENIDO · DULCE20
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: Resumen del pedido -->
+      <div class="resumen-carrito">
+        <div class="resumen-titulo">Resumen del pedido</div>
+
+        <div class="resumen-fila">
+          <span>Subtotal</span>
+          <span id="resumen-subtotal">$0</span>
+        </div>
+        <div class="resumen-fila">
+          <span>Domicilio (Cartagena)</span>
+          <span>$7.000</span>
+        </div>
+        <div class="resumen-fila">
+          <span>Descuento</span>
+          <span id="resumen-descuento" style="color:#2d7a5f">—</span>
+        </div>
+
+        <div class="resumen-linea"></div>
+
+        <div class="resumen-total-fila">
+          <span class="resumen-total-label">Total</span>
+          <span class="resumen-total-valor" id="resumen-total">$0</span>
+        </div>
+
+        <a href="checkout.html" class="btn-principal" style="width:100%; justify-content:center; padding:16px; font-size:15px; display:flex">
+          Ir al pago →
+        </a>
+
+        <a href="catalogo.html" style="display:block; text-align:center; font-size:13px; color:var(--texto-claro); margin-top:12px; text-decoration:none">
+          ← Seguir comprando
+        </a>
+
+        <!-- Sellos de confianza -->
+        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--borde); display:flex; flex-direction:column; gap:6px">
+          <div style="font-size:12px; color:var(--texto-claro); display:flex; gap:6px; align-items:center">Pago 100% seguro</div>
+          <div style="font-size:12px; color:var(--texto-claro); display:flex; gap:6px; align-items:center">Sin cargos ocultos</div>
+          <div style="font-size:12px; color:var(--texto-claro); display:flex; gap:6px; align-items:center">Entrega garantizada</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER SIMPLE -->
+  <footer>
+    <div class="footer-inferior">
+      <span>© 2025 FlanBross</span>
+      <span>Cartagena, Colombia</span>
+    </div>
+  </footer>
+
+  <script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/modules/cupones.js"></script>
+  <script src="js/modules/catalogo.js"></script>
+  <script src="js/modules/checkout.js"></script>
+  <script src="js/modules/cuenta.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Renderizar el carrito cuando carga la página
+    renderizarCarrito();
+  </script>
+</body>
+</html>

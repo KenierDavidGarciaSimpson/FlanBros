@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosotros — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
+
+    /* ---- Hero de la página ---- */
+    .nosotros-hero {
+      background: var(--chocolate);
+      padding: 120px 80px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .nosotros-hero-titulo {
+      font-family: var(--fuente-titulo);
+      font-size: 62px;
+      font-weight: 300;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .nosotros-hero-titulo em {
+      font-style: italic;
+      color: var(--caramelo);
+    }
+
+    .nosotros-hero-texto {
+      font-size: 16px;
+      color: rgba(253,246,238,0.6);
+      line-height: 1.8;
+      font-weight: 300;
+      max-width: 460px;
+    }
+
+    .nosotros-hero-imagen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .nosotros-hero-circulo {
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: rgba(196,98,45,0.15);
+      border: 2px solid rgba(196,98,45,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 140px;
+    }
+
+    /* ---- Sección de historia ---- */
+    .historia {
+      padding: 90px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .historia-imagen {
+      background: var(--crema-2);
+      border-radius: 24px;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 120px;
+      border: 1px solid var(--borde);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Detalle decorativo de la imagen */
+    .historia-imagen::after {
+      content: '🎂';
+      position: absolute;
+      bottom: -10px;
+      right: -10px;
+      font-size: 80px;
+      opacity: 0.2;
+    }
+
+    .historia-contenido { }
+
+    .historia-texto {
+      font-size: 16px;
+      color: var(--texto-medio);
+      line-height: 1.85;
+      font-weight: 300;
+      margin-bottom: 18px;
+    }
+
+    /* ---- Valores ---- */
+    .valores {
+      background: var(--crema-2);
+      padding: 80px;
+    }
+
+    .valores-grilla {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 48px;
+    }
+
+    .valor-card {
+      background: white;
+      border-radius: 18px;
+      padding: 32px 26px;
+      border: 1px solid var(--borde);
+      text-align: center;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .valor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--sombra);
+    }
+
+    .valor-icono {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .valor-titulo {
+      font-family: var(--fuente-titulo);
+      font-size: 22px;
+      color: var(--chocolate);
+      margin-bottom: 10px;
+    }
+
+    .valor-texto {
+      font-size: 14px;
+      color: var(--texto-claro);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ---- Equipo ---- */
+    .equipo {
+      padding: 90px 80px;
+    }
+
+    .equipo-grilla {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-top: 48px;
+    }
+
+    .miembro-card {
+      text-align: center;
+      background: white;
+      border-radius: 18px;
+      padding: 28px 20px;
+      border: 1px solid var(--borde);
+      transition: transform 0.2s;
+    }
+
+    .miembro-card:hover { transform: translateY(-4px); }
+
+    .miembro-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--fuente-titulo);
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .miembro-nombre {
+      font-family: var(--fuente-titulo);
+      font-size: 19px;
+      color: var(--chocolate);
+      margin-bottom: 4px;
+    }
+
+    .miembro-rol {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--caramelo);
+      margin-bottom: 10px;
+    }
+
+    .miembro-descripcion {
+      font-size: 13px;
+      color: var(--texto-claro);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ---- Estadísticas ---- */
+    .estadisticas {
+      background: var(--caramelo);
+      padding: 70px 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      text-align: center;
+    }
+
+    .estadistica-item { }
+
+    .estadistica-numero {
+      font-family: var(--fuente-titulo);
+      font-size: 52px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .estadistica-descripcion {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 300;
+    }
+
+    /* ---- CTA final ---- */
+    .cta-final {
+      background: var(--chocolate);
+      padding: 80px;
+      text-align: center;
+    }
+
+    .cta-final h2 {
+      font-family: var(--fuente-titulo);
+      font-size: 52px;
+      font-weight: 300;
+      color: white;
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .cta-final h2 em {
+      font-style: italic;
+      color: var(--caramelo);
+    }
+
+    .cta-final p {
+      font-size: 16px;
+      color: rgba(253,246,238,0.55);
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+
+    .cta-botones {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .nosotros-hero { grid-template-columns: 1fr; padding: 100px 24px 50px; }
+      .nosotros-hero-imagen { display: none; }
+      .nosotros-hero-titulo { font-size: 42px; }
+      .historia { grid-template-columns: 1fr; padding: 50px 24px; gap: 32px; }
+      .historia-imagen { height: 240px; }
+      .valores { padding: 50px 24px; }
+      .valores-grilla { grid-template-columns: 1fr; }
+      .equipo { padding: 50px 24px; }
+      .equipo-grilla { grid-template-columns: 1fr 1fr; }
+      .estadisticas { grid-template-columns: 1fr 1fr; padding: 50px 24px; gap: 32px; }
+      .cta-final { padding: 50px 24px; }
+      .cta-final h2 { font-size: 36px; }
+      .cta-botones { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <a href="index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="nosotros.html">Nosotros</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="carrito.html" class="btn-carrito">🛒<span class="carrito-badge" style="display:none">0</span></a>
+      <a href="login.html" class="btn-secundario">Ingresar</a>
+      <a href="catalogo.html" class="btn-principal">Ordenar</a>
+    </div>
+    <!-- Botón hamburguesa (solo móvil) -->
+  <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<!-- Menú móvil desplegable -->
+<div class="nav-menu-movil" id="nav-menu-movil">
+  <a href="index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
+  <a href="carrito.html">🛒 Carrito</a>
+</div>
+
+  <!-- HERO -->
+  <section class="nosotros-hero">
+    <div>
+      <div class="etiqueta-seccion" style="color:rgba(196,98,45,0.8)">Nuestra historia</div>
+      <h1 class="nosotros-hero-titulo">
+        Hechos con<br>
+        amor y <em>sabor</em><br>
+        artesanal
+      </h1>
+      <p class="nosotros-hero-texto">
+        Somos FlanBross, una empresa de repostería artesanal nacida en Cartagena de Indias
+        con una sola misión: convertir cada postre en una experiencia que no se olvida.
+        Desde 2022 llevamos dulzura a los hogares y celebraciones de toda la ciudad.
+      </p>
+    </div>
+    <div class="nosotros-hero-imagen">
+      <div class="nosotros-hero-circulo">🧑‍🍳</div>
+    </div>
+  </section>
+
+  <!-- HISTORIA -->
+  <section class="historia">
+    <div class="historia-imagen">🍮</div>
+    <div class="historia-contenido">
+      <div class="etiqueta-seccion">¿Cómo empezamos?</div>
+      <h2 class="titulo-seccion" style="margin:14px 0 24px">
+        De una cocina<br>pequeña a <em>miles</em><br>de sonrisas
+      </h2>
+      <p class="historia-texto">
+        Todo comenzó en 2022 cuando dos hermanos apasionados por la repostería
+        decidieron compartir sus recetas familiares con el mundo. Lo que empezó
+        como pedidos para amigos y vecinos se convirtió rápidamente en una de las
+        marcas de postres más queridas de Cartagena.
+      </p>
+      <p class="historia-texto">
+        Hoy contamos con un equipo de reposteros certificados, un sistema de entregas
+        a domicilio propio y más de 500 clientes satisfechos que confían en nosotros
+        para sus celebraciones más especiales.
+      </p>
+      <p class="historia-texto">
+        Cada postre que sale de nuestra cocina lleva consigo ingredientes seleccionados,
+        técnicas artesanales y mucho cariño. Porque creemos que los mejores momentos
+        de la vida merecen el mejor sabor.
+      </p>
+    </div>
+  </section>
+
+  <!-- VALORES -->
+  <section class="valores">
+    <div style="text-align:center">
+      <div class="etiqueta-seccion">Lo que nos mueve</div>
+      <h2 class="titulo-seccion" style="margin-top:14px">Nuestros <em>valores</em></h2>
+    </div>
+
+    <div class="valores-grilla">
+      <div class="valor-card">
+        <div class="valor-icono">🌿</div>
+        <div class="valor-titulo">Ingredientes naturales</div>
+        <p class="valor-texto">
+          Seleccionamos cada ingrediente cuidadosamente. Sin conservantes artificiales,
+          sin atajos. Solo productos frescos y de calidad premium.
+        </p>
+      </div>
+
+      <div class="valor-card">
+        <div class="valor-icono">❤️</div>
+        <div class="valor-titulo">Hecho con amor</div>
+        <p class="valor-texto">
+          Cada postre es preparado a mano por nuestros reposteros. La pasión
+          y el detalle se notan en cada bocado que preparamos para ti.
+        </p>
+      </div>
+
+      <div class="valor-card">
+        <div class="valor-icono">🚀</div>
+        <div class="valor-titulo">Entrega rápida</div>
+        <p class="valor-texto">
+          Tu postre llega fresco a tu puerta en menos de 45 minutos.
+          Cobertura en toda Cartagena con domiciliarios propios.
+        </p>
+      </div>
+
+      <div class="valor-card">
+        <div class="valor-icono">✨</div>
+        <div class="valor-titulo">Calidad garantizada</div>
+        <p class="valor-texto">
+          Todos nuestros postres pasan por un control de calidad antes de salir.
+          Si no estás satisfecho, te lo reponemos sin preguntas.
+        </p>
+      </div>
+
+      <div class="valor-card">
+        <div class="valor-icono">🎁</div>
+        <div class="valor-titulo">Presentación premium</div>
+        <p class="valor-texto">
+          Empacamos cada pedido con materiales eco-amigables y una presentación
+          digna de regalo. Perfectos para cualquier celebración especial.
+        </p>
+      </div>
+
+      <div class="valor-card">
+        <div class="valor-icono">🤝</div>
+        <div class="valor-titulo">Compromiso local</div>
+        <p class="valor-texto">
+          Somos una empresa 100% cartagenera. Apoyamos a productores locales
+          y generamos empleo digno en nuestra ciudad.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTADÍSTICAS -->
+  <div class="estadisticas">
+    <div class="estadistica-item">
+      <div class="estadistica-numero">500+</div>
+      <div class="estadistica-descripcion">Clientes satisfechos</div>
+    </div>
+    <div class="estadistica-item">
+      <div class="estadistica-numero">15+</div>
+      <div class="estadistica-descripcion">Postres únicos en el menú</div>
+    </div>
+    <div class="estadistica-item">
+      <div class="estadistica-numero">3</div>
+      <div class="estadistica-descripcion">Años en el mercado</div>
+    </div>
+    <div class="estadistica-item">
+      <div class="estadistica-numero">★ 4.9</div>
+      <div class="estadistica-descripcion">Calificación promedio</div>
+    </div>
+  </div>
+
+  <!-- EQUIPO -->
+  <section class="equipo">
+    <div style="text-align:center">
+      <div class="etiqueta-seccion">Las personas detrás</div>
+      <h2 class="titulo-seccion" style="margin-top:14px">Nuestro <em>equipo</em></h2>
+    </div>
+
+    <div class="equipo-grilla">
+      <div class="miembro-card">
+        <div class="miembro-avatar" style="background:var(--caramelo)">MB</div>
+        <div class="miembro-nombre">María Bonilla</div>
+        <div class="miembro-rol">Administradora</div>
+        <p class="miembro-descripcion">
+          Co-fundadora y alma del negocio. Gestiona cada detalle para que todo funcione perfectamente.
+        </p>
+      </div>
+
+      <div class="miembro-card">
+        <div class="miembro-avatar" style="background:var(--chocolate)">LM</div>
+        <div class="miembro-nombre">Luis Martínez</div>
+        <div class="miembro-rol">Repostero Chef</div>
+        <p class="miembro-descripcion">
+          Certificado en repostería artesanal francesa. Creador de nuestras recetas insignia.
+        </p>
+      </div>
+
+      <div class="miembro-card">
+        <div class="miembro-avatar" style="background:#D4837C">VF</div>
+        <div class="miembro-nombre">Valentina Florez</div>
+        <div class="miembro-rol">Domiciliaria</div>
+        <p class="miembro-descripcion">
+          Garantiza que cada postre llegue fresco y a tiempo a tu puerta con una sonrisa.
+        </p>
+      </div>
+
+      <div class="miembro-card">
+        <div class="miembro-avatar" style="background:#5BAF8E">AR</div>
+        <div class="miembro-nombre">Ana Rondón</div>
+        <div class="miembro-rol">Contadora</div>
+        <p class="miembro-descripcion">
+          Mantiene las finanzas en orden para que FlanBross siga creciendo cada día.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <h2>¿Listo para probar<br>nuestros <em>postres</em>?</h2>
+    <p>Haz tu pedido hoy y recíbelo en menos de 45 minutos en Cartagena.</p>
+    <div class="cta-botones">
+      <a href="catalogo.html" class="btn-principal" style="padding:14px 36px; font-size:15px">
+        Ver catálogo →
+      </a>
+      <a href="contacto.html" class="btn-secundario" style="padding:14px 36px; font-size:15px; border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.75)">
+        Contáctanos
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grilla">
+      <div>
+        <div class="footer-marca-nombre">FlanBross</div>
+        <p class="footer-marca-descripcion">
+          Postres artesanales premium elaborados con ingredientes seleccionados.
+          Entrega a domicilio en Cartagena de Indias.
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Menú</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Mi cuenta</div>
+        <ul class="footer-links">
+          <li><a href="cuenta.html">Mis pedidos</a></li>
+          <li><a href="login.html">Ingresar</a></li>
+          <li><a href="registro.html">Registrarse</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="#">📍 Cartagena, Colombia</a></li>
+          <li><a href="#">📞 +57 300 000 0000</a></li>
+          <li><a href="#">✉️ hola@flanbross.co</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-inferior">
+      <span>© 2025 FlanBross. Todos los derechos reservados.</span>
+      <span>Hecho con ❤️ en Cartagena</span>
+    </div>
+  </footer>
+
+  <script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto — FlanBross</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
+
+    .pd-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+      padding: 100px 80px 80px;
+    }
+
+    /* Imagen principal del producto */
+    .pd-imagen-principal {
+      aspect-ratio: 1/1;
+      background: var(--crema-2);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 160px;
+      border: 1px solid var(--borde);
+      margin-bottom: 14px;
+    }
+
+    /* Miniaturas debajo de la imagen */
+    .pd-miniaturas {
+      display: flex;
+      gap: 10px;
+    }
+    .pd-miniatura {
+      width: 76px; height: 76px;
+      border-radius: 12px;
+      background: var(--crema-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .pd-miniatura.activa,
+    .pd-miniatura:hover { border-color: var(--caramelo); }
+
+    /* Info del producto */
+    .pd-categoria {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--caramelo);
+      margin-bottom: 10px;
+    }
+    .pd-nombre {
+      font-family: var(--fuente-titulo);
+      font-size: 50px;
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--chocolate);
+      margin-bottom: 14px;
+    }
+    .pd-estrellas {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 15px;
+      color: #D4A853;
+    }
+    .pd-estrellas span {
+      font-size: 13px;
+      color: var(--texto-claro);
+    }
+    .pd-precio {
+      font-family: var(--fuente-titulo);
+      font-size: 44px;
+      color: var(--caramelo);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pd-unidad {
+      font-size: 14px;
+      color: var(--texto-claro);
+      margin-bottom: 22px;
+    }
+    .pd-descripcion {
+      font-size: 15px;
+      color: var(--texto-medio);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      font-weight: 300;
+    }
+    /* Etiquetas de alérgenos */
+    .pd-alergenos {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .pd-alergen-tag {
+      padding: 6px 14px;
+      background: var(--crema-2);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--texto-medio);
+      border: 1px solid var(--borde);
+    }
+    /* Selector de cantidad */
+    .pd-cantidad-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .pd-cantidad-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--texto-claro);
+    }
+    .pd-cantidad-controles {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--borde);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .pd-btn-cantidad {
+      width: 40px; height: 40px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--chocolate);
+      transition: background 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pd-btn-cantidad:hover { background: var(--crema-2); }
+    .pd-num-cantidad {
+      width: 50px;
+      text-align: center;
+      font-family: var(--fuente-titulo);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--chocolate);
+      border: none;
+      outline: none;
+      background: none;
+    }
+    /* Botón principal de agregar */
+    .pd-btn-agregar {
+      width: 100%;
+      padding: 17px;
+      background: var(--caramelo);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-family: var(--fuente-cuerpo);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 12px;
+    }
+    .pd-btn-agregar:hover { background: #a34e22; transform: translateY(-1px); }
+    .pd-btn-agregar.agregado { background: #2d7a5f; }
+
+    /* Tarjetas de info rápida (entrega, conservar, etc.) */
+    .pd-info-rapida {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .pd-info-card {
+      text-align: center;
+      padding: 14px 10px;
+      background: var(--crema-2);
+      border-radius: 12px;
+      border: 1px solid var(--borde);
+    }
+    .pd-info-card-icono { font-size: 22px; margin-bottom: 4px; }
+    .pd-info-card-etiqueta { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-claro); }
+    .pd-info-card-valor { font-size: 13px; font-weight: 600; color: var(--chocolate); margin-top: 2px; }
+
+    /* Productos relacionados */
+    .relacionados {
+      padding: 0 80px 80px;
+    }
+
+    @media (max-width: 900px) {
+      .pd-layout { grid-template-columns: 1fr; padding: 90px 20px 40px; gap: 32px; }
+      .pd-nombre { font-size: 36px; }
+      .relacionados { padding: 0 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <a href="../index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Inicio</a></li>
+      <li><a href="../catalogo.html">Catálogo</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="../carrito.html" class="btn-carrito">🛒<span class="carrito-badge" style="display:none">0</span></a>
+      <a href="../login.html" class="btn-secundario">Ingresar</a>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div style="padding:86px 80px 0; display:flex; gap:8px; font-size:13px; color:var(--texto-claro)">
+    <a href="../index.html" style="color:inherit; text-decoration:none">Inicio</a>
+    <span>›</span>
+    <a href="../catalogo.html" style="color:inherit; text-decoration:none">Catálogo</a>
+    <span>›</span>
+    <span id="breadcrumb-nombre">Producto</span>
+  </div>
+
+  <!-- DETALLE DEL PRODUCTO -->
+  <div class="pd-layout">
+
+    <!-- Galería -->
+    <div>
+      <div class="pd-imagen-principal" id="pd-emoji">🎂</div>
+      <div class="pd-miniaturas">
+        <div class="pd-miniatura activa" id="min-1">🎂</div>
+        <div class="pd-miniatura" id="min-2">📷</div>
+        <div class="pd-miniatura" id="min-3">📷</div>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div>
+      <div class="pd-categoria" id="pd-categoria">Tortas</div>
+      <h1 class="pd-nombre" id="pd-nombre">Cargando...</h1>
+
+      <div class="pd-estrellas">
+        ★★★★★ <span>4.9 · 42 reseñas</span>
+      </div>
+
+      <div class="pd-precio" id="pd-precio">$0</div>
+      <div class="pd-unidad">COP · Porción individual</div>
+
+      <p class="pd-descripcion" id="pd-descripcion">Cargando descripción...</p>
+
+      <!-- Alérgenos -->
+      <div class="pd-alergenos">
+        <span class="pd-alergen-tag">🥛 Lácteos</span>
+        <span class="pd-alergen-tag">🌾 Gluten</span>
+        <span class="pd-alergen-tag">🥚 Huevo</span>
+        <span class="pd-alergen-tag">🎁 Empaque premium</span>
+      </div>
+
+      <!-- Stock -->
+      <div id="pd-stock-info" style="padding:10px 14px; background:var(--crema-2); border-radius:10px; border:1px solid var(--borde); font-size:13px; color:var(--texto-medio); margin-bottom:22px; display:flex; align-items:center; gap:8px">
+        <span id="pd-stock-dot" style="width:8px; height:8px; border-radius:50%; background:#5BAF8E; display:inline-block; flex-shrink:0"></span>
+        <span id="pd-stock-texto">En stock</span>
+      </div>
+
+      <!-- Selector de cantidad -->
+      <div class="pd-cantidad-row">
+        <span class="pd-cantidad-label">Cantidad</span>
+        <div class="pd-cantidad-controles">
+          <button class="pd-btn-cantidad" id="btn-menos">−</button>
+          <input class="pd-num-cantidad" id="cantidad-input" type="number" value="1" min="1" readonly>
+          <button class="pd-btn-cantidad" id="btn-mas">+</button>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <button class="pd-btn-agregar" id="btn-agregar-carrito">
+        Agregar al carrito
+      </button>
+      <button class="btn-secundario" style="width:100%; justify-content:center; padding:15px"
+        onclick="window.location.href='../catalogo.html'">
+        ← Seguir explorando
+      </button>
+
+      <!-- Info rápida -->
+      <div class="pd-info-rapida">
+        <div class="pd-info-card">
+          <div class="pd-info-card-icono">🚀</div>
+          <div class="pd-info-card-etiqueta">Entrega</div>
+          <div class="pd-info-card-valor">30–45 min</div>
+        </div>
+        <div class="pd-info-card">
+          <div class="pd-info-card-icono">❄️</div>
+          <div class="pd-info-card-etiqueta">Conservar</div>
+          <div class="pd-info-card-valor">Refrigerado</div>
+        </div>
+        <div class="pd-info-card">
+          <div class="pd-info-card-icono">📅</div>
+          <div class="pd-info-card-etiqueta">Vigencia</div>
+          <div class="pd-info-card-valor">2 días</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTOS RELACIONADOS -->
+  <section class="relacionados">
+    <div class="etiqueta-seccion">También te puede gustar</div>
+    <h2 class="titulo-seccion" style="margin-bottom:32px">Más <em>postres</em></h2>
+    <div class="grilla-productos" id="grilla-relacionados"></div>
+  </section>
+
+  <script src="../js/modules/utils.js"></script>
+  <script src="../js/modules/sesion.js"></script>
+  <script src="../js/modules/nav.js"></script>
+  <script src="../js/modules/carrito.js"></script>
+  <script src="../js/modules/cupones.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    // Todos los productos (en producción vendrían del backend)
+    const TODOS_PRODUCTOS = [
+      { id:1,  nombre:'Torta Tres Leches',         categoria:'Tortas',        descripcion:'Bizcocho esponjoso bañado en tres tipos de leche, cubierto con crema chantilly artesanal.',                     precio:42000, emoji:'🎂', stock:15, badge:'Popular' },
+      { id:2,  nombre:'Cheesecake Maracuyá',        categoria:'Cheesecakes',   descripcion:'Tarta fría de queso crema con coulis de maracuyá sobre base de galleta artesanal.',                            precio:38000, emoji:'🍰', stock:12 },
+      { id:3,  nombre:'Brownie con Nueces',          categoria:'Brownies',      descripcion:'Brownie denso de chocolate 70% con nueces tostadas, porción individual.',                                     precio:8500,  emoji:'🍫', stock:40, badge:'Nuevo' },
+      { id:4,  nombre:'Macarons Surtidos x6',        categoria:'Macarons',      descripcion:'Caja de 6 macarons artesanales: vainilla, chocolate, limón, frutos rojos, pistacho y caramelo.',             precio:24000, emoji:'🎉', stock:25, badge:'Nuevo' },
+      { id:5,  nombre:'Creme Brûlée',                categoria:'Postres fríos', descripcion:'Crema francesa de vainilla con costra de azúcar caramelizada, presentación individual.',                     precio:14000, emoji:'🍮', stock:3  },
+      { id:6,  nombre:'Tiramisú Clásico',            categoria:'Postres fríos', descripcion:'Capas de bizcochuelo empapado en café con crema de mascarpone y cacao en polvo.',                            precio:16000, emoji:'☕', stock:18 },
+      { id:7,  nombre:'Cupcake Red Velvet',          categoria:'Cupcakes',      descripcion:'Cupcake terciopelo rojo con frosting de queso crema, decorado a mano con detalles en fondant.',               precio:7500,  emoji:'🧁', stock:30 },
+      { id:8,  nombre:'Torta Selva Negra',           categoria:'Tortas',        descripcion:'Capas de bizcocho de chocolate, crema chantilly y cerezas al marrasquino.',                                  precio:45000, emoji:'🎂', stock:8,  badge:'Popular' },
+      { id:9,  nombre:'Flan de Coco',                categoria:'Flanes',        descripcion:'Flan suave de leche de coco con caramelo artesanal, porción individual.',                                    precio:11000, emoji:'🍮', stock:22, badge:'Nuevo' },
+      { id:10, nombre:'Galletas de Mantequilla x12', categoria:'Galletas',      descripcion:'Caja de 12 galletas artesanales de mantequilla con azúcar decoradas con motivos coloridos.',                 precio:19000, emoji:'🍪', stock:35 }
+    ];
+
+    // Leer el ID del producto desde la URL (?id=3)
+    const idProducto = parseInt(obtenerParametroURL('id')) || 1;
+    const producto   = TODOS_PRODUCTOS.find(function(p) { return p.id === idProducto; });
+
+    if (!producto) {
+      document.querySelector('.pd-nombre').textContent = 'Producto no encontrado';
+    } else {
+      // Rellenar todos los datos en pantalla
+      document.title                                 = producto.nombre + ' — FlanBross';
+      document.getElementById('breadcrumb-nombre').textContent = producto.nombre;
+      document.getElementById('pd-emoji').textContent          = producto.emoji;
+      document.getElementById('min-1').textContent             = producto.emoji;
+      document.getElementById('pd-categoria').textContent      = producto.categoria;
+      document.getElementById('pd-nombre').textContent         = producto.nombre;
+      document.getElementById('pd-precio').textContent         = formatearPrecio(producto.precio);
+      document.getElementById('pd-descripcion').textContent    = producto.descripcion;
+
+      // Mostrar estado del stock
+      const stockInfo  = document.getElementById('pd-stock-info');
+      const stockDot   = document.getElementById('pd-stock-dot');
+      const stockTexto = document.getElementById('pd-stock-texto');
+      const minimo     = 5;
+
+      if (producto.stock === 0) {
+        stockDot.style.background   = '#E05252';
+        stockTexto.textContent       = 'Sin stock disponible';
+      } else if (producto.stock <= minimo) {
+        stockDot.style.background   = '#D4A853';
+        stockTexto.textContent       = '⚠ Últimas ' + producto.stock + ' unidades';
+        stockInfo.style.background   = 'rgba(212,168,83,0.08)';
+        stockInfo.style.borderColor  = 'rgba(212,168,83,0.3)';
+      } else {
+        stockTexto.textContent = 'En stock · ' + producto.stock + ' unidades disponibles';
+      }
+
+      // Control de cantidad
+      let cantidad = 1;
+      const inputCantidad = document.getElementById('cantidad-input');
+
+      document.getElementById('btn-menos').onclick = function() {
+        if (cantidad > 1) { cantidad--; inputCantidad.value = cantidad; }
+      };
+      document.getElementById('btn-mas').onclick = function() {
+        if (cantidad < producto.stock) { cantidad++; inputCantidad.value = cantidad; }
+      };
+
+      // Botón agregar al carrito
+      const btnAgregar = document.getElementById('btn-agregar-carrito');
+      btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
+
+      // Actualizar precio en el botón cuando cambia la cantidad
+      inputCantidad.addEventListener('input', function() {
+        cantidad = Math.max(1, Math.min(producto.stock, parseInt(this.value) || 1));
+        this.value = cantidad;
+        btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
+      });
+
+      btnAgregar.onclick = function() {
+        // Agregar al carrito con la cantidad seleccionada
+        for (let i = 0; i < cantidad; i++) {
+          agregarAlCarrito(producto);
+        }
+        // Solo contar 1 vez si se agregaron varios
+        // (agregarAlCarrito ya suma si el item existe)
+        // Dar feedback visual
+        btnAgregar.classList.add('agregado');
+        btnAgregar.textContent = '✓ Agregado al carrito';
+        setTimeout(function() {
+          btnAgregar.classList.remove('agregado');
+          btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
+        }, 2000);
+      };
+
+      // Mostrar productos relacionados (misma categoría, excepto el actual)
+      const relacionados = TODOS_PRODUCTOS.filter(function(p) {
+        return p.categoria === producto.categoria && p.id !== producto.id;
+      }).slice(0, 4);
+
+      // Si no hay de la misma categoría, mostrar otros
+      const paraRelacionados = relacionados.length > 0
+        ? relacionados
+        : TODOS_PRODUCTOS.filter(function(p) { return p.id !== producto.id; }).slice(0, 4);
+
+      const grillaRel = document.getElementById('grilla-relacionados');
+      let htmlRel = '';
+      paraRelacionados.forEach(function(p) {
+        htmlRel += `
+          <div class="tarjeta-producto">
+            <a href="producto.html?id=${p.id}">
+              <div class="tarjeta-imagen">${p.emoji}${p.badge ? '<span class="tarjeta-badge' + (p.badge==='Nuevo'?' nuevo':'') + '">' + p.badge + '</span>' : ''}</div>
+            </a>
+            <div class="tarjeta-cuerpo">
+              <div class="tarjeta-categoria">${p.categoria}</div>
+              <a href="producto.html?id=${p.id}" class="tarjeta-nombre">${p.nombre}</a>
+              <p class="tarjeta-descripcion">${p.descripcion}</p>
+              <div class="tarjeta-pie">
+                <span class="tarjeta-precio">${formatearPrecio(p.precio)}</span>
+                <button class="btn-agregar" onclick='agregarAlCarrito(${JSON.stringify(p)})'>+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      grillaRel.innerHTML = htmlRel;
+    }
+  </script>
+</body>
+</html>

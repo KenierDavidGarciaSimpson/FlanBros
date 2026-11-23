@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi cuenta — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>:root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }</style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="cuenta.html">Mi cuenta</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="carrito.html" class="btn-carrito">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="carrito-badge" style="display:none">0</span>
+      </a>
+      <button class="btn-secundario" onclick="cerrarSesion()">Salir</button>
+    </div>
+    <!-- Botón hamburguesa (solo móvil) -->
+  <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<!-- Menú móvil desplegable -->
+<div class="nav-menu-movil" id="nav-menu-movil">
+  <a href="index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
+  <a href="carrito.html">🛒 Carrito</a>
+</div>
+
+  <main class="cliente-dashboard">
+
+    <!-- Banner de pedido confirmado -->
+    <div id="banner-exito" style="display:none;background:rgba(91,175,142,0.12);border:1px solid rgba(91,175,142,0.35);border-radius:12px;padding:18px 22px;margin-bottom:28px;align-items:center;gap:14px">
+      <span style="font-size:28px">🎉</span>
+      <div>
+        <div style="font-weight:700;color:#2d7a5f;font-size:15px;margin-bottom:2px">¡Pedido confirmado!</div>
+        <div style="font-size:13px;color:#4a9a7a">Factura <strong id="numero-factura-confirmada"></strong> — Tu postre está siendo preparado. Tiempo estimado: 30–45 min.</div>
+      </div>
+    </div>
+
+    <div class="etiqueta-seccion">Mi cuenta</div>
+    <h1 class="saludo-titulo">Hola, <em id="nombre-usuario" style="font-style:italic;color:var(--caramelo)">—</em></h1>
+    <p style="color:var(--texto-claro);font-size:15px;margin-top:4px">Bienvenido de nuevo a FlanBross</p>
+
+    <!-- Estadísticas -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;max-width:480px">
+      <div style="background:white;border-radius:var(--radio);padding:20px;border:1px solid var(--borde)">
+        <div id="stat-pedidos" style="font-family:var(--fuente-titulo);font-size:34px;color:var(--chocolate)">—</div>
+        <div style="font-size:12px;color:var(--texto-claro);margin-top:4px">Pedidos realizados</div>
+      </div>
+      <div style="background:white;border-radius:var(--radio);padding:20px;border:1px solid var(--borde)">
+        <div id="stat-gasto" style="font-family:var(--fuente-titulo);font-size:28px;color:var(--caramelo)">—</div>
+        <div style="font-size:12px;color:var(--texto-claro);margin-top:4px">Total comprado</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grilla">
+
+      <!-- Historial de pedidos -->
+      <div>
+        <!-- Pedido activo -->
+        <div id="pedido-activo" style="display:none;background:linear-gradient(135deg,var(--chocolate),#6B3A1F);border-radius:var(--radio);padding:22px 26px;margin-bottom:20px;color:white">
+          <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px">Pedido activo</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span id="factura-activa" style="font-family:var(--fuente-titulo);font-size:20px">—</span>
+            <span id="estado-activo" class="estado-badge estado-preparando">—</span>
+          </div>
+        </div>
+
+        <div class="tarjeta-dash">
+          <div class="tarjeta-dash-cabecera">
+            <div class="tarjeta-dash-titulo">Historial de pedidos</div>
+            <a href="catalogo.html" class="btn-principal" style="padding:8px 18px;font-size:12px">+ Nuevo pedido</a>
+          </div>
+          <div id="historial-pedidos" class="tarjeta-dash-cuerpo">
+            <p style="color:var(--texto-claro);font-size:13px">Cargando pedidos...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Perfil -->
+      <div>
+        <div class="tarjeta-dash">
+          <div class="tarjeta-dash-cabecera">
+            <div class="tarjeta-dash-titulo">Mi perfil</div>
+          </div>
+          <div class="tarjeta-dash-cuerpo">
+            <div style="text-align:center;padding:10px 0 18px">
+              <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--caramelo),#a34e22);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-titulo);font-size:26px;color:white;font-weight:700" id="avatar-iniciales">—</div>
+              <div style="font-family:var(--fuente-titulo);font-size:20px;color:var(--chocolate)" id="nombre-perfil">—</div>
+              <div style="font-size:13px;color:var(--texto-claro)" id="correo-perfil">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tarjeta-dash" style="margin-top:16px">
+          <div class="tarjeta-dash-cuerpo" style="display:flex;flex-direction:column;gap:10px">
+            <a href="catalogo.html" class="btn-principal" style="justify-content:center;padding:12px">Ver catálogo</a>
+            <a href="carrito.html"  class="btn-secundario" style="justify-content:center;padding:12px">Mi carrito</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/modules/cupones.js"></script>
+  <script src="js/modules/catalogo.js"></script>
+  <script src="js/modules/checkout.js"></script>
+  <script src="js/modules/cuenta.js"></script>
+<script>
+// Mostrar aviso de pedido recién confirmado si viene del checkout
+(function() {
+  var num = localStorage.getItem('fb_pedido_confirmado');
+  if (!num) return;
+  localStorage.removeItem('fb_pedido_confirmado');
+  var banner = document.createElement('div');
+  banner.style.cssText = 'background:linear-gradient(135deg,#2d7a5f,#3a9e7a);color:white;padding:18px 24px;border-radius:14px;margin-bottom:24px;display:flex;align-items:center;gap:14px;animation:fadeIn .4s ease';
+  banner.innerHTML = '<span style="font-size:36px">🎉</span>'
+    + '<div><div style="font-weight:700;font-size:16px;margin-bottom:2px">¡Pedido confirmado!</div>'
+    + '<div style="font-size:13px;opacity:.9">Factura <strong>' + num + '</strong> — Te notificaremos cuando esté en camino.</div></div>';
+  var dash = document.querySelector('.cliente-dashboard');
+  var titulo = dash ? dash.querySelector('.saludo-titulo') : null;
+  if (titulo) titulo.parentNode.insertBefore(banner, titulo.nextSibling);
+})();
+</script>
+  <script src="js/app.js"></script>
+  <script>
+    // Verifica sesión y carga los datos del cliente al entrar
+    requiereSesion();
+    cargarMiCuenta();
+  </script>
+</body>
+</html>

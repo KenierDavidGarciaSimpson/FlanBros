@@ -1,0 +1,21 @@
+# Base de datos local para desarrollo:  docker compose up -d
+# Coincide con los valores por defecto de application.properties.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: flanbross-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: flanbross
+      MYSQL_USER: flanbross
+      MYSQL_PASSWORD: flanbross
+      TZ: America/Bogota
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - flanbross-datos:/var/lib/mysql
+
+volumes:
+  flanbross-datos:

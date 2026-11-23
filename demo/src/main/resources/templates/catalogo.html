@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>:root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }</style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="nosotros.html">Nosotros</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="carrito.html" class="btn-carrito">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="carrito-badge" style="display:none">0</span>
+      </a>
+      <a href="login.html" id="btn-nav-login" class="btn-secundario">Ingresar</a>
+      <span id="btn-nav-salir" style="display:none">
+        <span id="nav-nombre-usuario" style="font-size:13px;color:var(--texto-medio)"></span>
+        <button class="btn-secundario" onclick="cerrarSesion()" style="margin-left:8px">Salir</button>
+      </span>
+    </div>
+    <!-- Botón hamburguesa (solo móvil) -->
+  <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<!-- Menú móvil desplegable -->
+<div class="nav-menu-movil" id="nav-menu-movil">
+  <a href="index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
+  <a href="carrito.html">🛒 Carrito</a>
+</div>
+
+  <div style="padding:100px 80px 32px;background:var(--crema-2);border-bottom:1px solid var(--borde)">
+    <div class="etiqueta-seccion">Catálogo completo</div>
+    <h1 class="titulo-seccion">Todos nuestros <em>postres</em></h1>
+
+    <div class="filtros-barra">
+      <input id="buscador" type="text" class="input-buscar" placeholder="Buscar postre..." oninput="filtrarProductos()">
+      <select id="ordenar" class="select-ordenar" onchange="filtrarProductos()">
+        <option value="popular">Ordenar: Popular</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+        <option value="nombre">Nombre A–Z</option>
+      </select>
+    </div>
+
+    <div class="categorias-barra">
+      <div class="categoria-pill activa" data-categoria="Todos"        onclick="seleccionarCategoria('Todos')">Todos</div>
+      <div class="categoria-pill"        data-categoria="Tortas"        onclick="seleccionarCategoria('Tortas')">Tortas</div>
+      <div class="categoria-pill"        data-categoria="Cupcakes"      onclick="seleccionarCategoria('Cupcakes')">Cupcakes</div>
+      <div class="categoria-pill"        data-categoria="Brownies"      onclick="seleccionarCategoria('Brownies')">Brownies</div>
+      <div class="categoria-pill"        data-categoria="Flanes"        onclick="seleccionarCategoria('Flanes')">Flanes</div>
+      <div class="categoria-pill"        data-categoria="Cheesecakes"   onclick="seleccionarCategoria('Cheesecakes')">Cheesecakes</div>
+      <div class="categoria-pill"        data-categoria="Macarons"      onclick="seleccionarCategoria('Macarons')">Macarons</div>
+      <div class="categoria-pill"        data-categoria="Postres fríos" onclick="seleccionarCategoria('Postres fríos')">Postres fríos</div>
+      <div class="categoria-pill"        data-categoria="Galletas"      onclick="seleccionarCategoria('Galletas')">Galletas</div>
+    </div>
+  </div>
+
+  <section style="padding:40px 80px 80px">
+    <div id="grilla-productos" class="grilla-productos">
+      <p style="color:var(--texto-claro)">Cargando productos...</p>
+    </div>
+    <div id="paginacion-catalogo"></div>
+  </section>
+
+  <footer>
+    <div class="footer-inferior">
+      <span>© 2025 FlanBross</span>
+      <span>Cartagena, Colombia</span>
+    </div>
+  </footer>
+
+  <script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/modules/cupones.js"></script>
+  <script src="js/modules/catalogo.js"></script>
+  <script src="js/modules/checkout.js"></script>
+  <script src="js/modules/cuenta.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Carga los productos desde la base de datos al abrir la página
+    cargarCatalogo();
+  </script>
+</body>
+</html>

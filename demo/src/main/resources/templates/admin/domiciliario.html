@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Domiciliario — FlanBross</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
+    body { background: var(--chocolate); }
+
+    .domiciliario-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Panel lateral oscuro */
+    .panel-lateral {
+      background: #2A1500;
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .panel-logo {
+      font-family: var(--fuente-titulo);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--crema);
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* Card de estado del domiciliario */
+    .estado-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .estado-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .estado-etiqueta {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .badge-online {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(91,175,142,0.2);
+      border-radius: 999px;
+      font-size: 12px;
+      color: #7ECDB5;
+      font-weight: 600;
+    }
+
+    .punto-online {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #5BAF8E;
+      animation: parpadeo 2s infinite;
+    }
+
+    @keyframes parpadeo {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .perfil-domiciliario {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar-domiciliario {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--caramelo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--fuente-titulo);
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .nombre-domiciliario {
+      font-family: var(--fuente-titulo);
+      font-size: 20px;
+      color: white;
+    }
+
+    .rol-domiciliario {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    /* Estadísticas rápidas */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .stat-mini-num {
+      font-family: var(--fuente-titulo);
+      font-size: 24px;
+      color: white;
+      font-weight: 400;
+    }
+
+    .stat-mini-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 3px;
+    }
+
+    /* Título de sección en el panel */
+    .panel-seccion-titulo {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 10px;
+    }
+
+    /* Tarjeta de entrega */
+    .tarjeta-entrega-domicilio {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 18px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .tarjeta-entrega-domicilio:hover,
+    .tarjeta-entrega-domicilio.activa {
+      border-color: var(--caramelo);
+      background: rgba(196,98,45,0.1);
+    }
+
+    .entrega-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .entrega-id {
+      font-family: var(--fuente-titulo);
+      font-size: 17px;
+      color: white;
+      font-weight: 400;
+    }
+
+    .entrega-cliente {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .entrega-dir {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+    }
+
+    .entrega-botones {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-entrega {
+      flex: 1;
+      padding: 9px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      color: rgba(255,255,255,0.65);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--fuente-cuerpo);
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .btn-entrega:hover { background: rgba(255,255,255,0.08); color: white; }
+
+    .btn-entrega.confirmar {
+      background: var(--caramelo);
+      border-color: var(--caramelo);
+      color: white;
+    }
+
+    .btn-entrega.confirmar:hover { background: #a34e22; }
+
+    /* Área del mapa */
+    .area-mapa {
+      background: linear-gradient(135deg, #2A3D2A 0%, #1A2A1A 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Grilla decorativa del mapa */
+    .area-mapa::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg,  transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px),
+        repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px);
+    }
+
+    .mapa-placeholder {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .mapa-placeholder-icono { font-size: 64px; margin-bottom: 14px; }
+    .mapa-placeholder-texto { font-size: 15px; font-weight: 300; }
+
+    /* Pin en el mapa */
+    .mapa-pin {
+      position: absolute;
+      z-index: 2;
+    }
+
+    .pin-circulo {
+      width: 46px; height: 46px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .pin-contenido { transform: rotate(45deg); font-size: 20px; }
+    .pin-moto { background: var(--caramelo); }
+    .pin-destino { background: #3D5A3E; }
+
+    /* Info de ruta en la parte baja del mapa */
+    .ruta-info {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 14px 28px;
+      display: flex;
+      gap: 32px;
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 3;
+    }
+
+    .ruta-dato { text-align: center; }
+    .ruta-valor { font-family: var(--fuente-titulo); font-size: 24px; color: white; font-weight: 400; }
+    .ruta-label { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    @media (max-width: 900px) {
+      .domiciliario-layout { grid-template-columns: 1fr; }
+      .area-mapa { min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="domiciliario-layout">
+
+  <!-- ======= PANEL LATERAL ======= -->
+  <div class="panel-lateral">
+
+    <div class="panel-logo">🛵 FlanBross</div>
+
+    <!-- Perfil y estado -->
+    <div class="estado-card">
+      <div class="estado-header">
+        <span class="estado-etiqueta">Estado de turno</span>
+        <div class="badge-online">
+          <div class="punto-online"></div>
+          En línea
+        </div>
+      </div>
+      <div class="perfil-domiciliario">
+        <div class="avatar-domiciliario" id="avatar-domiciliario">—</div>
+        <div>
+          <div class="nombre-domiciliario" id="nombre-domiciliario">—</div>
+          <div class="rol-domiciliario">Domiciliaria · Cartagena</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas del día -->
+    <div class="stats-row">
+      <div class="stat-mini">
+        <div class="stat-mini-num" id="stat-dom-encamino">0</div>
+        <div class="stat-mini-label">En camino</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num" id="stat-dom-pendientes">0</div>
+        <div class="stat-mini-label">Por entregar</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num">$0</div>
+        <div class="stat-mini-label">Ganado</div>
+      </div>
+    </div>
+
+    <!-- Lista de entregas -->
+    <div>
+      <div class="panel-seccion-titulo">Mis domicilios del día</div>
+
+      <!-- Lo llena renderizarDomicilios() en js/domiciliario.js con los pedidos
+           listos y los domicilios en camino del repartidor. -->
+      <div id="lista-domicilios">
+        <div style="padding:24px; text-align:center; color:rgba(255,255,255,0.4); font-size:14px">
+          Cargando domicilios…
+        </div>
+      </div>
+    </div>
+
+    <!-- Enlace al admin -->
+    <div style="margin-top:auto; padding-top:14px; border-top:1px solid rgba(255,255,255,0.07)">
+      <a href="dashboard.html" style="font-size:12px; color:rgba(255,255,255,0.3); text-decoration:none">
+        ← Panel administrativo
+      </a>
+    </div>
+  </div>
+
+  <!-- ======= ÁREA DEL MAPA ======= -->
+  <div class="area-mapa">
+    <div class="mapa-placeholder">
+      <div class="mapa-placeholder-icono">🗺️</div>
+      <div class="mapa-placeholder-texto">Mapa de entregas · Cartagena</div>
+      <div style="font-size:13px; margin-top:8px; color:rgba(255,255,255,0.2)">
+        (En producción: Google Maps API)
+      </div>
+    </div>
+
+    <!-- Pin del domiciliario (posición simulada) -->
+    <div class="mapa-pin" style="top:38%; left:42%">
+      <div class="pin-circulo pin-moto">
+        <span class="pin-contenido">🛵</span>
+      </div>
+    </div>
+
+    <!-- Pin del destino -->
+    <div class="mapa-pin" style="top:58%; left:60%">
+      <div class="pin-circulo pin-destino">
+        <span class="pin-contenido">📍</span>
+      </div>
+    </div>
+
+    <!-- Info de ruta -->
+    <div class="ruta-info">
+      <div class="ruta-dato">
+        <div class="ruta-valor">1.8 km</div>
+        <div class="ruta-label">Distancia</div>
+      </div>
+      <div class="ruta-dato">
+        <div class="ruta-valor">~8 min</div>
+        <div class="ruta-label">Tiempo est.</div>
+      </div>
+      <div class="ruta-dato">
+        <div class="ruta-valor">$7.000</div>
+        <div class="ruta-valor-label">Costo envío</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/modules/utils.js"></script>
+<script src="../js/modules/sesion.js"></script>
+<script src="js/domiciliario.js"></script>
+</body>
+</html>

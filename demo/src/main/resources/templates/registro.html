@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrarse — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>:root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }</style>
+</head>
+<body>
+
+<div class="auth-pagina">
+
+  <div class="auth-visual">
+    <img src="img/hero.jpg" alt="FlanBross" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.18" onerror="this.style.display='none'">
+    <div style="position:relative;z-index:1">
+      <div class="auth-visual-logo">FlanBross</div>
+      <p class="auth-visual-texto">
+        Crea tu cuenta y empieza a disfrutar los mejores postres artesanales de Cartagena.
+      </p>
+    </div>
+  </div>
+
+  <div class="auth-formulario">
+    <div class="auth-caja">
+      <h1 class="auth-titulo">Crear cuenta</h1>
+      <p class="auth-subtitulo">Es gratis y toma menos de un minuto</p>
+
+      <div class="auth-tabs">
+        <a href="login.html"    class="auth-tab">Ingresar</a>
+        <a href="registro.html" class="auth-tab activa">Registrarse</a>
+      </div>
+
+      <div id="mensaje-error" style="display:none;padding:12px 14px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.25);border-radius:10px;color:#c0392b;font-size:13px;margin-bottom:14px"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="grupo-campo">
+          <label class="label-campo">Nombre</label>
+          <input id="nombre" type="text" class="input-campo" placeholder="Laura" required>
+        </div>
+        <div class="grupo-campo">
+          <label class="label-campo">Apellido</label>
+          <input id="apellido" type="text" class="input-campo" placeholder="Vargas" required>
+        </div>
+      </div>
+
+      <div class="grupo-campo">
+        <label class="label-campo">Correo electrónico</label>
+        <input id="correo" type="email" class="input-campo" placeholder="tu@correo.com" required>
+      </div>
+
+      <div class="grupo-campo">
+        <label class="label-campo">Teléfono</label>
+        <input id="telefono" type="tel" class="input-campo" placeholder="+57 300 000 0000">
+      </div>
+
+      <div class="grupo-campo">
+        <label class="label-campo">Contraseña</label>
+        <input id="contrasena" type="password" class="input-campo" placeholder="Mínimo 8 caracteres" required>
+      </div>
+
+      <div class="grupo-campo">
+        <label class="label-campo">Confirmar contraseña</label>
+        <input id="contrasena2" type="password" class="input-campo" placeholder="Repite tu contraseña" required>
+      </div>
+
+      <button class="btn-principal" style="width:100%;justify-content:center;padding:15px;font-size:15px;margin-top:8px" onclick="enviarRegistro()">
+        Crear mi cuenta
+      </button>
+
+      <p style="text-align:center;font-size:12px;color:var(--texto-claro);margin-top:14px;line-height:1.6">
+        Al registrarte aceptas nuestros <a href="#" style="color:var(--caramelo)">Términos de uso</a>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/app.js"></script>
+<script>
+  function enviarRegistro() {
+    const errorDiv    = document.getElementById('mensaje-error');
+    const contrasena  = document.getElementById('contrasena').value;
+    const contrasena2 = document.getElementById('contrasena2').value;
+    errorDiv.style.display = 'none';
+
+    if (contrasena !== contrasena2) {
+      errorDiv.textContent = 'Las contraseñas no coinciden.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (contrasena.length < 8) {
+      errorDiv.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    fetch('/api/registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre:     document.getElementById('nombre').value.trim(),
+        apellido:   document.getElementById('apellido').value.trim(),
+        correo:     document.getElementById('correo').value.trim(),
+        telefono:   document.getElementById('telefono').value.trim(),
+        contrasena: contrasena
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      if (resp.exito) {
+        guardarSesion(resp.datos.usuario);
+        window.location.href = '/cuenta.html';
+      } else {
+        errorDiv.textContent = resp.mensaje || 'Error al registrarse.';
+        errorDiv.style.display = 'block';
+      }
+    })
+    .catch(function() {
+      errorDiv.textContent = 'No se pudo conectar con el servidor.';
+      errorDiv.style.display = 'block';
+    });
+  }
+</script>
+<script>
+function toggleMenuMovil() {
+  var menu = document.getElementById('nav-menu-movil');
+  var btn  = document.getElementById('btn-hamburguesa');
+  if (!menu || !btn) return;
+  var abierto = menu.classList.toggle('abierto');
+  btn.setAttribute('aria-expanded', abierto);
+}
+// Cerrar menú al hacer clic en un enlace
+document.querySelectorAll('#nav-menu-movil a').forEach(function(a) {
+  a.addEventListener('click', function() {
+    document.getElementById('nav-menu-movil').classList.remove('abierto');
+  });
+});
+</script>
+</body>
+</html>

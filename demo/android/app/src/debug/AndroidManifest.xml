@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo en DEBUG: el servidor de desarrollo corre sin HTTPS (http://10.0.2.2:8080), y Android 9+
+     bloquea HTTP por defecto. En release la app debe hablar con un servidor HTTPS. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application
+        android:usesCleartextTraffic="true"
+        tools:ignore="InsecureBaseConfiguration" />
+</manifest>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar contraseña — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>:root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }</style>
+</head>
+<body>
+
+<div class="auth-pagina">
+
+  <!-- Lado decorativo -->
+  <div class="auth-visual">
+    <div style="position:relative;z-index:1">
+      <div class="auth-visual-logo">FlanBross</div>
+      <p class="auth-visual-texto">Recupera el acceso a tu cuenta en un par de pasos.</p>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="auth-formulario">
+    <div class="auth-caja">
+
+      <!-- PASO 1: ingresar correo -->
+      <div id="paso-correo">
+        <h1 class="auth-titulo">¿Olvidaste tu contraseña?</h1>
+        <p class="auth-subtitulo">Ingresa tu correo y te enviaremos un código de recuperación.</p>
+
+        <div id="msg-error-1" style="display:none;padding:12px 14px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.25);border-radius:10px;color:#c0392b;font-size:13px;margin-bottom:14px"></div>
+        <div id="msg-ok-1"    style="display:none;padding:12px 14px;background:rgba(45,122,95,0.08);border:1px solid rgba(45,122,95,0.25);border-radius:10px;color:#2d7a5f;font-size:13px;margin-bottom:14px"></div>
+
+        <div class="grupo-campo">
+          <label class="label-campo">Correo electrónico</label>
+          <input id="rec-correo" type="email" class="input-campo" placeholder="tu@correo.com">
+        </div>
+
+        <button class="btn-principal" style="width:100%;justify-content:center;padding:15px;font-size:15px;margin-top:8px"
+          onclick="solicitarRecuperacion()">
+          Enviar instrucciones
+        </button>
+
+        <p style="text-align:center;font-size:13px;margin-top:20px">
+          <a href="login.html" style="color:var(--caramelo);text-decoration:none">← Volver al login</a>
+        </p>
+      </div>
+
+      <!-- PASO 2: ingresar token + nueva contraseña (aparece al recibir el token) -->
+      <div id="paso-token" style="display:none">
+        <h1 class="auth-titulo">Nueva contraseña</h1>
+        <p class="auth-subtitulo">Ingresa el token que recibiste y tu nueva contraseña.</p>
+
+        <div id="msg-error-2" style="display:none;padding:12px 14px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.25);border-radius:10px;color:#c0392b;font-size:13px;margin-bottom:14px"></div>
+
+        <div class="grupo-campo">
+          <label class="label-campo">Token de recuperación</label>
+          <input id="rec-token" type="text" class="input-campo" placeholder="Pega aquí el token recibido">
+        </div>
+        <div class="grupo-campo">
+          <label class="label-campo">Nueva contraseña</label>
+          <input id="rec-pass1" type="password" class="input-campo" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div class="grupo-campo">
+          <label class="label-campo">Confirmar contraseña</label>
+          <input id="rec-pass2" type="password" class="input-campo" placeholder="Repite tu nueva contraseña">
+        </div>
+
+        <button class="btn-principal" style="width:100%;justify-content:center;padding:15px;font-size:15px;margin-top:8px"
+          onclick="cambiarContrasena()">
+          Cambiar contraseña
+        </button>
+      </div>
+
+      <!-- PASO 3: éxito -->
+      <div id="paso-exito" style="display:none;text-align:center;padding:20px 0">
+        <div style="font-size:72px;margin-bottom:16px">✅</div>
+        <h2 style="font-family:var(--fuente-titulo);font-size:30px;color:var(--chocolate);margin-bottom:10px">¡Contraseña actualizada!</h2>
+        <p style="color:var(--texto-claro);font-size:14px;margin-bottom:24px">Ya puedes ingresar con tu nueva contraseña.</p>
+        <a href="login.html" class="btn-principal" style="justify-content:center;padding:14px 32px">Ir al login →</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="js/modules/utils.js"></script>
+<script src="js/modules/sesion.js"></script>
+<script>
+  function solicitarRecuperacion() {
+    var correo = document.getElementById('rec-correo').value.trim();
+    var errEl  = document.getElementById('msg-error-1');
+    var okEl   = document.getElementById('msg-ok-1');
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    if (!correo) { errEl.textContent = 'Ingresa tu correo.'; errEl.style.display = 'block'; return; }
+
+    var btn = document.querySelector('#paso-correo .btn-principal');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+
+    fetch('/api/recuperar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo: correo })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      if (resp.exito) {
+        okEl.textContent = 'Listo. Copia el token que aparece a continuación y pégalo en el siguiente paso.';
+        if (resp.datos && resp.datos.token) {
+          okEl.textContent += ' Token: ' + resp.datos.token;
+        }
+        okEl.style.display = 'block';
+        setTimeout(function() {
+          document.getElementById('paso-correo').style.display = 'none';
+          document.getElementById('paso-token').style.display  = 'block';
+          if (resp.datos && resp.datos.token) {
+            document.getElementById('rec-token').value = resp.datos.token;
+          }
+        }, 2000);
+      } else {
+        // Por seguridad, siempre mostramos mensaje positivo aunque no exista el correo
+        okEl.textContent = 'Si el correo está registrado, recibirás las instrucciones pronto.';
+        okEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Enviar instrucciones';
+      }
+    })
+    .catch(function() {
+      errEl.textContent = 'No se pudo conectar con el servidor.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Enviar instrucciones';
+    });
+  }
+
+  function cambiarContrasena() {
+    var token = document.getElementById('rec-token').value.trim();
+    var pass1 = document.getElementById('rec-pass1').value;
+    var pass2 = document.getElementById('rec-pass2').value;
+    var errEl = document.getElementById('msg-error-2');
+    errEl.style.display = 'none';
+
+    if (!token)          { errEl.textContent = 'Pega el token de recuperación.'; errEl.style.display='block'; return; }
+    if (pass1.length < 6){ errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display='block'; return; }
+    if (pass1 !== pass2) { errEl.textContent = 'Las contraseñas no coinciden.'; errEl.style.display='block'; return; }
+
+    var btn = document.querySelector('#paso-token .btn-principal');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+
+    fetch('/api/recuperar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, nueva_contrasena: pass1 })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      if (resp.exito) {
+        document.getElementById('paso-token').style.display = 'none';
+        document.getElementById('paso-exito').style.display = 'block';
+      } else {
+        errEl.textContent = resp.mensaje || 'Token inválido o expirado.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Cambiar contraseña';
+      }
+    })
+    .catch(function() {
+      errEl.textContent = 'No se pudo conectar con el servidor.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Cambiar contraseña';
+    });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('paso-correo').style.display !== 'none') solicitarRecuperacion();
+    else if (document.getElementById('paso-token').style.display !== 'none') cambiarContrasena();
+  });
+</script>
+</body>
+</html>

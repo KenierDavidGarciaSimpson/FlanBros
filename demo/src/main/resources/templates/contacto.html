@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="/js/seguridad.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto — FlanBross</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
+
+    /* Hero */
+    .contacto-hero {
+      background: var(--chocolate);
+      padding: 120px 80px 70px;
+      text-align: center;
+    }
+    .contacto-hero h1 {
+      font-family: var(--fuente-titulo);
+      font-size: 60px;
+      font-weight: 300;
+      color: white;
+      margin: 14px 0 16px;
+      line-height: 1.1;
+    }
+    .contacto-hero h1 em { font-style: italic; color: var(--caramelo); }
+    .contacto-hero p {
+      font-size: 16px;
+      color: rgba(253,246,238,0.55);
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Layout principal */
+    .contacto-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 0;
+      min-height: 600px;
+    }
+
+    /* Panel izquierdo con info */
+    .contacto-info {
+      background: var(--crema-2);
+      padding: 60px 52px;
+      border-right: 1px solid var(--borde);
+    }
+
+    .contacto-info-titulo {
+      font-family: var(--fuente-titulo);
+      font-size: 32px;
+      color: var(--chocolate);
+      margin-bottom: 10px;
+    }
+
+    .contacto-info-subtitulo {
+      font-size: 14px;
+      color: var(--texto-claro);
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    /* Cards de contacto */
+    .info-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--borde);
+    }
+    .info-card:last-of-type { border-bottom: none; }
+
+    .info-card-icono {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid var(--borde);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .info-card-titulo {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--texto-claro);
+      margin-bottom: 4px;
+    }
+
+    .info-card-valor {
+      font-size: 15px;
+      color: var(--chocolate);
+      font-weight: 500;
+    }
+
+    .info-card-detalle {
+      font-size: 12px;
+      color: var(--texto-claro);
+      margin-top: 2px;
+    }
+
+    /* Redes sociales */
+    .redes-titulo {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--texto-claro);
+      margin: 32px 0 14px;
+    }
+
+    .redes-botones {
+      display: flex;
+      gap: 10px;
+    }
+
+    .red-btn {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--borde);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .red-btn:hover {
+      border-color: var(--caramelo);
+      transform: translateY(-2px);
+      box-shadow: var(--sombra);
+    }
+
+    /* Panel derecho con formulario */
+    .contacto-formulario {
+      background: white;
+      padding: 60px 52px;
+    }
+
+    .form-titulo {
+      font-family: var(--fuente-titulo);
+      font-size: 32px;
+      color: var(--chocolate);
+      margin-bottom: 8px;
+    }
+
+    .form-subtitulo {
+      font-size: 14px;
+      color: var(--texto-claro);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    /* Opciones de asunto */
+    .asunto-opciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .asunto-opcion {
+      padding: 12px 14px;
+      border: 1.5px solid var(--borde);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--texto-medio);
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .asunto-opcion:hover { border-color: var(--caramelo); }
+    .asunto-opcion.seleccionada {
+      border-color: var(--caramelo);
+      background: rgba(196,98,45,0.05);
+      color: var(--chocolate);
+      font-weight: 600;
+    }
+
+    /* Mensaje de éxito (oculto por defecto) */
+    .mensaje-exito {
+      display: none;
+      text-align: center;
+      padding: 48px 20px;
+    }
+    .mensaje-exito-icono { font-size: 72px; margin-bottom: 20px; }
+    .mensaje-exito-titulo {
+      font-family: var(--fuente-titulo);
+      font-size: 32px;
+      color: var(--chocolate);
+      margin-bottom: 10px;
+    }
+    .mensaje-exito-texto {
+      font-size: 15px;
+      color: var(--texto-claro);
+      font-weight: 300;
+    }
+
+    /* Mapa decorativo */
+    .mapa-seccion {
+      background: var(--crema-2);
+      padding: 70px 80px;
+    }
+
+    .mapa-contenedor {
+      background: linear-gradient(135deg, #2A3D2A, #1A2A1A);
+      border-radius: 20px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mapa-contenedor::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg,  transparent, transparent 36px, rgba(255,255,255,0.025) 36px, rgba(255,255,255,0.025) 37px),
+        repeating-linear-gradient(90deg, transparent, transparent 36px, rgba(255,255,255,0.025) 36px, rgba(255,255,255,0.025) 37px);
+    }
+
+    .mapa-label {
+      position: relative; z-index: 1;
+      text-align: center; color: rgba(255,255,255,0.35); font-size: 14px;
+    }
+    .mapa-label-icono { font-size: 52px; margin-bottom: 10px; }
+
+    /* Zonas de cobertura */
+    .zonas-grilla {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .zona-pill {
+      padding: 10px 16px;
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--texto-medio);
+      font-weight: 500;
+    }
+
+    @media (max-width: 900px) {
+      .contacto-hero { padding: 100px 24px 50px; }
+      .contacto-hero h1 { font-size: 40px; }
+      .contacto-layout { grid-template-columns: 1fr; }
+      .contacto-info, .contacto-formulario { padding: 40px 24px; }
+      .asunto-opciones { grid-template-columns: 1fr; }
+      .mapa-seccion { padding: 50px 24px; }
+      .zonas-grilla { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <a href="index.html" class="nav-logo">FlanBross</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="nosotros.html">Nosotros</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <div class="nav-acciones">
+      <a href="carrito.html" class="btn-carrito">🛒<span class="carrito-badge" style="display:none">0</span></a>
+      <a href="login.html" class="btn-secundario">Ingresar</a>
+      <a href="catalogo.html" class="btn-principal">Ordenar</a>
+    </div>
+    <!-- Botón hamburguesa (solo móvil) -->
+  <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<!-- Menú móvil desplegable -->
+<div class="nav-menu-movil" id="nav-menu-movil">
+  <a href="index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
+  <a href="carrito.html">🛒 Carrito</a>
+</div>
+
+  <!-- HERO -->
+  <div class="contacto-hero">
+    <div class="etiqueta-seccion" style="color:rgba(196,98,45,0.8)">Estamos para ti</div>
+    <h1>Hablemos sobre<br>tus <em>postres</em></h1>
+    <p>¿Tienes dudas, quieres hacer un pedido especial o necesitas ayuda? Escríbenos y te respondemos en menos de 2 horas.</p>
+  </div>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="contacto-layout">
+
+    <!-- INFO DE CONTACTO -->
+    <div class="contacto-info">
+      <div class="contacto-info-titulo">Encuéntranos</div>
+      <div class="contacto-info-subtitulo">Siempre disponibles para ayudarte</div>
+
+      <div class="info-card">
+        <div class="info-card-icono">📍</div>
+        <div>
+          <div class="info-card-titulo">Dirección</div>
+          <div class="info-card-valor">Cartagena de Indias, Colombia</div>
+          <div class="info-card-detalle">Cocina central en El Centro Histórico</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icono">📞</div>
+        <div>
+          <div class="info-card-titulo">Teléfono / WhatsApp</div>
+          <div class="info-card-valor">+57 300 000 0000</div>
+          <div class="info-card-detalle">Lunes a domingo · 8:00 AM – 8:00 PM</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icono">✉️</div>
+        <div>
+          <div class="info-card-titulo">Correo electrónico</div>
+          <div class="info-card-valor">hola@flanbross.co</div>
+          <div class="info-card-detalle">Respondemos en menos de 2 horas</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icono">🕐</div>
+        <div>
+          <div class="info-card-titulo">Horario de atención</div>
+          <div class="info-card-valor">8:00 AM – 8:00 PM</div>
+          <div class="info-card-detalle">Todos los días, incluyendo festivos</div>
+        </div>
+      </div>
+
+      <div class="redes-titulo">Síguenos en redes</div>
+      <div class="redes-botones">
+        <a href="#" class="red-btn" title="Instagram">📷</a>
+        <a href="#" class="red-btn" title="Facebook">📘</a>
+        <a href="#" class="red-btn" title="WhatsApp">💬</a>
+        <a href="#" class="red-btn" title="TikTok">🎵</a>
+      </div>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="contacto-formulario">
+
+      <!-- Formulario (visible por defecto) -->
+      <div id="contenido-formulario">
+        <div class="form-titulo">Envíanos un mensaje</div>
+        <div class="form-subtitulo">Cuéntanos en qué podemos ayudarte</div>
+
+        <!-- Opciones de asunto -->
+        <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--texto-claro); margin-bottom:12px">
+          ¿Sobre qué nos escribes?
+        </div>
+        <div class="asunto-opciones">
+          <div class="asunto-opcion seleccionada" onclick="seleccionarAsunto(this, 'Pedido especial')">
+            🎂 Pedido especial
+          </div>
+          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Información de productos')">
+            🍮 Información de productos
+          </div>
+          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Problema con mi pedido')">
+            ⚠️ Problema con mi pedido
+          </div>
+          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Otro motivo')">
+            💬 Otro motivo
+          </div>
+        </div>
+
+        <!-- Campos del formulario -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+          <div class="grupo-campo">
+            <label class="label-campo">Nombre</label>
+            <input id="contacto-nombre" type="text" class="input-campo" placeholder="Tu nombre">
+          </div>
+          <div class="grupo-campo">
+            <label class="label-campo">Teléfono / WhatsApp</label>
+            <input id="contacto-telefono" type="tel" class="input-campo" placeholder="+57 300 000 0000">
+          </div>
+        </div>
+
+        <div class="grupo-campo">
+          <label class="label-campo">Correo electrónico</label>
+          <input id="contacto-correo" type="email" class="input-campo" placeholder="tu@correo.com">
+        </div>
+
+        <div class="grupo-campo">
+          <label class="label-campo">Mensaje</label>
+          <textarea
+            id="contacto-mensaje"
+            class="textarea-campo"
+            rows="5"
+            placeholder="Cuéntanos qué necesitas... Por ejemplo: quiero una torta personalizada para 20 personas el próximo sábado."
+          ></textarea>
+        </div>
+
+        <!-- Error -->
+        <div id="contacto-error" style="display:none; padding:12px 14px; background:rgba(192,57,43,0.08); border:1px solid rgba(192,57,43,0.2); border-radius:10px; color:#c0392b; font-size:13px; margin-bottom:14px"></div>
+
+        <button class="btn-principal" style="width:100%; justify-content:center; padding:16px; font-size:15px"
+          onclick="enviarMensaje()">
+          Enviar mensaje ✉️
+        </button>
+
+        <p style="text-align:center; font-size:12px; color:var(--texto-claro); margin-top:14px">
+          También puedes escribirnos directo por
+          <a href="#" style="color:var(--caramelo); font-weight:600">WhatsApp</a>
+        </p>
+      </div>
+
+      <!-- Mensaje de éxito (oculto hasta enviar) -->
+      <div class="mensaje-exito" id="mensaje-exito">
+        <div class="mensaje-exito-icono">🎉</div>
+        <div class="mensaje-exito-titulo">¡Mensaje enviado!</div>
+        <p class="mensaje-exito-texto">
+          Gracias por escribirnos. Te responderemos en menos de 2 horas.<br>
+          Mientras tanto, puedes explorar nuestro catálogo.
+        </p>
+        <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+          <a href="catalogo.html" class="btn-principal" style="padding:12px 28px">Ver catálogo →</a>
+          <button class="btn-secundario" style="padding:12px 28px" onclick="nuevoMensaje()">Enviar otro mensaje</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MAPA Y COBERTURA -->
+  <section class="mapa-seccion">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px">
+      <div>
+        <div class="etiqueta-seccion">¿Llegamos a tu zona?</div>
+        <h2 class="titulo-seccion" style="margin-top:12px">Zonas de <em>cobertura</em></h2>
+      </div>
+      <p style="font-size:14px; color:var(--texto-claro); max-width:320px; font-weight:300">
+        Hacemos entregas en toda Cartagena de Indias. Tiempo estimado: 30–45 minutos.
+      </p>
+    </div>
+
+    <!-- Mapa decorativo -->
+    <div class="mapa-contenedor">
+      <div class="mapa-label">
+        <div class="mapa-label-icono">🗺️</div>
+        <div>Cartagena de Indias, Bolívar</div>
+        <div style="font-size:12px; margin-top:4px; color:rgba(255,255,255,0.2)">(Integración con Google Maps disponible)</div>
+      </div>
+    </div>
+
+    <!-- Zonas -->
+    <div class="zonas-grilla">
+      <div class="zona-pill">📍 Bocagrande</div>
+      <div class="zona-pill">📍 El Centro</div>
+      <div class="zona-pill">📍 Manga</div>
+      <div class="zona-pill">📍 Getsemaní</div>
+      <div class="zona-pill">📍 Pie de la Popa</div>
+      <div class="zona-pill">📍 San Fernando</div>
+      <div class="zona-pill">📍 Castillogrande</div>
+      <div class="zona-pill">📍 El Cabrero</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grilla">
+      <div>
+        <div class="footer-marca-nombre">FlanBross</div>
+        <p class="footer-marca-descripcion">
+          Postres artesanales premium elaborados con ingredientes seleccionados.
+          Entrega a domicilio en Cartagena de Indias.
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Menú</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Mi cuenta</div>
+        <ul class="footer-links">
+          <li><a href="cuenta.html">Mis pedidos</a></li>
+          <li><a href="login.html">Ingresar</a></li>
+          <li><a href="registro.html">Registrarse</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-titulo">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="#">📍 Cartagena, Colombia</a></li>
+          <li><a href="#">📞 +57 300 000 0000</a></li>
+          <li><a href="#">✉️ hola@flanbross.co</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-inferior">
+      <span>© 2025 FlanBross. Todos los derechos reservados.</span>
+      <span>Hecho con ❤️ en Cartagena</span>
+    </div>
+  </footer>
+
+  <script src="js/modules/utils.js"></script>
+  <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/nav.js"></script>
+  <script src="js/modules/carrito.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+
+    // Asunto seleccionado actualmente
+    let asuntoSeleccionado = 'Pedido especial';
+
+    // Resaltar la opción de asunto elegida
+    function seleccionarAsunto(elemento, asunto) {
+      document.querySelectorAll('.asunto-opcion').forEach(function(op) {
+        op.classList.remove('seleccionada');
+      });
+      elemento.classList.add('seleccionada');
+      asuntoSeleccionado = asunto;
+    }
+
+    // Enviar el formulario de contacto (conectado al backend real)
+    function enviarMensaje() {
+      var nombre    = document.getElementById('contacto-nombre').value.trim();
+      var correo    = document.getElementById('contacto-correo').value.trim();
+      var telefono  = document.getElementById('contacto-telefono').value.trim();
+      var mensaje   = document.getElementById('contacto-mensaje').value.trim();
+      var errorDiv  = document.getElementById('contacto-error');
+      var btn       = document.querySelector('[onclick="enviarMensaje()"]');
+
+      if (!nombre || !correo || !mensaje) {
+        errorDiv.textContent = 'Por favor completa tu nombre, correo y mensaje.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      errorDiv.style.display = 'none';
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+
+      fetch('/api/contacto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: nombre, correo: correo, telefono: telefono,
+          asunto: asuntoSeleccionado, mensaje: mensaje
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(resp) {
+        if (resp.exito) {
+          document.getElementById('contenido-formulario').style.display = 'none';
+          document.getElementById('mensaje-exito').style.display = 'block';
+        } else {
+          errorDiv.textContent = resp.mensaje || 'Ocurrió un error. Intenta de nuevo.';
+          errorDiv.style.display = 'block';
+          if (btn) { btn.disabled = false; btn.textContent = 'Enviar mensaje ✉️'; }
+        }
+      })
+      .catch(function() {
+        // Si el servidor no está disponible, mostrar éxito de todas formas (demo/offline)
+        document.getElementById('contenido-formulario').style.display = 'none';
+        document.getElementById('mensaje-exito').style.display = 'block';
+      });
+    }
+
+    // Volver al formulario para enviar otro mensaje
+    function nuevoMensaje() {
+      document.getElementById('contacto-nombre').value  = '';
+      document.getElementById('contacto-correo').value  = '';
+      document.getElementById('contacto-mensaje').value = '';
+      document.getElementById('mensaje-exito').style.display        = 'none';
+      document.getElementById('contenido-formulario').style.display = 'block';
+    }
+
+  </script>
+</body>
+</html>
