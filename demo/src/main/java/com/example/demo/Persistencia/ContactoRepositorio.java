@@ -17,4 +17,6 @@ public interface ContactoRepositorio {
     MensajeContacto guardar(MensajeContacto mensaje);
 
     List<MensajeContacto> listar();
+
+    boolean marcarLeido(int idMensaje);
 }

@@ -34,7 +34,12 @@ services:
       DB_URL: jdbc:postgresql://db:5432/flanbross
       DB_USUARIO: flanbross
       DB_CLAVE: flanbross
-      MOSTRAR_TOKEN_RECUPERACION: "true"   # solo demo: sin servidor de correo
+      MOSTRAR_TOKEN_RECUPERACION: "false"
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USUARIO: ${MAIL_USUARIO:-}
+      MAIL_CLAVE: ${MAIL_CLAVE:-}
+      MAIL_REMITENTE: ${MAIL_REMITENTE:-}
       TZ: America/Bogota
     ports:
       - "8080:8080"

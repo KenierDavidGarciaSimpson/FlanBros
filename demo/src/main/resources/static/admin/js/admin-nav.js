@@ -17,7 +17,7 @@ if (_elAdmin && _u) _elAdmin.textContent = _u.nombre + ' · ' + _u.nombre_rol;
 
 // Secciones visibles según rol
 var _permisos = {
-    administrador: ['dashboard','pedidos','productos','inventario','clientes','pagos','facturas','domicilios','empleados'],
+    administrador: ['dashboard','pedidos','productos','inventario','clientes','pagos','facturas','domicilios','empleados','mensajes'],
     repostero:     ['productos','inventario'],
     contador:      ['facturas','pagos']
 };
@@ -30,7 +30,7 @@ document.querySelectorAll('.admin-nav-item').forEach(function(btn) {
 });
 
 function mostrarSeccion(nombre) {
-    var secciones = ['dashboard','pedidos','productos','inventario','clientes','pagos','facturas','domicilios','empleados'];
+    var secciones = ['dashboard','pedidos','productos','inventario','clientes','pagos','facturas','domicilios','empleados','mensajes'];
     secciones.forEach(function(sec) {
         var el = document.getElementById('sec-' + sec);
         if (el) el.style.display = (sec === nombre) ? 'block' : 'none';
@@ -43,7 +43,8 @@ function mostrarSeccion(nombre) {
     var titulos = {
         dashboard:'Dashboard', pedidos:'Pedidos', productos:'Productos',
         inventario:'Inventario', clientes:'Clientes', pagos:'Pagos',
-        facturas:'Facturas', domicilios:'Domicilios', empleados:'Empleados'
+        facturas:'Facturas', domicilios:'Domicilios', empleados:'Empleados',
+        mensajes:'Mensajes'
     };
     var elTit = document.getElementById('titulo-seccion');
     if (elTit) elTit.textContent = titulos[nombre] || nombre;
@@ -57,6 +58,7 @@ function mostrarSeccion(nombre) {
     if (nombre === 'facturas')   cargarFacturasAdmin();
     if (nombre === 'pagos')      cargarPagosAdmin();
     if (nombre === 'domicilios') cargarDomiciliosAdmin();
+    if (nombre === 'mensajes')   cargarMensajesAdmin();
 }
 
 function setText(id, val) {

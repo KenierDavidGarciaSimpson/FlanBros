@@ -50,6 +50,11 @@
       <span class="admin-nav-icono">👔</span> Empleados
     </button>
 
+    <div class="admin-nav-grupo-label">Comunicación</div>
+    <button class="admin-nav-item" onclick="mostrarSeccion('mensajes')">
+      <span class="admin-nav-icono">✉️</span> Mensajes
+    </button>
+
     <div style="flex:1"></div>
     <div style="padding:14px 16px; border-top:1px solid rgba(255,255,255,0.07)">
       <a href="../index.html" style="font-size:12px; color:rgba(255,255,255,0.35); text-decoration:none">← Ver tienda</a>
@@ -296,6 +301,20 @@
         </div>
       </div>
 
+      <!-- ===== SECCIÓN: MENSAJES ===== -->
+      <div id="sec-mensajes" style="display:none">
+        <div class="tabla-tarjeta">
+          <div class="tabla-cabecera">
+            <div class="tabla-titulo">Mensajes de contacto</div>
+            <button class="btn-sm btn-sm-borde" onclick="cargarMensajesAdmin()">Actualizar</button>
+          </div>
+          <table class="tabla-admin">
+            <thead><tr><th>Estado</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Mensaje</th><th>Fecha</th><th>Acción</th></tr></thead>
+            <tbody id="tabla-mensajes"><tr><td colspan="7" style="color:var(--texto-claro);padding:16px">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
 <script src="../js/modules/utils.js"></script>
 <script src="../js/modules/sesion.js"></script>
 <script src="../js/modules/nav.js"></script>
@@ -311,6 +330,7 @@
 <script src="js/admin-facturas.js"></script>
 <script src="js/admin-pagos.js"></script>
 <script src="js/admin-domicilios.js"></script>
+<script src="js/admin-mensajes.js"></script>
 <script>
 // buscar en tabla activa (buscador del topbar)
 function buscarEnTabla(inputId, tablaId) {

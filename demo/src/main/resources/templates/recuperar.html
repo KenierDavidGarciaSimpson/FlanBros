@@ -51,7 +51,7 @@
       <!-- PASO 2: ingresar token + nueva contraseña (aparece al recibir el token) -->
       <div id="paso-token" style="display:none">
         <h1 class="auth-titulo">Nueva contraseña</h1>
-        <p class="auth-subtitulo">Ingresa el token que recibiste y tu nueva contraseña.</p>
+        <p class="auth-subtitulo">Ingresa el token que recibiste en tu correo y tu nueva contraseña.</p>
 
         <div id="msg-error-2" style="display:none;padding:12px 14px;background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.25);border-radius:10px;color:#c0392b;font-size:13px;margin-bottom:14px"></div>
 
@@ -112,17 +112,11 @@
     .then(function(r) { return r.json(); })
     .then(function(resp) {
       if (resp.exito) {
-        okEl.textContent = 'Listo. Copia el token que aparece a continuación y pégalo en el siguiente paso.';
-        if (resp.datos && resp.datos.token) {
-          okEl.textContent += ' Token: ' + resp.datos.token;
-        }
+        okEl.textContent = 'Si el correo está registrado, te enviamos un token. Revisa tu bandeja de entrada y la carpeta de spam.';
         okEl.style.display = 'block';
         setTimeout(function() {
           document.getElementById('paso-correo').style.display = 'none';
           document.getElementById('paso-token').style.display  = 'block';
-          if (resp.datos && resp.datos.token) {
-            document.getElementById('rec-token').value = resp.datos.token;
-          }
         }, 2000);
       } else {
         // Por seguridad, siempre mostramos mensaje positivo aunque no exista el correo
