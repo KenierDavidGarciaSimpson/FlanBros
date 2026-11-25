@@ -50,7 +50,7 @@ sitio es público.
 
 ## Pruebas
 
-`SeguridadApiTests` (perfil `memoria`, sin MySQL) cubre: API privada sin sesión → 401, redirección al login,
+`SeguridadApiTests` (perfil `memoria`, sin base de datos) cubre: API privada sin sesión → 401, redirección al login,
 matriz de roles, rechazo de escrituras sin CSRF, login correcto/incorrecto, bloqueo tras 5 fallos y
 aislamiento entre clientes. Se ejecuta con `.\mvnw.cmd test`.
 
