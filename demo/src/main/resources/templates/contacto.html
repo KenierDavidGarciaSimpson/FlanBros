@@ -290,6 +290,7 @@
           <span id="nav-nombre-usuario" style="font-size:13px;color:var(--texto-medio)"></span>
           <button class="btn-secundario" onclick="cerrarSesion()" style="margin-left:8px">Salir</button>
         </span>
+        <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
         <a href="catalogo.html" class="btn-principal" onclick="irAOrdenar(event)">Ordenar</a>
     </div>
     <!-- Botón hamburguesa (solo móvil) -->
@@ -370,53 +371,19 @@
     <!-- FORMULARIO -->
     <div class="contacto-formulario">
 
-      <!-- Formulario (visible por defecto) -->
-      <div id="contenido-formulario">
+      <!-- Formulario (solo con sesión iniciada) -->
+      <div id="contenido-formulario" style="display:none">
         <div class="form-titulo">Envíanos un mensaje</div>
-        <div class="form-subtitulo">Cuéntanos en qué podemos ayudarte</div>
+        <div class="form-subtitulo">Tu mensaje llegará a la bandeja del administrador con los datos de tu cuenta.</div>
 
-        <!-- Opciones de asunto -->
-        <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--texto-claro); margin-bottom:12px">
-          ¿Sobre qué nos escribes?
-        </div>
-        <div class="asunto-opciones">
-          <div class="asunto-opcion seleccionada" onclick="seleccionarAsunto(this, 'Pedido especial')">
-            🎂 Pedido especial
-          </div>
-          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Información de productos')">
-            🍮 Información de productos
-          </div>
-          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Problema con mi pedido')">
-            ⚠️ Problema con mi pedido
-          </div>
-          <div class="asunto-opcion" onclick="seleccionarAsunto(this, 'Otro motivo')">
-            💬 Otro motivo
-          </div>
-        </div>
-
-        <!-- Campos del formulario -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
-          <div class="grupo-campo">
-            <label class="label-campo">Nombre</label>
-            <input id="contacto-nombre" type="text" class="input-campo" placeholder="Tu nombre">
-          </div>
-          <div class="grupo-campo">
-            <label class="label-campo">Teléfono / WhatsApp</label>
-            <input id="contacto-telefono" type="tel" class="input-campo" placeholder="+57 300 000 0000">
-          </div>
-        </div>
-
-        <div class="grupo-campo">
-          <label class="label-campo">Correo electrónico</label>
-          <input id="contacto-correo" type="email" class="input-campo" placeholder="tu@correo.com">
-        </div>
+        <div id="contacto-remitente" style="font-size:13px;color:var(--texto-claro);margin-bottom:14px;padding:10px 12px;background:var(--crema-2);border-radius:10px"></div>
 
         <div class="grupo-campo">
           <label class="label-campo">Mensaje</label>
           <textarea
             id="contacto-mensaje"
             class="textarea-campo"
-            rows="5"
+            rows="6"
             placeholder="Cuéntanos qué necesitas... Por ejemplo: quiero una torta personalizada para 20 personas el próximo sábado."
           ></textarea>
         </div>
@@ -435,12 +402,22 @@
         </p>
       </div>
 
+      <!-- Aviso para usuarios sin sesión -->
+      <div id="contacto-sin-sesion" style="display:none; text-align:center; padding:30px 10px">
+        <div style="font-size:56px; margin-bottom:12px">🔒</div>
+        <div class="form-titulo" style="margin-bottom:8px">Inicia sesión para escribirnos</div>
+        <p class="form-subtitulo" style="margin-bottom:22px">
+          Para enviar un mensaje necesitas una cuenta. Tu nombre, correo y teléfono se toman automáticamente de ella.
+        </p>
+        <a href="login.html" class="btn-principal" style="padding:13px 32px">Iniciar sesión</a>
+      </div>
+
       <!-- Mensaje de éxito (oculto hasta enviar) -->
       <div class="mensaje-exito" id="mensaje-exito">
         <div class="mensaje-exito-icono">🎉</div>
         <div class="mensaje-exito-titulo">¡Mensaje enviado!</div>
         <p class="mensaje-exito-texto">
-          Gracias por escribirnos. Te responderemos en menos de 2 horas.<br>
+          Gracias por escribirnos<br>
           Mientras tanto, puedes explorar nuestro catálogo.
         </p>
         <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
@@ -534,46 +511,55 @@
   <script src="js/app.js"></script>
   <script>
 
-    // Asunto seleccionado actualmente
-    let asuntoSeleccionado = 'Pedido especial';
+    // Solo usuarios con sesión iniciada pueden enviar mensajes de contacto.
+    var _usuarioContacto = null;
 
-    // Resaltar la opción de asunto elegida
-    function seleccionarAsunto(elemento, asunto) {
-      document.querySelectorAll('.asunto-opcion').forEach(function(op) {
-        op.classList.remove('seleccionada');
-      });
-      elemento.classList.add('seleccionada');
-      asuntoSeleccionado = asunto;
+    function mostrarEstadoContacto() {
+      _usuarioContacto = (typeof obtenerSesion === 'function') ? obtenerSesion() : null;
+      var form = document.getElementById('contenido-formulario');
+      var gate = document.getElementById('contacto-sin-sesion');
+      var info = document.getElementById('contacto-remitente');
+
+      if (_usuarioContacto) {
+        var nombre = ((_usuarioContacto.nombre || '') + ' ' + (_usuarioContacto.apellido || '')).trim();
+        info.textContent = 'Enviando como ' + nombre + ' (' + (_usuarioContacto.correo || '') + ')';
+        form.style.display = 'block';
+        gate.style.display = 'none';
+      } else {
+        form.style.display = 'none';
+        gate.style.display = 'block';
+      }
     }
 
-    // Enviar el formulario de contacto (conectado al backend real)
+    // Enviar el mensaje: nombre, correo y teléfono los toma el backend de la cuenta.
     function enviarMensaje() {
-      var nombre    = document.getElementById('contacto-nombre').value.trim();
-      var correo    = document.getElementById('contacto-correo').value.trim();
-      var telefono  = document.getElementById('contacto-telefono').value.trim();
-      var mensaje   = document.getElementById('contacto-mensaje').value.trim();
-      var errorDiv  = document.getElementById('contacto-error');
-      var btn       = document.querySelector('[onclick="enviarMensaje()"]');
+      if (!_usuarioContacto) {
+        window.location.href = 'login.html';
+        return;
+      }
+      var mensaje  = document.getElementById('contacto-mensaje').value.trim();
+      var errorDiv = document.getElementById('contacto-error');
+      var btn      = document.querySelector('[onclick="enviarMensaje()"]');
 
-      if (!nombre || !correo || !mensaje) {
-        errorDiv.textContent = 'Por favor completa tu nombre, correo y mensaje.';
+      if (!mensaje) {
+        errorDiv.textContent = 'Escribe tu mensaje.';
         errorDiv.style.display = 'block';
         return;
       }
       errorDiv.style.display = 'none';
-
       if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
 
       fetch('/api/contacto', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: nombre, correo: correo, telefono: telefono,
-          asunto: asuntoSeleccionado, mensaje: mensaje
-        })
+        body: JSON.stringify({ mensaje: mensaje })
       })
-      .then(function(r) { return r.json(); })
+      .then(function(r) {
+        if (r.status === 401) { window.location.href = 'login.html'; return null; }
+        return r.json();
+      })
       .then(function(resp) {
+        if (!resp) return;
         if (resp.exito) {
           document.getElementById('contenido-formulario').style.display = 'none';
           document.getElementById('mensaje-exito').style.display = 'block';
@@ -584,20 +570,20 @@
         }
       })
       .catch(function() {
-        // Si el servidor no está disponible, mostrar éxito de todas formas (demo/offline)
-        document.getElementById('contenido-formulario').style.display = 'none';
-        document.getElementById('mensaje-exito').style.display = 'block';
+        errorDiv.textContent = 'No se pudo conectar con el servidor. Intenta de nuevo.';
+        errorDiv.style.display = 'block';
+        if (btn) { btn.disabled = false; btn.textContent = 'Enviar mensaje ✉️'; }
       });
     }
 
     // Volver al formulario para enviar otro mensaje
     function nuevoMensaje() {
-      document.getElementById('contacto-nombre').value  = '';
-      document.getElementById('contacto-correo').value  = '';
       document.getElementById('contacto-mensaje').value = '';
-      document.getElementById('mensaje-exito').style.display        = 'none';
-      document.getElementById('contenido-formulario').style.display = 'block';
+      document.getElementById('mensaje-exito').style.display = 'none';
+      mostrarEstadoContacto();
     }
+
+    document.addEventListener('DOMContentLoaded', mostrarEstadoContacto);
 
   </script>
 </body>

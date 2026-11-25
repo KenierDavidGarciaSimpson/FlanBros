@@ -70,7 +70,7 @@ public class ConfiguracionSeguridad {
                 .requestMatchers(RECURSOS_ESTATICOS).permitAll()
                 .requestMatchers(PAGINAS_PUBLICAS).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/login", "/api/registro", "/api/recuperar",
-                        "/api/contacto", "/api/cupones").permitAll()
+                        "/api/cupones").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/sesion").authenticated()
 
@@ -83,6 +83,7 @@ public class ConfiguracionSeguridad {
                 .requestMatchers(HttpMethod.GET, "/api/pedidos").hasAnyRole(ADMIN, DOMICILIARIO, CLIENTE)
                 .requestMatchers(HttpMethod.PUT, "/api/pedidos").hasAnyRole(ADMIN, DOMICILIARIO)
                 .requestMatchers("/api/domicilios", "/api/domicilios/**").hasAnyRole(ADMIN, DOMICILIARIO)
+                .requestMatchers(HttpMethod.POST, "/api/contacto").authenticated()
                 .requestMatchers("/api/clientes", "/api/clientes/**",
                         "/api/empleados", "/api/empleados/**",
                         "/api/dashboard", "/api/dashboard/**",

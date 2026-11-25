@@ -41,4 +41,15 @@ public class ContactoRepositorioMemoria implements ContactoRepositorio {
     public synchronized List<MensajeContacto> listar() {
         return List.copyOf(mensajes);
     }
+
+    @Override
+    public synchronized boolean marcarLeido(int idMensaje) {
+        for (MensajeContacto m : mensajes) {
+            if (m.id_mensaje == idMensaje) {
+                m.estado = "leido";
+                return true;
+            }
+        }
+        return false;
+    }
 }

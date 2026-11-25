@@ -63,6 +63,15 @@ public class ContactoRepositorioJdbc implements ContactoRepositorio {
                 .query(ContactoRepositorioJdbc::mensaje).list();
     }
 
+    @Override
+    public boolean marcarLeido(int idMensaje) {
+        return jdbc.sql("""
+                UPDATE mensaje_contacto SET estado = 'leido' WHERE id_mensaje = :id
+                """)
+                .param("id", idMensaje)
+                .update() > 0;
+    }
+
     private static MensajeContacto mensaje(ResultSet rs, int fila) throws SQLException {
         MensajeContacto m = new MensajeContacto();
         m.id_mensaje = rs.getInt("id_mensaje");
