@@ -1,21 +1,45 @@
-# Base de datos local para desarrollo:  docker compose up -d
-# Coincide con los valores por defecto de application.properties.
+# Entorno con Docker:
+#   docker compose up -d db          -> solo PostgreSQL (el servidor se corre desde IntelliJ/Maven)
+#   docker compose up -d --build     -> PostgreSQL + servidor FlanBross, todo en contenedores
+# El emulador de Android entra por http://10.0.2.2:8080 en cualquiera de los dos casos.
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: flanbross-mysql
+  db:
+    image: postgres:16
+    container_name: flanbross-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: flanbross
-      MYSQL_USER: flanbross
-      MYSQL_PASSWORD: flanbross
+      POSTGRES_DB: flanbross
+      POSTGRES_USER: flanbross
+      POSTGRES_PASSWORD: flanbross
       TZ: America/Bogota
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - flanbross-datos:/var/lib/mysql
+      - flanbross-datos:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flanbross -d flanbross"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: flanbross-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/flanbross
+      DB_USUARIO: flanbross
+      DB_CLAVE: flanbross
+      MOSTRAR_TOKEN_RECUPERACION: "true"   # solo demo: sin servidor de correo
+      TZ: America/Bogota
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./carpeta-imagenes:/app/carpeta-imagenes
 
 volumes:
   flanbross-datos:
