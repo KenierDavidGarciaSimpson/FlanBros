@@ -40,7 +40,8 @@ function renderizarPedidosCliente(pedidos) {
     const elGasto = document.getElementById('stat-gasto');
     if (elTotal) elTotal.textContent = pedidos.length;
     if (elGasto) {
-        const suma = pedidos.reduce(function(acc, p) { return acc + parseFloat(p.total_pedido); }, 0);
+        // Lo que paga el cliente es el total de la factura (con cupón e IVA).
+        const suma = pedidos.reduce(function(acc, p) { return acc + parseFloat(p.total_factura || p.total_pedido || 0); }, 0);
         elGasto.textContent = formatearPrecio(suma);
     }
 
@@ -67,7 +68,7 @@ function renderizarPedidosCliente(pedidos) {
             + '<div class="item-pedido-fecha">' + formatearFecha(p.fecha_pedido) + '</div>'
             + '<span class="estado-badge estado-' + p.estado_pedido.replace('_','-') + '">' + etiquetaEstado(p.estado_pedido) + '</span>'
             + '</div>'
-            + '<div class="item-pedido-precio">' + formatearPrecio(p.total_pedido) + '</div>'
+            + '<div class="item-pedido-precio">' + formatearPrecio(p.total_factura || p.total_pedido) + '</div>'
             + '</div>';
     }).join('');
 }

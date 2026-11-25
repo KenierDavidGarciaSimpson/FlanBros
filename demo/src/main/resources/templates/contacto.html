@@ -547,12 +547,8 @@
         errorDiv.style.display = 'block';
         return;
       }
-      var error = VALIDA.primero(
-        VALIDA.largo('nombre', nombre, 2, 100),
-        VALIDA.correo(correo),
-        VALIDA.telefono(telefono, false),
-        VALIDA.largo('mensaje', mensaje, 10, 2000)
-      );
+      // Nombre, correo y teléfono salen de la cuenta: solo se valida el mensaje.
+      var error = VALIDA.largo('mensaje', mensaje, 10, 2000);
       if (error) { mostrarError(errorDiv, error); return; }
       errorDiv.style.display = 'none';
       if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }

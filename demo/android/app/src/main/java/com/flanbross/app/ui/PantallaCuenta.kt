@@ -55,12 +55,12 @@ fun PantallaCuenta(
     }
 }
 
-/** Formulario de contacto. Es publico: sirve con o sin sesion. */
+/**
+ * Formulario de contacto. Requiere sesion: el servidor toma nombre, correo y telefono
+ * de la cuenta, asi que aqui solo se escribe el mensaje (igual que en la web).
+ */
 @Composable
 fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
-    var nombre by rememberSaveable { mutableStateOf(usuario?.let { "${it.nombre} ${it.apellido}".trim() }.orEmpty()) }
-    var correo by rememberSaveable { mutableStateOf(usuario?.correo.orEmpty()) }
-    var asunto by rememberSaveable { mutableStateOf("Otro motivo") }
     var mensaje by rememberSaveable { mutableStateOf("") }
     var respuesta by remember { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -71,13 +71,17 @@ fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
         TextButton(onClick = onVolver) { Text("← Volver") }
         Text("Contáctanos", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
-        CampoTexto(nombre, { nombre = it.take(100) }, "Nombre")
+        if (usuario == null) {
+            Text("Inicia sesión para enviarnos un mensaje.")
+            return@Column
+        }
+        Text(
+            "Enviando como ${"${usuario.nombre} ${usuario.apellido}".trim()} (${usuario.correo})",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
         Spacer(Modifier.height(8.dp))
-        CampoTexto(correo, { correo = it.take(120) }, "Correo", teclado = KeyboardType.Email)
-        Spacer(Modifier.height(8.dp))
-        CampoTexto(asunto, { asunto = it.take(80) }, "Asunto")
-        Spacer(Modifier.height(8.dp))
-        CampoTexto(mensaje, { mensaje = it.take(2000) }, "Mensaje (mínimo 10 caracteres)", lineas = 4)
+        CampoTexto(mensaje, { mensaje = it.take(2000) }, "Mensaje (mínimo 10 caracteres)", lineas = 5)
         respuesta?.let {
             Spacer(Modifier.height(8.dp))
             Text("✓ $it", color = MaterialTheme.colorScheme.primary)
@@ -88,21 +92,15 @@ fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
         }
         Spacer(Modifier.height(16.dp))
         Button(
-            enabled = !enviando && nombre.isNotBlank() && correo.isNotBlank() && mensaje.isNotBlank(),
+            enabled = !enviando && mensaje.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
                 respuesta = null
-                error = Validacion.primero(
-                    Validacion.largo("nombre", nombre, 2, 100),
-                    Validacion.correo(correo),
-                    Validacion.largo("asunto", asunto, 0, 80),
-                    Validacion.largo("mensaje", mensaje, 10, 2000),
-                )
+                error = Validacion.largo("mensaje", mensaje, 10, 2000)
                 if (error == null) alcance.launch {
                     enviando = true
-                    error = null
-                    respuesta = null
-                    when (val r = Servicios.repositorio.enviarContacto(nombre.trim(), correo.trim(), null, asunto.trim(), mensaje.trim())) {
+                    val nombre = "${usuario.nombre} ${usuario.apellido}".trim()
+                    when (val r = Servicios.repositorio.enviarContacto(nombre, usuario.correo, null, "Mensaje desde la app", mensaje.trim())) {
                         is Res.Ok -> { respuesta = r.mensaje; mensaje = "" }
                         is Res.Error -> error = r.mensaje
                     }
