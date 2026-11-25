@@ -13,5 +13,12 @@ function actualizarNav() {
     } else {
         if (btnLogin) btnLogin.style.display = 'inline-flex';
         if (btnSalir) btnSalir.style.display = 'none';
+        if (nomNav)   nomNav.textContent = '';
     }
+}
+
+// "Ordenar" solo entra al catálogo con sesión activa; si no, manda al login.
+function irAOrdenar(evento) {
+    if (evento) evento.preventDefault();
+    window.location.href = obtenerSesion() ? '/catalogo.html' : '/login.html';
 }
