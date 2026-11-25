@@ -37,4 +37,7 @@ object Cobro {
     fun iva(subtotal: Long): Long = (subtotal * 8 + 50) / 100
 
     fun total(subtotal: Long): Long = subtotal + iva(subtotal)
+
+    /** Descuento del cupon, redondeado igual que el servidor (mitad hacia arriba). */
+    fun descuento(subtotal: Long, porcentaje: Int): Long = (subtotal * porcentaje + 50) / 100
 }

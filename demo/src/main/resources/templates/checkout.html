@@ -81,17 +81,17 @@
             <div class="fila-formulario">
               <div class="grupo-campo">
                 <label class="label-campo">Nombre</label>
-                <input id="nombre" type="text" class="input-campo" placeholder="Laura">
+                <input id="nombre" type="text" maxlength="80" class="input-campo" placeholder="Laura">
               </div>
               <div class="grupo-campo">
                 <label class="label-campo">Apellido</label>
-                <input id="apellido" type="text" class="input-campo" placeholder="Vargas">
+                <input id="apellido" type="text" maxlength="80" class="input-campo" placeholder="Vargas">
               </div>
             </div>
 
             <div class="grupo-campo">
               <label class="label-campo">Dirección completa</label>
-              <input id="direccion" type="text" class="input-campo" placeholder="Ej: Calle 12 #45-67, El Centro">
+              <input id="direccion" type="text" maxlength="150" class="input-campo" placeholder="Ej: Calle 12 #45-67, El Centro">
             </div>
 
             <div class="fila-formulario">
@@ -102,18 +102,18 @@
               </div>
               <div class="grupo-campo">
                 <label class="label-campo">Barrio / Sector</label>
-                <input id="barrio" type="text" class="input-campo" placeholder="Bocagrande">
+                <input id="barrio" type="text" maxlength="45" class="input-campo" placeholder="Bocagrande">
               </div>
             </div>
 
             <div class="grupo-campo">
               <label class="label-campo">Teléfono de contacto</label>
-              <input id="telefono" type="tel" class="input-campo" placeholder="+57 300 000 0000">
+              <input id="telefono" type="tel" maxlength="20" class="input-campo" placeholder="+57 300 000 0000">
             </div>
 
             <div class="grupo-campo">
               <label class="label-campo">Indicaciones especiales (opcional)</label>
-              <textarea id="indicaciones" class="textarea-campo" rows="3"
+              <textarea id="indicaciones" maxlength="250" class="textarea-campo" rows="3"
                 placeholder="Ej: Apto 302, timbre no funciona, dejar en portería..."></textarea>
             </div>
 
@@ -135,7 +135,7 @@
 
             <div class="metodos-pago">
               <label class="metodo-pago seleccionado" onclick="seleccionarPago(this)">
-                <input type="radio" name="pago" value="billetera" checked>
+                <input type="radio" name="pago" value="billetera_digital" checked>
                 <span class="metodo-pago-icono">📱</span>
                 <div>
                   <div class="metodo-pago-nombre">Billetera digital</div>
@@ -223,18 +223,22 @@
                 <span id="confirm-descuento" style="color:#2d7a5f; font-weight:500">—</span>
               </div>
               <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px">
-                <span style="color:var(--texto-claro)">Domicilio</span>
-                <span id="confirm-domicilio" style="color:var(--chocolate); font-weight:500">$7.000</span>
+                <span style="color:var(--texto-claro)">IVA (8 %)</span>
+                <span id="confirm-iva" style="color:var(--chocolate); font-weight:500">$0</span>
               </div>
-              <div style="display:flex; justify-content:space-between; font-size:15px; padding-top:10px; border-top:1px solid rgba(90,58,42,0.12)">
-                <span style="color:var(--chocolate); font-weight:700">Total</span>
+              <div style="display:flex; justify-content:space-between; font-size:15px; padding-top:10px; border-top:1px solid rgba(90,58,42,0.12); margin-bottom:8px">
+                <span style="color:var(--chocolate); font-weight:700">Total factura</span>
                 <span id="confirm-total" style="color:var(--chocolate); font-weight:700">$0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px">
+                <span style="color:var(--texto-claro)">Domicilio (se paga al recibir)</span>
+                <span id="confirm-domicilio" style="color:var(--chocolate); font-weight:500">$7.000</span>
               </div>
             </div>
 
             <div style="display:flex; gap:12px; justify-content:center">
               <button class="btn-secundario" onclick="irAPaso(3)">← Editar</button>
-              <button class="btn-principal" style="padding:14px 32px; font-size:15px"
+              <button id="btn-confirmar-pedido" class="btn-principal" style="padding:14px 32px; font-size:15px"
                 onclick="confirmarPedido()">
                 ✅ Confirmar pedido
               </button>
@@ -261,8 +265,12 @@
             <span id="checkout-subtotal">$0</span>
           </div>
           <div class="resumen-fila">
-            <span>Domicilio</span>
-            <span>$7.000</span>
+            <span>Descuento</span>
+            <span id="checkout-descuento" style="color:#2d7a5f">—</span>
+          </div>
+          <div class="resumen-fila">
+            <span>IVA (8 %)</span>
+            <span id="checkout-iva">$0</span>
           </div>
 
           <div class="resumen-linea"></div>
@@ -270,6 +278,10 @@
           <div class="resumen-total-fila">
             <span class="resumen-total-label">Total</span>
             <span class="resumen-total-valor" id="checkout-total">$0</span>
+          </div>
+          <div class="resumen-fila" style="font-size:12px; margin-top:6px">
+            <span>Domicilio (se paga al recibir)</span>
+            <span>$7.000</span>
           </div>
 
           <div style="margin-top:16px; padding:12px; background:rgba(91,175,142,0.1); border-radius:10px; border:1px solid rgba(91,175,142,0.25); font-size:13px; color:#2d7a5f">
@@ -283,6 +295,7 @@
 
   <script src="js/modules/utils.js"></script>
   <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/validaciones.js"></script>
   <script src="js/modules/nav.js"></script>
   <script src="js/modules/carrito.js"></script>
   <script src="js/modules/cupones.js"></script>
@@ -291,50 +304,7 @@
   <script src="js/modules/cuenta.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Al cargar el checkout, verificar sesión y mostrar resumen del carrito
-    requiereSesion();
-
-    function mostrarResumenCheckout() {
-      const carrito    = obtenerCarrito();
-      const contenedor = document.getElementById('items-checkout');
-      if (!contenedor) return;
-
-      if (carrito.length === 0) {
-        contenedor.innerHTML = '<p style="color:var(--texto-claro);font-size:13px">Carrito vacío.</p>';
-        return;
-      }
-
-      contenedor.innerHTML = carrito.map(function(item) {
-        const imgHTML = item.imagen
-          ? '<img src="../img/productos/' + item.imagen + '" style="width:40px;height:40px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">'
-          : '';
-        return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
-          + imgHTML
-          + '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--chocolate)">' + item.nombre + '</div>'
-          + '<div style="font-size:12px;color:var(--texto-claro)">x' + item.cantidad + '</div></div>'
-          + '<span style="font-family:var(--fuente-titulo);font-size:15px;color:var(--caramelo)">' + formatearPrecio(item.precio * item.cantidad) + '</span>'
-          + '</div>';
-      }).join('');
-
-      const subtotal = calcularSubtotal();
-      const elSub = document.getElementById('checkout-subtotal');
-      const elTot = document.getElementById('checkout-total');
-      if (elSub) elSub.textContent = formatearPrecio(subtotal);
-      if (elTot) elTot.textContent = formatearPrecio(subtotal + 7000);
-    }
-
-    // Pre-llenar datos si el usuario tiene sesión
-    (function() {
-      const u = obtenerSesion();
-      if (!u) return;
-      const elNom = document.getElementById('nombre');
-      const elApe = document.getElementById('apellido');
-      if (elNom && !elNom.value) elNom.value = u.nombre || '';
-      if (elApe && !elApe.value) elApe.value = u.apellido || '';
-    })();
-
-    mostrarResumenCheckout();
-    irAPaso(2);
+    iniciarCheckout();
   </script>
 </body>
 </html>

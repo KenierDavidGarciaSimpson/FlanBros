@@ -61,7 +61,7 @@
         </div>
         <div class="grupo-campo">
           <label class="label-campo">Nueva contraseña</label>
-          <input id="rec-pass1" type="password" class="input-campo" placeholder="Mínimo 6 caracteres">
+          <input id="rec-pass1" type="password" class="input-campo" maxlength="72" placeholder="Mínimo 8 caracteres">
         </div>
         <div class="grupo-campo">
           <label class="label-campo">Confirmar contraseña</label>
@@ -89,6 +89,7 @@
 
 <script src="js/modules/utils.js"></script>
 <script src="js/modules/sesion.js"></script>
+<script src="js/modules/validaciones.js"></script>
 <script>
   function solicitarRecuperacion() {
     var correo = document.getElementById('rec-correo').value.trim();
@@ -97,7 +98,8 @@
     errEl.style.display = 'none';
     okEl.style.display  = 'none';
 
-    if (!correo) { errEl.textContent = 'Ingresa tu correo.'; errEl.style.display = 'block'; return; }
+    var errCorreo = VALIDA.correo(correo);
+    if (errCorreo) { errEl.textContent = errCorreo; errEl.style.display = 'block'; return; }
 
     var btn = document.querySelector('#paso-correo .btn-principal');
     btn.disabled = true; btn.textContent = 'Enviando...';
@@ -144,7 +146,8 @@
     errEl.style.display = 'none';
 
     if (!token)          { errEl.textContent = 'Pega el token de recuperación.'; errEl.style.display='block'; return; }
-    if (pass1.length < 6){ errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display='block'; return; }
+    var errPass = VALIDA.contrasena(pass1);
+    if (errPass)         { errEl.textContent = errPass; errEl.style.display='block'; return; }
     if (pass1 !== pass2) { errEl.textContent = 'Las contraseñas no coinciden.'; errEl.style.display='block'; return; }
 
     var btn = document.querySelector('#paso-token .btn-principal');

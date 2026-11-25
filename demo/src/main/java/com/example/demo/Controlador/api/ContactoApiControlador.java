@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Controlador.util.ValidacionUtil;
 import com.example.demo.Modelo.MensajeContacto;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.ContactoRepositorio;
@@ -46,11 +47,23 @@ public class ContactoApiControlador {
                     "Por favor completa tu nombre, correo y mensaje"));
         }
 
+        String telefono = PeticionUtil.texto(cuerpo, "telefono");
+        String asunto = PeticionUtil.texto(cuerpo, "asunto", "Otro motivo");
+        String error = ValidacionUtil.primero(
+                ValidacionUtil.largoEntre("nombre", nombre, 2, 100),
+                ValidacionUtil.correo(correo),
+                ValidacionUtil.telefono(telefono),
+                ValidacionUtil.largoMaximo("asunto", asunto, 80),
+                ValidacionUtil.largoEntre("mensaje", mensaje, 10, 2000));
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
+        }
+
         MensajeContacto contacto = new MensajeContacto();
         contacto.nombre = nombre;
         contacto.correo = correo;
-        contacto.telefono = PeticionUtil.texto(cuerpo, "telefono");
-        contacto.asunto = PeticionUtil.texto(cuerpo, "asunto", "Otro motivo");
+        contacto.telefono = telefono;
+        contacto.asunto = asunto;
         contacto.mensaje = mensaje;
 
         return ResponseEntity.status(HttpStatus.CREATED)

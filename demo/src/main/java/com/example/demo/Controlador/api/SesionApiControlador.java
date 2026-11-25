@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Controlador.util.ValidacionUtil;
 import com.example.demo.Modelo.Cliente;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Modelo.dto.SesionUsuario;
@@ -121,25 +122,34 @@ public class SesionApiControlador {
         String correo = PeticionUtil.texto(cuerpo, "correo");
         String contrasena = PeticionUtil.texto(cuerpo, "contrasena");
 
+        String telefono = PeticionUtil.texto(cuerpo, "telefono");
+        String direccion = PeticionUtil.texto(cuerpo, "direccion");
+
         if (nombre == null || apellido == null || correo == null || contrasena == null) {
             return ResponseEntity.badRequest()
                     .body(RespuestaApi.error("Faltan datos obligatorios para crear la cuenta"));
         }
-        if (contrasena.length() < LARGO_MINIMO_CONTRASENA) {
-            return ResponseEntity.badRequest().body(RespuestaApi.error(
-                    "La contrasena debe tener al menos " + LARGO_MINIMO_CONTRASENA + " caracteres"));
+        String error = ValidacionUtil.primero(
+                ValidacionUtil.nombre("nombre", nombre),
+                ValidacionUtil.nombre("apellido", apellido),
+                ValidacionUtil.correo(correo),
+                ValidacionUtil.telefono(telefono),
+                ValidacionUtil.largoMaximo("dirección", direccion, 200),
+                ValidacionUtil.contrasena(contrasena));
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
         }
         if (personas.existeCorreo(correo)) {
             return ResponseEntity.badRequest()
-                    .body(RespuestaApi.error("Ese correo ya esta registrado"));
+                    .body(RespuestaApi.error("Ese correo ya está registrado"));
         }
 
         Cliente cliente = new Cliente();
         cliente.nombre = nombre;
         cliente.apellido = apellido;
         cliente.correo = correo;
-        cliente.telefono = PeticionUtil.texto(cuerpo, "telefono");
-        cliente.direccion = PeticionUtil.texto(cuerpo, "direccion");
+        cliente.telefono = telefono;
+        cliente.direccion = direccion;
         personas.registrarCliente(cliente, contrasena);
 
         // Se devuelve la sesion ya autenticada: registro.html entra directo a la cuenta.
@@ -169,20 +179,24 @@ public class SesionApiControlador {
     }
 
     private ResponseEntity<RespuestaApi> canjearToken(String token, String nuevaContrasena) {
-        if (nuevaContrasena == null || nuevaContrasena.length() < LARGO_MINIMO_CONTRASENA) {
-            return ResponseEntity.badRequest().body(RespuestaApi.error(
-                    "La contrasena debe tener al menos " + LARGO_MINIMO_CONTRASENA + " caracteres"));
+        String error = ValidacionUtil.contrasena(nuevaContrasena);
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
         }
         if (!personas.cambiarContrasena(token, nuevaContrasena)) {
             return ResponseEntity.badRequest()
-                    .body(RespuestaApi.error("Token invalido o expirado"));
+                    .body(RespuestaApi.error("Token inválido o expirado"));
         }
-        return ResponseEntity.ok(RespuestaApi.ok(null, "Contrasena actualizada correctamente"));
+        return ResponseEntity.ok(RespuestaApi.ok(null, "Contraseña actualizada correctamente"));
     }
 
     private ResponseEntity<RespuestaApi> solicitarToken(String correo) {
         if (correo == null) {
             return ResponseEntity.badRequest().body(RespuestaApi.error("Ingresa tu correo"));
+        }
+        String error = ValidacionUtil.correo(correo);
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
         }
 
         Map<String, Object> datos = new LinkedHashMap<>();
@@ -195,7 +209,7 @@ public class SesionApiControlador {
         // Con mostrarToken=false falta enviar el token por correo (pendiente: servidor SMTP).
 
         return ResponseEntity.ok(RespuestaApi.ok(datos,
-                "Si el correo esta registrado, recibiras las instrucciones"));
+                "Si el correo está registrado, recibirás las instrucciones"));
     }
 
     /**

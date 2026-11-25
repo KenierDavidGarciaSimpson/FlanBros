@@ -60,7 +60,7 @@
             <span style="font-family:var(--fuente-titulo); font-size:18px; color:var(--chocolate)">
               Productos en el carrito
             </span>
-            <button class="btn-eliminar" onclick="vaciarCarrito()">Vaciar carrito</button>
+            <button class="btn-eliminar" onclick="if (confirmarVaciar()) vaciarCarrito()">Vaciar carrito</button>
           </div>
           <!-- Aquí JavaScript inserta los items del carrito -->
           <div id="lista-carrito" style="padding:0 24px">
@@ -74,9 +74,10 @@
             Código de descuento
           </div>
           <div class="cupon-row">
-            <input id="input-cupon" type="text" placeholder="Ej: FLANBROSS10">
+            <input id="input-cupon" type="text" maxlength="30" placeholder="Ej: FLANBROSS10">
             <button onclick="aplicarCupon()">Aplicar</button>
           </div>
+          <div id="estado-cupon" style="font-size:13px; color:#2d7a5f; margin:6px 0"></div>
           <div style="font-size:12px; color:var(--texto-claro)">
             Códigos disponibles para demo: FLANBROSS10 · BIENVENIDO · DULCE20
           </div>
@@ -92,12 +93,12 @@
           <span id="resumen-subtotal">$0</span>
         </div>
         <div class="resumen-fila">
-          <span>Domicilio (Cartagena)</span>
-          <span>$7.000</span>
-        </div>
-        <div class="resumen-fila">
           <span>Descuento</span>
           <span id="resumen-descuento" style="color:#2d7a5f">—</span>
+        </div>
+        <div class="resumen-fila">
+          <span>IVA (8 %)</span>
+          <span id="resumen-iva">$0</span>
         </div>
 
         <div class="resumen-linea"></div>
@@ -106,8 +107,12 @@
           <span class="resumen-total-label">Total</span>
           <span class="resumen-total-valor" id="resumen-total">$0</span>
         </div>
+        <div class="resumen-fila" style="font-size:12px; margin:-4px 0 14px">
+          <span>Domicilio en Cartagena (se paga al recibir)</span>
+          <span>$7.000</span>
+        </div>
 
-        <a href="checkout.html" class="btn-principal" style="width:100%; justify-content:center; padding:16px; font-size:15px; display:flex">
+        <a href="checkout.html" id="btn-ir-pago" onclick="irAlPago(event)" class="btn-principal" style="width:100%; justify-content:center; padding:16px; font-size:15px; display:flex">
           Ir al pago →
         </a>
 
@@ -144,8 +149,19 @@
   <script src="js/modules/cuenta.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Renderizar el carrito cuando carga la página
-    renderizarCarrito();
+    // El carrito es solo para clientes con sesión iniciada.
+    if (!obtenerSesion()) {
+      try { sessionStorage.setItem('fb_volver', '/carrito.html'); } catch (e) {}
+      window.location.replace('/login.html');
+    } else {
+      renderizarCarrito();
+      pintarEstadoCupon();
+      // Al entrar, poner al día precios y stock con el servidor.
+      sincronizarCarrito().then(function () { renderizarCarrito(); actualizarBadgeCarrito(); });
+    }
+    function confirmarVaciar() {
+      return obtenerCarrito().length > 0 && window.confirm('¿Vaciar el carrito?');
+    }
   </script>
 </body>
 </html>

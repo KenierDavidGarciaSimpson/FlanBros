@@ -1,6 +1,7 @@
 package com.flanbross.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -53,8 +54,19 @@ fun PantallaCarrito(
     usuario: Usuario?,
     onContinuar: () -> Unit,
     onVerCatalogo: () -> Unit,
+    onLogin: () -> Unit,
+    onRegistro: () -> Unit,
 ) {
+    if (usuario == null) {
+        PedirSesion("Inicia sesión para usar el carrito", onLogin, onRegistro)
+        return
+    }
     val lineas by carrito.lineas.collectAsStateWithLifecycle()
+    val cupon by carrito.cupon.collectAsStateWithLifecycle()
+    var codigo by rememberSaveable { mutableStateOf("") }
+    var avisoCupon by remember { mutableStateOf<String?>(null) }
+    var validando by remember { mutableStateOf(false) }
+    val alcance = rememberCoroutineScope()
 
     if (lineas.isEmpty()) {
         Column(
@@ -90,30 +102,71 @@ fun PantallaCarrito(
                         OutlinedButton(onClick = { carrito.cambiarCantidad(linea.producto.id, linea.cantidad - 1) },
                             modifier = Modifier.size(40.dp), contentPadding = PaddingValues(0.dp)) { Text("−") }
                         Text("${linea.cantidad}", modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
-                        OutlinedButton(onClick = { carrito.cambiarCantidad(linea.producto.id, linea.cantidad + 1) },
-                            modifier = Modifier.size(40.dp), contentPadding = PaddingValues(0.dp)) { Text("+") }
+                        OutlinedButton(
+                            enabled = linea.cantidad < linea.producto.stock,
+                            onClick = { carrito.cambiarCantidad(linea.producto.id, linea.cantidad + 1) },
+                            modifier = Modifier.size(40.dp), contentPadding = PaddingValues(0.dp),
+                        ) { Text("+") }
                     }
                 }
             }
         }
-        ResumenCobro(subtotal)
+        // Cupon de descuento
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            val actual = cupon
+            if (actual != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("✓ Cupón ${actual.codigo} (${actual.porcentaje} %)", color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f))
+                    TextButton(onClick = { carrito.aplicarCupon(null); avisoCupon = null }) { Text("Quitar") }
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.weight(1f)) {
+                        CampoTexto(codigo, { codigo = it.uppercase().take(30) }, "Código de descuento")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton(
+                        enabled = !validando && codigo.isNotBlank(),
+                        onClick = {
+                            val errorFormato = Validacion.cupon(codigo)
+                            avisoCupon = errorFormato
+                            if (errorFormato == null) alcance.launch {
+                                validando = true
+                                avisoCupon = null
+                                when (val r = Servicios.repositorio.validarCupon(codigo.trim(), subtotal)) {
+                                    is Res.Ok -> { carrito.aplicarCupon(r.dato); codigo = "" }
+                                    is Res.Error -> avisoCupon = r.mensaje
+                                }
+                                validando = false
+                            }
+                        },
+                    ) { Text(if (validando) "…" else "Aplicar") }
+                }
+            }
+            avisoCupon?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+        }
+        ResumenCobro(subtotal, cupon?.porcentaje ?: 0)
         Button(
             onClick = onContinuar,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        ) { Text(if (usuario == null) "Inicia sesión para pedir" else "Continuar con el pedido") }
+        ) { Text("Continuar con el pedido") }
     }
 }
 
 /** Resumen con las mismas reglas del servidor: IVA 8 %; el domicilio se registra aparte. */
 @Composable
-private fun ResumenCobro(subtotal: Long) {
+private fun ResumenCobro(subtotal: Long, porcentaje: Int) {
+    val descuento = Cobro.descuento(subtotal, porcentaje)
+    val base = subtotal - descuento
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         HorizontalDivider()
         Spacer(Modifier.height(8.dp))
         FilaMonto("Subtotal", Formato.pesos(subtotal))
-        FilaMonto("IVA (8 %)", Formato.pesos(Cobro.iva(subtotal)))
-        FilaMonto("Total", Formato.pesos(Cobro.total(subtotal)), destacado = true)
-        FilaMonto("Domicilio (se registra aparte)", Formato.pesos(Cobro.COSTO_DOMICILIO))
+        if (descuento > 0) FilaMonto("Descuento ($porcentaje %)", "-" + Formato.pesos(descuento))
+        FilaMonto("IVA (8 %)", Formato.pesos(Cobro.iva(base)))
+        FilaMonto("Total", Formato.pesos(Cobro.total(base)), destacado = true)
+        FilaMonto("Domicilio (se paga al recibir)", Formato.pesos(Cobro.COSTO_DOMICILIO))
     }
 }
 
@@ -148,21 +201,27 @@ fun PantallaCheckout(
         return
     }
     val lineas by carrito.lineas.collectAsStateWithLifecycle()
+    val cupon by carrito.cupon.collectAsStateWithLifecycle()
     var direccion by rememberSaveable { mutableStateOf("") }
+    var telefono by rememberSaveable { mutableStateOf("") }
     var observaciones by rememberSaveable { mutableStateOf("") }
     var metodo by rememberSaveable { mutableStateOf("contraentrega") }
     var error by remember { mutableStateOf<String?>(null) }
     var enviando by remember { mutableStateOf(false) }
     val alcance = rememberCoroutineScope()
     val subtotal = carrito.subtotal(lineas)
+    val porcentaje = cupon?.porcentaje ?: 0
+    val base = subtotal - Cobro.descuento(subtotal, porcentaje)
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
         TextButton(onClick = onVolver) { Text("← Volver al carrito") }
         Text("Confirmar pedido", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
-        CampoTexto(direccion, { direccion = it }, "Dirección de entrega")
+        CampoTexto(direccion, { direccion = it.take(200) }, "Dirección de entrega")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(observaciones, { observaciones = it }, "Observaciones (opcional)", lineas = 3)
+        CampoTexto(telefono, { telefono = it.take(20) }, "Teléfono de contacto")
+        Spacer(Modifier.height(8.dp))
+        CampoTexto(observaciones, { observaciones = it.take(250) }, "Observaciones (opcional)", lineas = 3)
         Spacer(Modifier.height(12.dp))
         Text("Método de pago", style = MaterialTheme.typography.titleMedium)
         metodosDePago.forEach { (valor, nombre) ->
@@ -175,25 +234,46 @@ fun PantallaCheckout(
             }
         }
         Spacer(Modifier.height(12.dp))
-        FilaMonto("Total a pagar", Formato.pesos(Cobro.total(subtotal)), destacado = true)
+        if (porcentaje > 0) {
+            FilaMonto("Cupón ${cupon?.codigo} ($porcentaje %)", "-" + Formato.pesos(Cobro.descuento(subtotal, porcentaje)))
+        }
+        FilaMonto("Total a pagar", Formato.pesos(Cobro.total(base)), destacado = true)
+        FilaMonto("Domicilio (se paga al recibir)", Formato.pesos(Cobro.COSTO_DOMICILIO))
         error?.let {
             Spacer(Modifier.height(8.dp))
             Text(it, color = MaterialTheme.colorScheme.error)
         }
         Spacer(Modifier.height(16.dp))
         Button(
-            enabled = !enviando && direccion.isNotBlank() && lineas.isNotEmpty(),
+            enabled = !enviando && lineas.isNotEmpty(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                alcance.launch {
+                error = Validacion.primero(
+                    Validacion.largo("dirección", direccion, 5, 200),
+                    Validacion.telefono(telefono, obligatorio = true),
+                    Validacion.largo("observaciones", observaciones, 0, 250),
+                )
+                if (error == null) alcance.launch {
                     enviando = true
-                    error = null
+                    // Antes de enviar, confirmar precios y stock con el servidor.
+                    val catalogo = Servicios.repositorio.productos()
+                    if (catalogo is Res.Ok) {
+                        val avisos = carrito.sincronizar(catalogo.dato)
+                        if (avisos.isNotEmpty()) {
+                            error = avisos.joinToString("\n") + "\nRevisa el carrito antes de confirmar."
+                            enviando = false
+                            return@launch
+                        }
+                    }
+                    val notas = "Tel: " + telefono.trim() +
+                        (observaciones.trim().takeIf { it.isNotEmpty() }?.let { " | $it" } ?: "")
                     val pedido = NuevoPedido(
                         idCliente = usuario.idEntidad,
                         direccionEntrega = direccion.trim(),
-                        observaciones = observaciones.trim().ifBlank { null },
+                        observaciones = notas,
                         metodoPago = metodo,
-                        items = lineas.map { ItemPedido(it.producto.id, it.cantidad, it.producto.precio) },
+                        items = carrito.lineas.value.map { ItemPedido(it.producto.id, it.cantidad, it.producto.precio) },
+                        codigoCupon = cupon?.codigo,
                     )
                     when (val r = Servicios.repositorio.crearPedido(pedido)) {
                         is Res.Ok -> { carrito.pedidoConfirmado(r.dato); onCreado() }

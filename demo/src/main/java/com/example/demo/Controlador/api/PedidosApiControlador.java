@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Controlador.util.ValidacionUtil;
+import com.example.demo.Modelo.Cupon;
+import com.example.demo.Modelo.dto.ItemPedido;
 import com.example.demo.Modelo.Pedido;
 import com.example.demo.Modelo.dto.NuevoPedido;
 import com.example.demo.Modelo.dto.RespuestaApi;
+import com.example.demo.Persistencia.CuponRepositorio;
 import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 import com.example.demo.Seguridad.UsuarioActual;
@@ -44,10 +48,17 @@ import com.example.demo.Seguridad.UsuarioActual;
 @RequestMapping("/api/pedidos")
 public class PedidosApiControlador {
 
-    private final PedidoRepositorio pedidos;
+    private static final List<String> METODOS_PAGO = List.of(
+            "contraentrega", "tarjeta", "transferencia", "billetera_digital");
+    private static final int MAX_LINEAS = 30;
+    private static final int MAX_UNIDADES_POR_LINEA = 50;
 
-    public PedidosApiControlador(PedidoRepositorio pedidos) {
+    private final PedidoRepositorio pedidos;
+    private final CuponRepositorio cupones;
+
+    public PedidosApiControlador(PedidoRepositorio pedidos, CuponRepositorio cupones) {
         this.pedidos = pedidos;
+        this.cupones = cupones;
     }
 
     /**
@@ -90,6 +101,10 @@ public class PedidosApiControlador {
             return ResponseEntity.badRequest().body(RespuestaApi.error(
                     "Faltan datos obligatorios: id_cliente, items y direccion_entrega"));
         }
+        String error = validar(solicitud);
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
+        }
         try {
             Pedido pedido = pedidos.crear(solicitud);
 
@@ -107,6 +122,51 @@ public class PedidosApiControlador {
             // tal cual el texto de e.getMessage().
             return ResponseEntity.badRequest().body(RespuestaApi.error(e.getMessage()));
         }
+    }
+
+    /**
+     * Reglas del pedido que no dependen de la base de datos. El stock y la
+     * existencia de cada producto los revisa el repositorio dentro de la transaccion.
+     * Si viene un cupon valido, deja el porcentaje listo en la solicitud.
+     */
+    private String validar(NuevoPedido solicitud) {
+        solicitud.direccion_entrega = solicitud.direccion_entrega.trim();
+        if (solicitud.observaciones != null) {
+            solicitud.observaciones = solicitud.observaciones.trim();
+            if (solicitud.observaciones.isEmpty()) {
+                solicitud.observaciones = null;
+            }
+        }
+        String error = ValidacionUtil.primero(
+                ValidacionUtil.largoEntre("dirección de entrega", solicitud.direccion_entrega, 5, 200),
+                ValidacionUtil.largoMaximo("observaciones", solicitud.observaciones, 300));
+        if (error != null) {
+            return error;
+        }
+        if (solicitud.metodo_pago == null || !METODOS_PAGO.contains(solicitud.metodo_pago)) {
+            return "Elige un método de pago válido";
+        }
+        if (solicitud.items.size() > MAX_LINEAS) {
+            return "El pedido no puede tener más de " + MAX_LINEAS + " productos distintos";
+        }
+        for (ItemPedido item : solicitud.items) {
+            if (item == null || !item.esValido()) {
+                return "Hay un producto con cantidad inválida en el pedido";
+            }
+            if (item.cantidad > MAX_UNIDADES_POR_LINEA) {
+                return "No puedes pedir más de " + MAX_UNIDADES_POR_LINEA + " unidades de un mismo producto";
+            }
+        }
+        String codigo = solicitud.codigo_cupon == null ? null : solicitud.codigo_cupon.trim();
+        if (codigo != null && !codigo.isEmpty()) {
+            Optional<Cupon> cupon = cupones.buscarPorCodigo(codigo);
+            if (cupon.isEmpty()) {
+                return "El cupón " + codigo + " no es válido o está vencido";
+            }
+            solicitud.descuento_pct = cupon.get().descuento_pct;
+            solicitud.cupon_aplicado = cupon.get().codigoNormalizado();
+        }
+        return null;
     }
 
     /** PUT /api/pedidos — mueve el estado y aplica los efectos en cascada. */
