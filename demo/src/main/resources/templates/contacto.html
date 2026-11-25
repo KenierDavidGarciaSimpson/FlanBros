@@ -281,9 +281,16 @@
       <li><a href="contacto.html">Contacto</a></li>
     </ul>
     <div class="nav-acciones">
-      <a href="carrito.html" class="btn-carrito">🛒<span class="carrito-badge" style="display:none">0</span></a>
-      <a href="login.html" class="btn-secundario">Ingresar</a>
-      <a href="catalogo.html" class="btn-principal">Ordenar</a>
+      <a href="carrito.html" class="btn-carrito" title="Ver carrito">
+        🛒
+        <span class="carrito-badge" style="display:none">0</span>
+      </a>
+        <a href="login.html" id="btn-nav-login" class="btn-secundario">Ingresar</a>
+        <span id="btn-nav-salir" style="display:none">
+          <span id="nav-nombre-usuario" style="font-size:13px;color:var(--texto-medio)"></span>
+          <button class="btn-secundario" onclick="cerrarSesion()" style="margin-left:8px">Salir</button>
+        </span>
+        <a href="catalogo.html" class="btn-principal" onclick="irAOrdenar(event)">Ordenar</a>
     </div>
     <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">

@@ -15,8 +15,11 @@ function guardarCarrito(carrito) {
 // Modal de cantidad — aparece al hacer clic en "+"
 // =====================================================
 var _productoModal = null;
+var _modalTimeout  = null;
 
 function mostrarModalCantidad(producto) {
+    // Si el modal anterior aún esperaba cerrarse, cancelarlo: si no, cerraría el nuevo.
+    if (_modalTimeout) { clearTimeout(_modalTimeout); _modalTimeout = null; }
     _productoModal = producto;
 
     // Crear el modal si no existe
@@ -28,7 +31,8 @@ function mostrarModalCantidad(producto) {
         modal.innerHTML = `
           <div style="background:white;border-radius:18px;padding:28px 28px 22px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(61,28,2,.18)">
             <div id="mc-img-wrap" style="width:100%;height:140px;background:var(--crema-2);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
-              <img id="mc-img" src="" alt="" style="width:100%;height:100%;object-fit:cover">
+              <img id="mc-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+              <span id="mc-emoji" style="font-size:52px;display:none"></span>
             </div>
             <div id="mc-categoria" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--texto-claro);margin-bottom:4px"></div>
             <div id="mc-nombre" style="font-family:var(--fuente-titulo);font-size:22px;color:var(--chocolate);margin-bottom:4px"></div>
@@ -56,19 +60,25 @@ function mostrarModalCantidad(producto) {
     }
 
     // Poblar con datos del producto
-    var cant = 1;
+    var cant  = 1;
     var stock = producto.stock || 99;
     var img   = document.getElementById('mc-img');
-    var imgWrap = document.getElementById('mc-img-wrap');
+    var emoji = document.getElementById('mc-emoji');
 
+    // Nunca borrar el <img> del modal: solo alternar con el emoji de respaldo.
     if (producto.imagen) {
-        img.src = 'img/productos/' + producto.imagen;
         img.style.display = 'block';
-        img.onerror = function() { this.style.display='none'; imgWrap.textContent = producto.emoji || '🍰'; imgWrap.style.fontSize='52px'; };
+        if (emoji) emoji.style.display = 'none';
+        img.onerror = function () {
+            this.style.display = 'none';
+            if (emoji) { emoji.textContent = producto.emoji || '🍰'; emoji.style.display = 'block'; }
+        };
+        img.src = '/img/productos/' + producto.imagen;
     } else {
         img.style.display = 'none';
-        imgWrap.textContent = producto.emoji || '🍰';
-        imgWrap.style.fontSize = '52px';
+        img.removeAttribute('src');
+        img.onerror = null;
+        if (emoji) { emoji.textContent = producto.emoji || '🍰'; emoji.style.display = 'block'; }
     }
 
     document.getElementById('mc-categoria').textContent  = producto.categoria || '';
@@ -76,6 +86,13 @@ function mostrarModalCantidad(producto) {
     document.getElementById('mc-cant').textContent       = cant;
     document.getElementById('mc-stock-info').textContent = stock <= 5 ? '⚠ Solo ' + stock + ' disponibles' : stock + ' disponibles';
     actualizarPrecioModal(cant, producto.precio);
+
+    // Reiniciar el botón por si el producto anterior dejó el estado "Agregado".
+    var btnAgregar = document.getElementById('mc-btn-agregar');
+    if (btnAgregar) {
+        btnAgregar.style.background = 'var(--caramelo)';
+        btnAgregar.textContent = 'Agregar al carrito';
+    }
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -97,6 +114,10 @@ function cambiarCantidadModal(delta) {
 }
 
 function confirmarAgregarCarrito() {
+    if (!obtenerSesion()) {
+        window.location.href = '/login.html';
+        return;
+    }
     if (!_productoModal) return;
     var cant = parseInt(document.getElementById('mc-cant').textContent) || 1;
     var carrito = obtenerCarrito();
@@ -124,19 +145,25 @@ function confirmarAgregarCarrito() {
     var btn = document.getElementById('mc-btn-agregar');
     btn.style.background = '#2d7a5f';
     btn.textContent = '✓ Agregado (' + cant + ')';
-    setTimeout(cerrarModalCantidad, 800);
+    _modalTimeout = setTimeout(cerrarModalCantidad, 800);
     mostrarToast(cant + ' × ' + nombre + ' agregado al carrito');
 }
 
 function cerrarModalCantidad() {
+    if (_modalTimeout) { clearTimeout(_modalTimeout); _modalTimeout = null; }
     var modal = document.getElementById('modal-cantidad-carrito');
     if (modal) modal.style.display = 'none';
     document.body.style.overflow = '';
     _productoModal = null;
 }
 
-// agregarAlCarrito ahora abre el modal de cantidad
+// agregarAlCarrito ahora abre el modal de cantidad.
+// Solo usuarios con sesión iniciada pueden agregar productos al carrito.
 function agregarAlCarrito(producto) {
+    if (!obtenerSesion()) {
+        window.location.href = '/login.html';
+        return;
+    }
     mostrarModalCantidad(producto);
 }
 
