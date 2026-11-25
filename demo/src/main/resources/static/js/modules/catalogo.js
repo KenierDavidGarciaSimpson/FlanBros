@@ -11,18 +11,10 @@ function cargarCatalogo() {
 
     grilla.innerHTML = '<p style="color:var(--texto-claro);padding:40px;text-align:center">Cargando productos...</p>';
 
-    fetch(API + '/productos')
-        .then(function(r) { return r.json(); })
-        .then(function(resp) {
-            if (resp.exito) {
-                window.PRODUCTOS = resp.datos;
-                filtrarProductos();
-            } else {
-                grilla.innerHTML = '<p style="color:var(--texto-claro);padding:40px">No se pudieron cargar los productos.</p>';
-            }
-        })
+    obtenerProductos(true)
+        .then(function() { filtrarProductos(); })
         .catch(function() {
-            grilla.innerHTML = '<p style="color:var(--texto-claro);padding:40px">No se pudo conectar con el servidor.</p>';
+            grilla.innerHTML = '<p style="color:var(--texto-claro);padding:40px">No se pudieron cargar los productos. Revisa tu conexión y recarga la página.</p>';
         });
 }
 
@@ -39,7 +31,7 @@ function filtrarProductos() {
 
     var lista = prods.filter(function(p) {
         var matchCat  = categoriaActiva === 'Todos' || p.categoria === categoriaActiva;
-        var matchBusc = p.nombre_producto.toLowerCase().includes(busqueda)
+        var matchBusc = (p.nombre_producto || '').toLowerCase().includes(busqueda)
                      || (p.descripcion || '').toLowerCase().includes(busqueda);
         return matchCat && matchBusc;
     });
@@ -72,31 +64,33 @@ function renderizarPagina() {
     }
 
     grilla.innerHTML = pagina.map(function(p) {
-        var agotado = p.stock <= 0;
-        var rutaImg = p.imagen ? 'img/productos/' + p.imagen : null;
+        var agotado = !estaDisponible(p);
+        var nombre  = escaparHTML(p.nombre_producto);
+        var rutaImg = p.imagen ? 'img/productos/' + escaparHTML(p.imagen) : null;
+        var emoji   = escaparHTML(p.emoji || '🍰');
 
         var imgHTML = rutaImg
-            ? '<img src="' + rutaImg + '" alt="' + p.nombre_producto + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-              + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:52px">' + (p.emoji || '🍰') + '</div>'
-            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px">' + (p.emoji || '🍰') + '</div>';
+            ? '<img src="' + rutaImg + '" alt="' + nombre + '" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+              + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:52px">' + emoji + '</div>'
+            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px">' + emoji + '</div>';
 
         return '<div class="tarjeta-producto">'
             + '<a href="pages/producto.html?id=' + p.id_producto + '">'
             + '<div class="tarjeta-imagen" style="overflow:hidden;padding:0">'
             + imgHTML
-            + (p.badge ? '<span class="tarjeta-badge' + (p.badge === 'Nuevo' ? ' nuevo' : '') + '">' + p.badge + '</span>' : '')
+            + (p.badge ? '<span class="tarjeta-badge' + (p.badge === 'Nuevo' ? ' nuevo' : '') + '">' + escaparHTML(p.badge) + '</span>' : '')
             + (agotado ? '<span class="tarjeta-badge" style="background:#888">Agotado</span>' : '')
             + '</div>'
             + '</a>'
             + '<div class="tarjeta-cuerpo">'
-            + '<div class="tarjeta-categoria">' + p.categoria + '</div>'
-            + '<a href="pages/producto.html?id=' + p.id_producto + '" class="tarjeta-nombre">' + p.nombre_producto + '</a>'
-            + '<p class="tarjeta-descripcion">' + (p.descripcion || '') + '</p>'
+            + '<div class="tarjeta-categoria">' + escaparHTML(p.categoria) + '</div>'
+            + '<a href="pages/producto.html?id=' + p.id_producto + '" class="tarjeta-nombre">' + nombre + '</a>'
+            + '<p class="tarjeta-descripcion">' + escaparHTML(p.descripcion) + '</p>'
             + '<div class="tarjeta-pie">'
             + '<span class="tarjeta-precio">' + formatearPrecio(p.precio) + '</span>'
             + (agotado
                 ? '<span style="font-size:12px;color:#888">Sin stock</span>'
-                : '<button class="btn-agregar" onclick=\'agregarAlCarrito(' + JSON.stringify(p) + ')\'>+</button>')
+                : '<button type="button" class="btn-agregar" aria-label="Agregar ' + nombre + ' al carrito" onclick="agregarAlCarrito(' + p.id_producto + ')">+</button>')
             + '</div>'
             + '</div>'
             + '</div>';

@@ -90,6 +90,16 @@ class Repositorio(private val http: ClienteHttp) {
             ?: Res.Error("Respuesta inesperada del servidor")
     }
 
+    // ---------------- Cupones ----------------
+
+    suspend fun validarCupon(codigo: String, subtotal: Long): Res<CuponValido> {
+        val cuerpo = buildJsonObject { put("codigo", codigo); put("subtotal", subtotal) }
+        val r = http.enviar("POST", "api/cupones", cuerpo.toString())
+        if (!r.respuesta.exito) return Res.Error(r.respuesta.mensaje)
+        return leer<CuponValido>(r.respuesta)?.let { Res.Ok(it, r.respuesta.mensaje) }
+            ?: Res.Error("Respuesta inesperada del servidor")
+    }
+
     // ---------------- Contacto ----------------
 
     suspend fun enviarContacto(

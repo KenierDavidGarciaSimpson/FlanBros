@@ -74,7 +74,8 @@ fun PantallaLogin(
             enabled = !cargando && correo.isNotBlank() && clave.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                alcance.launch {
+                error = Validacion.correo(correo)
+                if (error == null) alcance.launch {
                     cargando = true
                     error = null
                     when (val r = Servicios.repositorio.login(correo.trim(), clave)) {
@@ -104,6 +105,7 @@ fun PantallaRegistro(sesion: SesionViewModel, onExito: () -> Unit, onVolver: () 
     var telefono by rememberSaveable { mutableStateOf("") }
     var direccion by rememberSaveable { mutableStateOf("") }
     var clave by rememberSaveable { mutableStateOf("") }
+    var clave2 by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var cargando by remember { mutableStateOf(false) }
     val alcance = rememberCoroutineScope()
@@ -112,27 +114,38 @@ fun PantallaRegistro(sesion: SesionViewModel, onExito: () -> Unit, onVolver: () 
         TextButton(onClick = onVolver) { Text("← Volver") }
         Text("Crear cuenta", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
-        CampoTexto(nombre, { nombre = it }, "Nombre")
+        CampoTexto(nombre, { nombre = it.take(80) }, "Nombre")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(apellido, { apellido = it }, "Apellido")
+        CampoTexto(apellido, { apellido = it.take(80) }, "Apellido")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(correo, { correo = it }, "Correo", teclado = KeyboardType.Email)
+        CampoTexto(correo, { correo = it.take(120) }, "Correo", teclado = KeyboardType.Email)
         Spacer(Modifier.height(8.dp))
-        CampoTexto(telefono, { telefono = it }, "Teléfono (opcional)", teclado = KeyboardType.Phone)
+        CampoTexto(telefono, { telefono = it.take(20) }, "Teléfono (opcional)", teclado = KeyboardType.Phone)
         Spacer(Modifier.height(8.dp))
-        CampoTexto(direccion, { direccion = it }, "Dirección (opcional)")
+        CampoTexto(direccion, { direccion = it.take(200) }, "Dirección (opcional)")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(clave, { clave = it }, "Contraseña (mínimo 8 caracteres)", teclado = KeyboardType.Password, secreto = true)
+        CampoTexto(clave, { clave = it.take(72) }, "Contraseña (mínimo 8 caracteres)", teclado = KeyboardType.Password, secreto = true)
+        Spacer(Modifier.height(8.dp))
+        CampoTexto(clave2, { clave2 = it.take(72) }, "Confirmar contraseña", teclado = KeyboardType.Password, secreto = true)
         error?.let {
             Spacer(Modifier.height(8.dp))
             Text(it, color = MaterialTheme.colorScheme.error)
         }
         Spacer(Modifier.height(16.dp))
         Button(
-            enabled = !cargando && nombre.isNotBlank() && apellido.isNotBlank() && correo.isNotBlank() && clave.length >= 8,
+            enabled = !cargando && nombre.isNotBlank() && apellido.isNotBlank() && correo.isNotBlank() && clave.isNotEmpty(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                alcance.launch {
+                error = Validacion.primero(
+                    Validacion.nombre("nombre", nombre),
+                    Validacion.nombre("apellido", apellido),
+                    Validacion.correo(correo),
+                    Validacion.telefono(telefono, obligatorio = false),
+                    Validacion.largo("dirección", direccion, 0, 200),
+                    Validacion.contrasena(clave),
+                    if (clave != clave2) "Las contraseñas no coinciden." else null,
+                )
+                if (error == null) alcance.launch {
                     cargando = true
                     error = null
                     val r = Servicios.repositorio.registro(
@@ -180,7 +193,8 @@ fun PantallaRecuperar(onVolver: () -> Unit) {
             enabled = !cargando && correo.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                alcance.launch {
+                error = Validacion.correo(correo)
+                if (error == null) alcance.launch {
                     cargando = true
                     error = null
                     when (val r = Servicios.repositorio.solicitarRecuperacion(correo.trim())) {
@@ -207,10 +221,11 @@ fun PantallaRecuperar(onVolver: () -> Unit) {
             CampoTexto(nueva, { nueva = it }, "Contraseña nueva (mínimo 8)", teclado = KeyboardType.Password, secreto = true)
             Spacer(Modifier.height(8.dp))
             Button(
-                enabled = !cargando && token.isNotBlank() && nueva.length >= 8,
+                enabled = !cargando && token.isNotBlank() && nueva.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    alcance.launch {
+                    error = Validacion.contrasena(nueva)
+                    if (error == null) alcance.launch {
                         cargando = true
                         error = null
                         when (val r = Servicios.repositorio.cambiarContrasena(token.trim(), nueva)) {

@@ -38,32 +38,32 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <div class="grupo-campo">
           <label class="label-campo">Nombre</label>
-          <input id="nombre" type="text" class="input-campo" placeholder="Laura" required>
+          <input id="nombre" type="text" maxlength="80" class="input-campo" placeholder="Laura" required>
         </div>
         <div class="grupo-campo">
           <label class="label-campo">Apellido</label>
-          <input id="apellido" type="text" class="input-campo" placeholder="Vargas" required>
+          <input id="apellido" type="text" maxlength="80" class="input-campo" placeholder="Vargas" required>
         </div>
       </div>
 
       <div class="grupo-campo">
         <label class="label-campo">Correo electrónico</label>
-        <input id="correo" type="email" class="input-campo" placeholder="tu@correo.com" required>
+        <input id="correo" type="email" maxlength="120" class="input-campo" placeholder="tu@correo.com" required>
       </div>
 
       <div class="grupo-campo">
         <label class="label-campo">Teléfono</label>
-        <input id="telefono" type="tel" class="input-campo" placeholder="+57 300 000 0000">
+        <input id="telefono" type="tel" maxlength="20" class="input-campo" placeholder="+57 300 000 0000">
       </div>
 
       <div class="grupo-campo">
         <label class="label-campo">Contraseña</label>
-        <input id="contrasena" type="password" class="input-campo" placeholder="Mínimo 8 caracteres" required>
+        <input id="contrasena" type="password" maxlength="72" class="input-campo" placeholder="Mínimo 8 caracteres" required>
       </div>
 
       <div class="grupo-campo">
         <label class="label-campo">Confirmar contraseña</label>
-        <input id="contrasena2" type="password" class="input-campo" placeholder="Repite tu contraseña" required>
+        <input id="contrasena2" type="password" maxlength="72" class="input-campo" placeholder="Repite tu contraseña" required>
       </div>
 
       <button class="btn-principal" style="width:100%;justify-content:center;padding:15px;font-size:15px;margin-top:8px" onclick="enviarRegistro()">
@@ -79,6 +79,7 @@
 
 <script src="js/modules/utils.js"></script>
   <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/validaciones.js"></script>
   <script src="js/modules/nav.js"></script>
   <script src="js/modules/carrito.js"></script>
   <script src="js/app.js"></script>
@@ -89,16 +90,19 @@
     const contrasena2 = document.getElementById('contrasena2').value;
     errorDiv.style.display = 'none';
 
-    if (contrasena !== contrasena2) {
-      errorDiv.textContent = 'Las contraseñas no coinciden.';
-      errorDiv.style.display = 'block';
-      return;
-    }
-    if (contrasena.length < 8) {
-      errorDiv.textContent = 'La contraseña debe tener al menos 8 caracteres.';
-      errorDiv.style.display = 'block';
-      return;
-    }
+    var val = function (id) { return document.getElementById(id).value; };
+    var error = VALIDA.primero(
+      VALIDA.nombre('nombre', val('nombre')),
+      VALIDA.nombre('apellido', val('apellido')),
+      VALIDA.correo(val('correo')),
+      VALIDA.telefono(val('telefono'), false),
+      VALIDA.contrasena(contrasena),
+      contrasena !== contrasena2 ? 'Las contraseñas no coinciden.' : null
+    );
+    if (error) { mostrarError(errorDiv, error); return; }
+    var btn = document.querySelector('[onclick="enviarRegistro()"]');
+    if (btn) { if (btn.disabled) return; btn.disabled = true; }
+    var listo = function () { if (btn) btn.disabled = false; };
 
     fetch('/api/registro', {
       method: 'POST',
@@ -113,15 +117,19 @@
     })
     .then(function(r) { return r.json(); })
     .then(function(resp) {
+      listo();
       if (resp.exito) {
         guardarSesion(resp.datos.usuario);
-        window.location.href = '/cuenta.html';
+        var volver = null;
+        try { volver = sessionStorage.getItem('fb_volver'); sessionStorage.removeItem('fb_volver'); } catch (e) {}
+        window.location.href = volver && volver.charAt(0) === '/' && volver.indexOf('//') !== 0 ? volver : '/cuenta.html';
       } else {
         errorDiv.textContent = resp.mensaje || 'Error al registrarse.';
         errorDiv.style.display = 'block';
       }
     })
     .catch(function() {
+      listo();
       errorDiv.textContent = 'No se pudo conectar con el servidor.';
       errorDiv.style.display = 'block';
     });

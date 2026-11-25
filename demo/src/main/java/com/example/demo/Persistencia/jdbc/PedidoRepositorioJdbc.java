@@ -140,6 +140,17 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
             total = total.add(producto.precio.multiply(BigDecimal.valueOf(item.cantidad)));
         }
 
+        // ---- 1b. Cupon (el controlador ya lo valido contra la tabla cupon) ---
+        String observaciones = solicitud.observaciones;
+        if (solicitud.descuento_pct > 0) {
+            BigDecimal descuento = total.multiply(BigDecimal.valueOf(solicitud.descuento_pct))
+                    .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP);
+            total = total.subtract(descuento);
+            String nota = "Cupón " + solicitud.cupon_aplicado + " (-" + solicitud.descuento_pct
+                    + "%: $" + descuento.toPlainString() + ")";
+            observaciones = observaciones == null ? nota : observaciones + " | " + nota;
+        }
+
         // ---- 2. Cabecera del pedido ----------------------------------------
         LocalDateTime ahora = LocalDateTime.now();
         KeyHolder llavePedido = new GeneratedKeyHolder();
@@ -149,7 +160,7 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 """)
                 .param("fecha", ahora)
                 .param("total", total)
-                .param("observaciones", solicitud.observaciones)
+                .param("observaciones", observaciones)
                 .param("cliente", solicitud.id_cliente)
                 .update(llavePedido, "id_pedido");
         int idPedido = llavePedido.getKey().intValue();

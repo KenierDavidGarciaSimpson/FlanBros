@@ -83,6 +83,14 @@ data class NuevoPedido(
     val observaciones: String? = null,
     @SerialName("metodo_pago") val metodoPago: String,
     val items: List<ItemPedido>,
+    /** Opcional: el servidor lo valida otra vez y aplica el descuento a la factura. */
+    @SerialName("codigo_cupon") val codigoCupon: String? = null,
+)
+
+@Serializable
+data class CuponValido(
+    val codigo: String,
+    @SerialName("descuento_pct") val porcentaje: Int,
 )
 
 @Serializable

@@ -2,6 +2,7 @@ package com.example.demo.Modelo.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -28,6 +29,20 @@ public class NuevoPedido {
 
     /** contraentrega | tarjeta | transferencia | billetera_digital. */
     public String metodo_pago = "contraentrega";
+
+    /** Codigo de cupon que escribio el cliente (opcional). */
+    public String codigo_cupon;
+
+    /**
+     * Porcentaje de descuento YA validado por el servidor. Lo llena el controlador
+     * despues de buscar el cupon; {@code @JsonIgnore} impide que el navegador lo envie.
+     */
+    @JsonIgnore
+    public int descuento_pct;
+
+    /** Codigo del cupon validado (normalizado), para dejarlo anotado en el pedido. */
+    @JsonIgnore
+    public String cupon_aplicado;
 
     /** Mismos obligatorios que validaba el PHP: cliente, items y direccion. */
     public boolean estaCompleto() {

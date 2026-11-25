@@ -333,125 +333,111 @@
   <script src="../js/modules/cupones.js"></script>
   <script src="../js/app.js"></script>
   <script>
-    // Todos los productos (en producción vendrían del backend)
-    const TODOS_PRODUCTOS = [
-      { id:1,  nombre:'Torta Tres Leches',         categoria:'Tortas',        descripcion:'Bizcocho esponjoso bañado en tres tipos de leche, cubierto con crema chantilly artesanal.',                     precio:42000, emoji:'🎂', stock:15, badge:'Popular' },
-      { id:2,  nombre:'Cheesecake Maracuyá',        categoria:'Cheesecakes',   descripcion:'Tarta fría de queso crema con coulis de maracuyá sobre base de galleta artesanal.',                            precio:38000, emoji:'🍰', stock:12 },
-      { id:3,  nombre:'Brownie con Nueces',          categoria:'Brownies',      descripcion:'Brownie denso de chocolate 70% con nueces tostadas, porción individual.',                                     precio:8500,  emoji:'🍫', stock:40, badge:'Nuevo' },
-      { id:4,  nombre:'Macarons Surtidos x6',        categoria:'Macarons',      descripcion:'Caja de 6 macarons artesanales: vainilla, chocolate, limón, frutos rojos, pistacho y caramelo.',             precio:24000, emoji:'🎉', stock:25, badge:'Nuevo' },
-      { id:5,  nombre:'Creme Brûlée',                categoria:'Postres fríos', descripcion:'Crema francesa de vainilla con costra de azúcar caramelizada, presentación individual.',                     precio:14000, emoji:'🍮', stock:3  },
-      { id:6,  nombre:'Tiramisú Clásico',            categoria:'Postres fríos', descripcion:'Capas de bizcochuelo empapado en café con crema de mascarpone y cacao en polvo.',                            precio:16000, emoji:'☕', stock:18 },
-      { id:7,  nombre:'Cupcake Red Velvet',          categoria:'Cupcakes',      descripcion:'Cupcake terciopelo rojo con frosting de queso crema, decorado a mano con detalles en fondant.',               precio:7500,  emoji:'🧁', stock:30 },
-      { id:8,  nombre:'Torta Selva Negra',           categoria:'Tortas',        descripcion:'Capas de bizcocho de chocolate, crema chantilly y cerezas al marrasquino.',                                  precio:45000, emoji:'🎂', stock:8,  badge:'Popular' },
-      { id:9,  nombre:'Flan de Coco',                categoria:'Flanes',        descripcion:'Flan suave de leche de coco con caramelo artesanal, porción individual.',                                    precio:11000, emoji:'🍮', stock:22, badge:'Nuevo' },
-      { id:10, nombre:'Galletas de Mantequilla x12', categoria:'Galletas',      descripcion:'Caja de 12 galletas artesanales de mantequilla con azúcar decoradas con motivos coloridos.',                 precio:19000, emoji:'🍪', stock:35 }
-    ];
+    // Detalle de producto: los datos (precio, stock, estado) vienen de la API.
+    (function () {
+      var id = parseInt(new URLSearchParams(window.location.search).get('id'), 10) || 0;
+      var btnAgregar = document.getElementById('btn-agregar-carrito');
+      var inputCantidad = document.getElementById('cantidad-input');
+      var cantidad = 1;
+      var producto = null;
 
-    // Leer el ID del producto desde la URL (?id=3)
-    const idProducto = parseInt(obtenerParametroURL('id')) || 1;
-    const producto   = TODOS_PRODUCTOS.find(function(p) { return p.id === idProducto; });
+      function poner(idEl, texto) { var el = document.getElementById(idEl); if (el) el.textContent = texto; }
 
-    if (!producto) {
-      document.querySelector('.pd-nombre').textContent = 'Producto no encontrado';
-    } else {
-      // Rellenar todos los datos en pantalla
-      document.title                                 = producto.nombre + ' — FlanBross';
-      document.getElementById('breadcrumb-nombre').textContent = producto.nombre;
-      document.getElementById('pd-emoji').textContent          = producto.emoji;
-      document.getElementById('min-1').textContent             = producto.emoji;
-      document.getElementById('pd-categoria').textContent      = producto.categoria;
-      document.getElementById('pd-nombre').textContent         = producto.nombre;
-      document.getElementById('pd-precio').textContent         = formatearPrecio(producto.precio);
-      document.getElementById('pd-descripcion').textContent    = producto.descripcion;
+      function libres() { return producto ? producto.stock - cantidadEnCarrito(producto.id_producto) : 0; }
 
-      // Mostrar estado del stock
-      const stockInfo  = document.getElementById('pd-stock-info');
-      const stockDot   = document.getElementById('pd-stock-dot');
-      const stockTexto = document.getElementById('pd-stock-texto');
-      const minimo     = 5;
-
-      if (producto.stock === 0) {
-        stockDot.style.background   = '#E05252';
-        stockTexto.textContent       = 'Sin stock disponible';
-      } else if (producto.stock <= minimo) {
-        stockDot.style.background   = '#D4A853';
-        stockTexto.textContent       = '⚠ Últimas ' + producto.stock + ' unidades';
-        stockInfo.style.background   = 'rgba(212,168,83,0.08)';
-        stockInfo.style.borderColor  = 'rgba(212,168,83,0.3)';
-      } else {
-        stockTexto.textContent = 'En stock · ' + producto.stock + ' unidades disponibles';
+      function pintarBoton() {
+        if (!producto) return;
+        if (!estaDisponible(producto)) {
+          btnAgregar.disabled = true; btnAgregar.textContent = 'Agotado'; return;
+        }
+        if (libres() <= 0 && obtenerSesion()) {
+          btnAgregar.disabled = true; btnAgregar.textContent = 'Ya tienes todas las unidades en el carrito'; return;
+        }
+        btnAgregar.disabled = false;
+        btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
       }
 
-      // Control de cantidad
-      let cantidad = 1;
-      const inputCantidad = document.getElementById('cantidad-input');
+      function sinProducto(mensaje) {
+        poner('pd-nombre', mensaje);
+        poner('pd-descripcion', '');
+        poner('pd-precio', '');
+        btnAgregar.disabled = true;
+        btnAgregar.textContent = 'No disponible';
+      }
 
-      document.getElementById('btn-menos').onclick = function() {
-        if (cantidad > 1) { cantidad--; inputCantidad.value = cantidad; }
-      };
-      document.getElementById('btn-mas').onclick = function() {
-        if (cantidad < producto.stock) { cantidad++; inputCantidad.value = cantidad; }
-      };
+      if (!id) { sinProducto('Producto no encontrado'); return; }
 
-      // Botón agregar al carrito
-      const btnAgregar = document.getElementById('btn-agregar-carrito');
-      btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
+      obtenerProductos().then(function (lista) {
+        producto = lista.find(function (p) { return p.id_producto === id; }) || null;
+        if (!producto) { sinProducto('Producto no encontrado'); return; }
 
-      // Actualizar precio en el botón cuando cambia la cantidad
-      inputCantidad.addEventListener('input', function() {
-        cantidad = Math.max(1, Math.min(producto.stock, parseInt(this.value) || 1));
-        this.value = cantidad;
-        btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
-      });
+        document.title = producto.nombre_producto + ' — FlanBross';
+        poner('breadcrumb-nombre', producto.nombre_producto);
+        poner('pd-emoji', producto.emoji || '🍰');
+        poner('min-1', producto.emoji || '🍰');
+        poner('pd-categoria', producto.categoria || '');
+        poner('pd-nombre', producto.nombre_producto);
+        poner('pd-precio', formatearPrecio(producto.precio));
+        poner('pd-descripcion', producto.descripcion || '');
 
-      btnAgregar.onclick = function() {
-        // Agregar al carrito con la cantidad seleccionada
-        for (let i = 0; i < cantidad; i++) {
-          agregarAlCarrito(producto);
+        var stockInfo = document.getElementById('pd-stock-info');
+        var stockDot = document.getElementById('pd-stock-dot');
+        if (!estaDisponible(producto)) {
+          stockDot.style.background = '#E05252';
+          poner('pd-stock-texto', 'Sin stock disponible');
+        } else if (producto.stock <= 5) {
+          stockDot.style.background = '#D4A853';
+          poner('pd-stock-texto', '⚠ Últimas ' + producto.stock + ' unidades');
+          stockInfo.style.background = 'rgba(212,168,83,0.08)';
+          stockInfo.style.borderColor = 'rgba(212,168,83,0.3)';
+        } else {
+          poner('pd-stock-texto', 'En stock · ' + producto.stock + ' unidades disponibles');
         }
-        // Solo contar 1 vez si se agregaron varios
-        // (agregarAlCarrito ya suma si el item existe)
-        // Dar feedback visual
+        pintarBoton();
+        pintarRelacionados(lista);
+      }).catch(function () { sinProducto('No se pudo cargar el producto. Revisa tu conexión.'); });
+
+      document.getElementById('btn-menos').onclick = function () {
+        if (cantidad > 1) { cantidad--; inputCantidad.value = cantidad; pintarBoton(); }
+      };
+      document.getElementById('btn-mas').onclick = function () {
+        if (!producto) return;
+        var maximo = obtenerSesion() ? libres() : producto.stock;
+        if (cantidad < maximo) { cantidad++; inputCantidad.value = cantidad; pintarBoton(); }
+        else { mostrarToast('Solo hay ' + Math.max(maximo, 0) + ' unidad(es) disponibles', 'error'); }
+      };
+
+      btnAgregar.onclick = function () {
+        if (!producto) return;
+        if (!agregarCantidadAlCarrito(producto, cantidad)) { pintarBoton(); return; }
         btnAgregar.classList.add('agregado');
         btnAgregar.textContent = '✓ Agregado al carrito';
-        setTimeout(function() {
-          btnAgregar.classList.remove('agregado');
-          btnAgregar.textContent = 'Agregar al carrito — ' + formatearPrecio(producto.precio * cantidad);
-        }, 2000);
+        cantidad = 1; inputCantidad.value = 1;
+        setTimeout(function () { btnAgregar.classList.remove('agregado'); pintarBoton(); }, 1500);
       };
 
-      // Mostrar productos relacionados (misma categoría, excepto el actual)
-      const relacionados = TODOS_PRODUCTOS.filter(function(p) {
-        return p.categoria === producto.categoria && p.id !== producto.id;
-      }).slice(0, 4);
-
-      // Si no hay de la misma categoría, mostrar otros
-      const paraRelacionados = relacionados.length > 0
-        ? relacionados
-        : TODOS_PRODUCTOS.filter(function(p) { return p.id !== producto.id; }).slice(0, 4);
-
-      const grillaRel = document.getElementById('grilla-relacionados');
-      let htmlRel = '';
-      paraRelacionados.forEach(function(p) {
-        htmlRel += `
-          <div class="tarjeta-producto">
-            <a href="producto.html?id=${p.id}">
-              <div class="tarjeta-imagen">${p.emoji}${p.badge ? '<span class="tarjeta-badge' + (p.badge==='Nuevo'?' nuevo':'') + '">' + p.badge + '</span>' : ''}</div>
-            </a>
-            <div class="tarjeta-cuerpo">
-              <div class="tarjeta-categoria">${p.categoria}</div>
-              <a href="producto.html?id=${p.id}" class="tarjeta-nombre">${p.nombre}</a>
-              <p class="tarjeta-descripcion">${p.descripcion}</p>
-              <div class="tarjeta-pie">
-                <span class="tarjeta-precio">${formatearPrecio(p.precio)}</span>
-                <button class="btn-agregar" onclick='agregarAlCarrito(${JSON.stringify(p)})'>+</button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      grillaRel.innerHTML = htmlRel;
-    }
+      function pintarRelacionados(lista) {
+        var otros = lista.filter(function (p) { return p.id_producto !== producto.id_producto; });
+        var misma = otros.filter(function (p) { return p.categoria === producto.categoria; });
+        var elegidos = (misma.length ? misma : otros).slice(0, 4);
+        document.getElementById('grilla-relacionados').innerHTML = elegidos.map(function (p) {
+          var nombre = escaparHTML(p.nombre_producto);
+          return '<div class="tarjeta-producto">'
+            + '<a href="producto.html?id=' + p.id_producto + '"><div class="tarjeta-imagen">' + escaparHTML(p.emoji || '🍰')
+            + (p.badge ? '<span class="tarjeta-badge' + (p.badge === 'Nuevo' ? ' nuevo' : '') + '">' + escaparHTML(p.badge) + '</span>' : '')
+            + '</div></a>'
+            + '<div class="tarjeta-cuerpo">'
+            + '<div class="tarjeta-categoria">' + escaparHTML(p.categoria) + '</div>'
+            + '<a href="producto.html?id=' + p.id_producto + '" class="tarjeta-nombre">' + nombre + '</a>'
+            + '<p class="tarjeta-descripcion">' + escaparHTML(p.descripcion) + '</p>'
+            + '<div class="tarjeta-pie"><span class="tarjeta-precio">' + formatearPrecio(p.precio) + '</span>'
+            + (estaDisponible(p)
+                ? '<button type="button" class="btn-agregar" aria-label="Agregar ' + nombre + '" onclick="agregarAlCarrito(' + p.id_producto + ')">+</button>'
+                : '<span style="font-size:12px;color:#888">Sin stock</span>')
+            + '</div></div></div>';
+        }).join('');
+      }
+    })();
   </script>
 </body>
 </html>

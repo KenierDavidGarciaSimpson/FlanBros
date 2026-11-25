@@ -76,6 +76,7 @@
 
 <script src="js/modules/utils.js"></script>
   <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/validaciones.js"></script>
   <script src="js/modules/nav.js"></script>
   <script src="js/modules/carrito.js"></script>
   <script src="js/app.js"></script>
@@ -90,6 +91,7 @@
     }
   })();
 
+  var enviandoLogin = false;
   function enviarLogin() {
     const correo     = document.getElementById('correo').value.trim();
     const contrasena = document.getElementById('contrasena').value;
@@ -101,6 +103,10 @@
       errorDiv.style.display = 'block';
       return;
     }
+    var errCorreo = VALIDA.correo(correo);
+    if (errCorreo) { mostrarError(errorDiv, errCorreo); return; }
+    if (enviandoLogin) return;
+    enviandoLogin = true;
 
     fetch('/api/login', {
       method: 'POST',
@@ -109,6 +115,7 @@
     })
     .then(function(r) { return r.json(); })
     .then(function(resp) {
+      enviandoLogin = false;
       if (resp.exito) {
         guardarSesion(resp.datos.usuario);
         redirigirPorRol(resp.datos.usuario.nombre_rol);
@@ -118,7 +125,8 @@
       }
     })
     .catch(function() {
-      errorDiv.textContent = 'No se pudo conectar con el servidor. Verifica que XAMPP esté corriendo.';
+      enviandoLogin = false;
+      errorDiv.textContent = 'No se pudo conectar con el servidor. Revisa tu conexión e intenta de nuevo.';
       errorDiv.style.display = 'block';
     });
   }
@@ -126,7 +134,10 @@
   // Redirige según el rol del usuario que inició sesión
   function redirigirPorRol(rol) {
     if (rol === 'cliente') {
-      window.location.replace('/cuenta.html');
+      // Si venía de agregar al carrito o de ver el carrito, volver allá.
+      var volver = null;
+      try { volver = sessionStorage.getItem('fb_volver'); sessionStorage.removeItem('fb_volver'); } catch (e) {}
+      window.location.replace(volver && volver.charAt(0) === '/' && volver.indexOf('//') !== 0 ? volver : '/cuenta.html');
     } else if (rol === 'domiciliario') {
       window.location.replace('/admin/domiciliario.html');
     } else {

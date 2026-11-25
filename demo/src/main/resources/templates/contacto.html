@@ -381,7 +381,7 @@
         <div class="grupo-campo">
           <label class="label-campo">Mensaje</label>
           <textarea
-            id="contacto-mensaje"
+            id="contacto-mensaje" maxlength="2000"
             class="textarea-campo"
             rows="6"
             placeholder="Cuéntanos qué necesitas... Por ejemplo: quiero una torta personalizada para 20 personas el próximo sábado."
@@ -506,6 +506,7 @@
 
   <script src="js/modules/utils.js"></script>
   <script src="js/modules/sesion.js"></script>
+  <script src="js/modules/validaciones.js"></script>
   <script src="js/modules/nav.js"></script>
   <script src="js/modules/carrito.js"></script>
   <script src="js/app.js"></script>
@@ -546,6 +547,13 @@
         errorDiv.style.display = 'block';
         return;
       }
+      var error = VALIDA.primero(
+        VALIDA.largo('nombre', nombre, 2, 100),
+        VALIDA.correo(correo),
+        VALIDA.telefono(telefono, false),
+        VALIDA.largo('mensaje', mensaje, 10, 2000)
+      );
+      if (error) { mostrarError(errorDiv, error); return; }
       errorDiv.style.display = 'none';
       if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
 
@@ -570,7 +578,7 @@
         }
       })
       .catch(function() {
-        errorDiv.textContent = 'No se pudo conectar con el servidor. Intenta de nuevo.';
+        errorDiv.textContent = 'No se pudo enviar el mensaje. Revisa tu conexión e intenta de nuevo.';
         errorDiv.style.display = 'block';
         if (btn) { btn.disabled = false; btn.textContent = 'Enviar mensaje ✉️'; }
       });

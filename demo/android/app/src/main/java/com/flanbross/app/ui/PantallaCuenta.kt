@@ -71,13 +71,13 @@ fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
         TextButton(onClick = onVolver) { Text("← Volver") }
         Text("Contáctanos", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
-        CampoTexto(nombre, { nombre = it }, "Nombre")
+        CampoTexto(nombre, { nombre = it.take(100) }, "Nombre")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(correo, { correo = it }, "Correo", teclado = KeyboardType.Email)
+        CampoTexto(correo, { correo = it.take(120) }, "Correo", teclado = KeyboardType.Email)
         Spacer(Modifier.height(8.dp))
-        CampoTexto(asunto, { asunto = it }, "Asunto")
+        CampoTexto(asunto, { asunto = it.take(80) }, "Asunto")
         Spacer(Modifier.height(8.dp))
-        CampoTexto(mensaje, { mensaje = it }, "Mensaje", lineas = 4)
+        CampoTexto(mensaje, { mensaje = it.take(2000) }, "Mensaje (mínimo 10 caracteres)", lineas = 4)
         respuesta?.let {
             Spacer(Modifier.height(8.dp))
             Text("✓ $it", color = MaterialTheme.colorScheme.primary)
@@ -91,7 +91,14 @@ fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
             enabled = !enviando && nombre.isNotBlank() && correo.isNotBlank() && mensaje.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                alcance.launch {
+                respuesta = null
+                error = Validacion.primero(
+                    Validacion.largo("nombre", nombre, 2, 100),
+                    Validacion.correo(correo),
+                    Validacion.largo("asunto", asunto, 0, 80),
+                    Validacion.largo("mensaje", mensaje, 10, 2000),
+                )
+                if (error == null) alcance.launch {
                     enviando = true
                     error = null
                     respuesta = null

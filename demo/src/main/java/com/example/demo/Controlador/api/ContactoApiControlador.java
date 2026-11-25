@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Controlador.util.ValidacionUtil;
 import com.example.demo.Modelo.MensajeContacto;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Modelo.dto.SesionUsuario;
@@ -54,8 +55,9 @@ public class ContactoApiControlador {
         }
 
         String mensaje = PeticionUtil.texto(cuerpo, "mensaje");
-        if (mensaje == null || mensaje.isBlank()) {
-            return ResponseEntity.badRequest().body(RespuestaApi.error("Escribe tu mensaje"));
+        String error = ValidacionUtil.largoEntre("mensaje", mensaje, 10, 2000);
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
         }
 
         SesionUsuario usuario = sesion.get();

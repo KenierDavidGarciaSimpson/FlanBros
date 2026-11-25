@@ -10,6 +10,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +65,16 @@ fun Raiz() {
     val lineas by carritoVm.lineas.collectAsStateWithLifecycle()
     val usuario = (estadoSesion as? EstadoSesion.Activa)?.usuario
 
+    // El carrito es de cada cliente: si cierra sesion o entra otra cuenta, se vacia.
+    var duenoCarrito by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(usuario?.correo) {
+        val actual = usuario?.correo
+        if (actual != duenoCarrito) {
+            carritoVm.vaciar()
+            duenoCarrito = actual
+        }
+    }
+
     val nav = rememberNavController()
     val rutaActual = nav.currentBackStackEntryAsState().value?.destination?.route
 
@@ -103,10 +117,12 @@ fun Raiz() {
                 ) { entrada ->
                     PantallaProducto(
                         id = entrada.arguments?.getInt("id") ?: 0,
+                        usuario = usuario,
                         catalogo = catalogoVm,
                         carrito = carritoVm,
                         onVolver = { nav.popBackStack() },
                         onIrCarrito = { irAPestana(nav, Rutas.CARRITO) },
+                        onLogin = { nav.navigate(Rutas.LOGIN) },
                     )
                 }
                 composable(Rutas.CARRITO) {
@@ -115,6 +131,8 @@ fun Raiz() {
                         usuario = usuario,
                         onContinuar = { nav.navigate(if (usuario != null) Rutas.CHECKOUT else Rutas.LOGIN) },
                         onVerCatalogo = { irAPestana(nav, Rutas.CATALOGO) },
+                        onLogin = { nav.navigate(Rutas.LOGIN) },
+                        onRegistro = { nav.navigate(Rutas.REGISTRO) },
                     )
                 }
                 composable(Rutas.CHECKOUT) {

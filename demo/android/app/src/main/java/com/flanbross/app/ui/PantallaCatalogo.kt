@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flanbross.app.data.Producto
+import com.flanbross.app.data.Usuario
 
 /** Catalogo: filtro por categoria y cuadricula de productos. No requiere sesion. */
 @Composable
@@ -114,15 +115,19 @@ private fun TarjetaProducto(producto: Producto, onClick: () -> Unit) {
 @Composable
 fun PantallaProducto(
     id: Int,
+    usuario: Usuario?,
     catalogo: CatalogoViewModel,
     carrito: CarritoViewModel,
     onVolver: () -> Unit,
     onIrCarrito: () -> Unit,
+    onLogin: () -> Unit,
 ) {
     val estado by catalogo.estado.collectAsStateWithLifecycle()
+    val lineas by carrito.lineas.collectAsStateWithLifecycle()
     val producto = (estado as? Cargable.Listo)?.datos?.firstOrNull { it.id == id }
     var cantidad by rememberSaveable { mutableStateOf(1) }
     var agregado by rememberSaveable { mutableStateOf(false) }
+    var aviso by rememberSaveable { mutableStateOf<String?>(null) }
 
     if (producto == null) {
         ErrorReintentar("No encontramos este producto.", onVolver)
@@ -147,21 +152,57 @@ fun PantallaProducto(
             )
             Spacer(Modifier.height(16.dp))
 
-            if (producto.stock > 0) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedButton(onClick = { if (cantidad > 1) cantidad-- }, modifier = Modifier.size(48.dp), contentPadding = PaddingValues(0.dp)) { Text("−", fontSize = 20.sp) }
-                    Text("$cantidad", style = MaterialTheme.typography.titleLarge)
-                    OutlinedButton(onClick = { if (cantidad < producto.stock) cantidad++ }, modifier = Modifier.size(48.dp), contentPadding = PaddingValues(0.dp)) { Text("+", fontSize = 20.sp) }
-                }
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = { carrito.agregar(producto, cantidad); agregado = true },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text("Agregar al carrito · ${Formato.pesos(producto.precio * cantidad)}") }
-                if (agregado) {
+            if (producto.stock > 0 && producto.estado == "disponible") {
+                if (usuario == null) {
+                    // El carrito es solo para clientes con sesion iniciada.
+                    Text("Inicia sesión para agregar productos al carrito.", style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(8.dp))
-                    Text("✓ Agregado al carrito", color = MaterialTheme.colorScheme.primary)
-                    TextButton(onClick = onIrCarrito) { Text("Ver carrito") }
+                    Button(onClick = onLogin, modifier = Modifier.fillMaxWidth()) { Text("Iniciar sesión") }
+                } else {
+                    val enCarrito = lineas.firstOrNull { it.producto.id == producto.id }?.cantidad ?: 0
+                    val libres = (producto.stock - enCarrito).coerceAtLeast(0)
+                    if (libres <= 0) {
+                        Text(
+                            "Ya tienes en el carrito todas las unidades disponibles ($enCarrito).",
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                        TextButton(onClick = onIrCarrito) { Text("Ver carrito") }
+                    } else {
+                        if (cantidad > libres) cantidad = libres
+                        if (enCarrito > 0) {
+                            Text("Ya tienes $enCarrito en el carrito · puedes agregar hasta $libres más", style = MaterialTheme.typography.bodySmall)
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            OutlinedButton(onClick = { if (cantidad > 1) cantidad-- }, modifier = Modifier.size(48.dp), contentPadding = PaddingValues(0.dp)) { Text("−", fontSize = 20.sp) }
+                            Text("$cantidad", style = MaterialTheme.typography.titleLarge)
+                            OutlinedButton(
+                                onClick = {
+                                    if (cantidad < libres) cantidad++ else aviso = "Solo hay $libres unidad(es) disponibles"
+                                },
+                                modifier = Modifier.size(48.dp),
+                                contentPadding = PaddingValues(0.dp),
+                            ) { Text("+", fontSize = 20.sp) }
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                aviso = carrito.agregar(producto, cantidad)
+                                agregado = aviso == null
+                                if (agregado) cantidad = 1
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("Agregar al carrito · ${Formato.pesos(producto.precio * cantidad)}") }
+                    }
+                    aviso?.let {
+                        Spacer(Modifier.height(8.dp))
+                        Text(it, color = MaterialTheme.colorScheme.error)
+                    }
+                    if (agregado) {
+                        Spacer(Modifier.height(8.dp))
+                        Text("✓ Agregado al carrito", color = MaterialTheme.colorScheme.primary)
+                        TextButton(onClick = onIrCarrito) { Text("Ver carrito") }
+                    }
                 }
             }
         }
