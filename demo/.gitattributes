@@ -1,0 +1,16 @@
+# Normaliza los saltos de linea (Windows/Linux) para que git no marque archivos como modificados
+* text=auto
+
+/mvnw text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Binarios: git no debe tocarlos
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.jar binary
+*.zip binary

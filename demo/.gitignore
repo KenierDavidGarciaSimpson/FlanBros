@@ -1,0 +1,57 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+### Imagenes subidas desde el panel (no van al repo) ###
+carpeta-imagenes/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Android (carpeta android/) ###
+local.properties
+*.apk
+*.aab
+*.keystore
+*.jks
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+android/**/build/
+# Contiene la IP de tu PC para el celular real: es personal, no se sube
+android/gradle.properties
+
+### Secretos y archivos locales ###
+.env
+*.env
+application-local.properties
+application-secret.properties
+*.log
