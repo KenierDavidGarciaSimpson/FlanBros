@@ -35,7 +35,7 @@ import com.example.demo.Modelo.dto.SesionUsuario;
 /**
  * Pruebas de seguridad: quien puede entrar a que.
  *
- * <p>Corren con el perfil {@code memoria} (datos de resources/datos), asi que no necesitan MySQL.
+ * <p>Corren con el perfil {@code memoria} (datos de resources/datos), asi que no necesitan PostgreSQL.
  * Cubren la matriz de roles, el token CSRF, las redirecciones al login, el limite de intentos de
  * login y que un cliente no pueda ver datos de otro.</p>
  */

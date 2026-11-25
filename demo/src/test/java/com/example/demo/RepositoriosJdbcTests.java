@@ -31,30 +31,28 @@ import com.example.demo.Persistencia.ProductoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 
 /**
- * Pruebas de los repositorios JDBC contra MySQL REAL (no mocks): transacciones, restricciones
+ * Pruebas de los repositorios JDBC contra PostgreSQL REAL (no mocks): transacciones, restricciones
  * de la base, BCrypt y tokens de recuperacion.
  *
- * <p>Usan una base aparte, {@code flanbross_test}, que se crea sola. Antes de cada prueba se hace
+ * <p>Usan una base aparte, {@code flanbross_test}, que crea docker/init al levantar el contenedor la primera vez (si ya tenias el contenedor: {@code docker compose down -v} y volver a subirlo). Antes de cada prueba se hace
  * {@code flyway.clean()} + {@code migrate()}, asi que cada una parte de los datos demo y no
- * depende de las demas. Si no hay MySQL en localhost:3306 (por ejemplo {@code docker compose up -d}),
+ * depende de las demas. Si no hay PostgreSQL en localhost:5432 (por ejemplo {@code docker compose up -d}),
  * toda la clase se OMITE en lugar de fallar.</p>
  *
- * <p>Credenciales por defecto: root/root (las del docker-compose). Se cambian con las variables
+ * <p>Credenciales por defecto: flanbross/flanbross (las del docker-compose). Se cambian con las variables
  * DB_TEST_URL, DB_TEST_USUARIO y DB_TEST_CLAVE.</p>
  */
 @SpringBootTest(properties = {
-        "spring.datasource.url=${DB_TEST_URL:jdbc:mysql://localhost:3306/flanbross_test"
-                + "?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8"
-                + "&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true}",
-        "spring.datasource.username=${DB_TEST_USUARIO:root}",
-        "spring.datasource.password=${DB_TEST_CLAVE:root}",
+        "spring.datasource.url=${DB_TEST_URL:jdbc:postgresql://localhost:5432/flanbross_test}",
+        "spring.datasource.username=${DB_TEST_USUARIO:flanbross}",
+        "spring.datasource.password=${DB_TEST_CLAVE:flanbross}",
         "spring.flyway.clean-disabled=false" })
-@EnabledIf("mysqlDisponible")
+@EnabledIf("baseDisponible")
 class RepositoriosJdbcTests {
 
-    static boolean mysqlDisponible() {
+    static boolean baseDisponible() {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("localhost", 3306), 500);
+            socket.connect(new InetSocketAddress("localhost", 5432), 500);
             return true;
         } catch (Exception e) {
             return false;
