@@ -17,14 +17,14 @@ INSERT INTO empleado (id_empleado, nombre, apellido, documento, telefono, correo
   (5, 'Ana', 'Rondón', '1.045.221.005', '+57 300 000 0005', 'ana@flanbross.co', 2000000, '2023-06-15', 'activo', 5);
 
 INSERT INTO usuario (id_usuario, id_rol, id_cliente, id_empleado, correo, contrasena_hash) VALUES
-  (1, 1, 1, NULL, 'laura@demo.com', '$2b$10$l/NWuIl1OHyEJ.W/a.z5/.vgtyEiWN94XyP/tWmz6fnXCxWYo6lsO'),
-  (2, 1, 2, NULL, 'juliana@demo.com', '$2b$10$l/NWuIl1OHyEJ.W/a.z5/.vgtyEiWN94XyP/tWmz6fnXCxWYo6lsO'),
-  (3, 1, 3, NULL, 'alex@demo.com', '$2b$10$l/NWuIl1OHyEJ.W/a.z5/.vgtyEiWN94XyP/tWmz6fnXCxWYo6lsO'),
-  (4, 2, NULL, 1, 'maria@flanbross.co', '$2b$10$sc4.qL2yPywHnhBihWN.De1oFHTUWPz5u4uyiN2afmVOTUtgmAG4a'),
-  (5, 3, NULL, 2, 'luis@flanbross.co', '$2b$10$sc4.qL2yPywHnhBihWN.De1oFHTUWPz5u4uyiN2afmVOTUtgmAG4a'),
-  (6, 4, NULL, 3, 'vale@flanbross.co', '$2b$10$sc4.qL2yPywHnhBihWN.De1oFHTUWPz5u4uyiN2afmVOTUtgmAG4a'),
-  (7, 4, NULL, 4, 'felipe@flanbross.co', '$2b$10$sc4.qL2yPywHnhBihWN.De1oFHTUWPz5u4uyiN2afmVOTUtgmAG4a'),
-  (8, 5, NULL, 5, 'ana@flanbross.co', '$2b$10$sc4.qL2yPywHnhBihWN.De1oFHTUWPz5u4uyiN2afmVOTUtgmAG4a');
+  (1, 1, 1, NULL, 'laura@demo.com', '$2b$10$R4kbcvGmXMAAC3mnROsh1.vkpqYSr62Ju/ebisdjyMYph3ZV0Ftiy'),
+  (2, 1, 2, NULL, 'juliana@demo.com', '$2b$10$R4kbcvGmXMAAC3mnROsh1.vkpqYSr62Ju/ebisdjyMYph3ZV0Ftiy'),
+  (3, 1, 3, NULL, 'alex@demo.com', '$2b$10$R4kbcvGmXMAAC3mnROsh1.vkpqYSr62Ju/ebisdjyMYph3ZV0Ftiy'),
+  (4, 2, NULL, 1, 'maria@flanbross.co', '$2b$10$AWM5GCwEgMEFwM3FwaONC.9yxyLK/YxQHqpCV1wzh962ugwba8lOu'),
+  (5, 3, NULL, 2, 'luis@flanbross.co', '$2b$10$AWM5GCwEgMEFwM3FwaONC.9yxyLK/YxQHqpCV1wzh962ugwba8lOu'),
+  (6, 4, NULL, 3, 'vale@flanbross.co', '$2b$10$AWM5GCwEgMEFwM3FwaONC.9yxyLK/YxQHqpCV1wzh962ugwba8lOu'),
+  (7, 4, NULL, 4, 'felipe@flanbross.co', '$2b$10$AWM5GCwEgMEFwM3FwaONC.9yxyLK/YxQHqpCV1wzh962ugwba8lOu'),
+  (8, 5, NULL, 5, 'ana@flanbross.co', '$2b$10$AWM5GCwEgMEFwM3FwaONC.9yxyLK/YxQHqpCV1wzh962ugwba8lOu');
 
 INSERT INTO producto (id_producto, nombre_producto, descripcion, precio, id_categoria, fecha_vencimiento, estado_producto, imagen, emoji, badge) VALUES
   (1, 'Torta Tres Leches', 'Bizcocho esponjoso bañado en tres tipos de leche con crema chantilly.', 42000, 1, '2026-12-31', 'disponible', NULL, '🎂', 'Popular'),
@@ -98,3 +98,15 @@ INSERT INTO domicilio (id_domicilio, direccion_entrega, fecha_entrega, estado_en
   (4, 'Getsemaní, Calle 30 #9-80', '2026-11-05 17:15:00', 'entregado', 7000, 4, 4),
   (5, 'Av. Pedro Heredia #44-10', NULL, 'en_camino', 7000, 5, 3),
   (6, 'Av. Pedro Heredia #44-10', NULL, 'pendiente', 7000, 6, NULL);
+
+-- Los ids se insertaron a mano: se avanzan las secuencias para que el siguiente INSERT no choque.
+SELECT setval(pg_get_serial_sequence('cliente', 'id_cliente'), (SELECT MAX(id_cliente) FROM cliente));
+SELECT setval(pg_get_serial_sequence('empleado', 'id_empleado'), (SELECT MAX(id_empleado) FROM empleado));
+SELECT setval(pg_get_serial_sequence('usuario', 'id_usuario'), (SELECT MAX(id_usuario) FROM usuario));
+SELECT setval(pg_get_serial_sequence('producto', 'id_producto'), (SELECT MAX(id_producto) FROM producto));
+SELECT setval(pg_get_serial_sequence('inventario', 'id_inventario'), (SELECT MAX(id_inventario) FROM inventario));
+SELECT setval(pg_get_serial_sequence('pedido', 'id_pedido'), (SELECT MAX(id_pedido) FROM pedido));
+SELECT setval(pg_get_serial_sequence('detalle_pedido', 'id_detalle'), (SELECT MAX(id_detalle) FROM detalle_pedido));
+SELECT setval(pg_get_serial_sequence('factura', 'id_factura'), (SELECT MAX(id_factura) FROM factura));
+SELECT setval(pg_get_serial_sequence('pago', 'id_pago'), (SELECT MAX(id_pago) FROM pago));
+SELECT setval(pg_get_serial_sequence('domicilio', 'id_domicilio'), (SELECT MAX(id_domicilio) FROM domicilio));
