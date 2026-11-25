@@ -16,7 +16,7 @@ import com.example.demo.Modelo.MensajeContacto;
 import com.example.demo.Persistencia.ContactoRepositorio;
 
 /**
- * ContactoRepositorioJdbc — capa 2 (Persistencia), buzon de contacto en MySQL.
+ * ContactoRepositorioJdbc — capa 2 (Persistencia), buzon de contacto en PostgreSQL.
  *
  * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
  */
@@ -48,7 +48,7 @@ public class ContactoRepositorioJdbc implements ContactoRepositorio {
                 .param("asunto", mensaje.asunto)
                 .param("mensaje", mensaje.mensaje)
                 .param("fecha", mensaje.fecha_envio)
-                .update(llave);
+                .update(llave, "id_mensaje");
         mensaje.id_mensaje = llave.getKey().intValue();
         return mensaje;
     }

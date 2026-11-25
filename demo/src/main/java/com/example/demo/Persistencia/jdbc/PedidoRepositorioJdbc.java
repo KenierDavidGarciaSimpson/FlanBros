@@ -33,7 +33,7 @@ import com.example.demo.Persistencia.ProductoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 
 /**
- * PedidoRepositorioJdbc — capa 2 (Persistencia), pedidos, facturas, pagos y domicilios en MySQL.
+ * PedidoRepositorioJdbc — capa 2 (Persistencia), pedidos, facturas, pagos y domicilios en PostgreSQL.
  *
  * <p>Conserva las reglas del repositorio en memoria (IVA 8 %, domicilio $7.000, factura
  * {@code FAC-AAAA-000N}, cascada al cambiar el estado del pedido) pero ahora cada operacion
@@ -151,7 +151,7 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .param("total", total)
                 .param("observaciones", solicitud.observaciones)
                 .param("cliente", solicitud.id_cliente)
-                .update(llavePedido);
+                .update(llavePedido, "id_pedido");
         int idPedido = llavePedido.getKey().intValue();
 
         // ---- 3. Lineas y descuento atomico de inventario ---------------------
@@ -191,7 +191,7 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .param("total", totalFactura)
                 .param("cliente", solicitud.id_cliente)
                 .param("pedido", idPedido)
-                .update(llaveFactura);
+                .update(llaveFactura, "id_factura");
         int idFactura = llaveFactura.getKey().intValue();
 
         // ---- 5. Pago pendiente -----------------------------------------------

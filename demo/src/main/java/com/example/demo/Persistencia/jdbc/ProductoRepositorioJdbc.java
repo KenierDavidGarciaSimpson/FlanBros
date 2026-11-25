@@ -19,7 +19,7 @@ import com.example.demo.Modelo.Producto;
 import com.example.demo.Persistencia.ProductoRepositorio;
 
 /**
- * ProductoRepositorioJdbc — capa 2 (Persistencia), catalogo e inventario en MySQL.
+ * ProductoRepositorioJdbc — capa 2 (Persistencia), catalogo e inventario en PostgreSQL.
  *
  * <p>El stock vive solo en la tabla {@code inventario}; {@code Producto.stock} se lee de
  * ahi con un JOIN. El descuento de existencias es atomico:
@@ -114,7 +114,7 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
                 .param("imagen", producto.imagen)
                 .param("emoji", producto.emoji)
                 .param("badge", producto.badge)
-                .update(llave);
+                .update(llave, "id_producto");
         producto.id_producto = llave.getKey().intValue();
         producto.estado_producto = estado;
 
@@ -243,7 +243,7 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
         KeyHolder llave = new GeneratedKeyHolder();
         jdbc.sql("INSERT INTO categoria (nombre) VALUES (:nombre)")
                 .param("nombre", limpio)
-                .update(llave);
+                .update(llave, "id_categoria");
         return llave.getKey().intValue();
     }
 

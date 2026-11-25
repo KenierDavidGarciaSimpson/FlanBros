@@ -28,7 +28,7 @@ import com.example.demo.Persistencia.PersonaRepositorio;
  *
  * <p><b>Contrasenas:</b> sin base de datos no hay bcrypt, asi que la comparacion se
  * hace contra {@code contrasena_demo}. Es el UNICO punto que habria que cambiar al
- * conectar MySQL: dos lineas dentro de {@link #contrasenaIgual(Usuario, String)}.
+ * conectar PostgreSQL: dos lineas dentro de {@link #contrasenaIgual(Usuario, String)}.
  * El controlador ya no ve contrasenas en ningun caso.</p>
  *
  * <p>No conoce el repositorio de pedidos a proposito: asi no hay dependencia

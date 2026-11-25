@@ -15,7 +15,7 @@ import com.example.demo.Modelo.Cupon;
 import com.example.demo.Persistencia.CuponRepositorio;
 
 /**
- * CuponRepositorioJdbc — capa 2 (Persistencia), cupones de descuento en MySQL.
+ * CuponRepositorioJdbc — capa 2 (Persistencia), cupones de descuento en PostgreSQL.
  *
  * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
  */
