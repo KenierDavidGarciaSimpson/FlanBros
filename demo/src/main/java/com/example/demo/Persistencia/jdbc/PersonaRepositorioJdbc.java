@@ -29,7 +29,7 @@ import com.example.demo.Modelo.dto.SesionUsuario;
 import com.example.demo.Persistencia.PersonaRepositorio;
 
 /**
- * PersonaRepositorioJdbc — capa 2 (Persistencia), cuentas, clientes y personal en MySQL.
+ * PersonaRepositorioJdbc — capa 2 (Persistencia), cuentas, clientes y personal en PostgreSQL.
  *
  * <p>Las contrasenas se guardan con BCrypt ({@code usuario.contrasena_hash}). El token de
  * recuperacion se entrega una sola vez a quien lo pide y en la base queda su SHA-256: si
@@ -133,7 +133,7 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .param("telefono", cliente.telefono)
                 .param("direccion", cliente.direccion)
                 .param("fecha", ahora)
-                .update(llave);
+                .update(llave, "id_cliente");
         cliente.id_cliente = llave.getKey().intValue();
         cliente.fecha_registro = ahora;
         cliente.estado_cliente = "activo";
@@ -245,7 +245,7 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                         ? LocalDate.now() : empleado.fecha_contratacion)
                 .param("estado", estado)
                 .param("rol", empleado.id_rol)
-                .update(llave);
+                .update(llave, "id_empleado");
         return buscarEmpleado(llave.getKey().intValue()).orElseThrow();
     }
 

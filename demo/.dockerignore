@@ -1,0 +1,8 @@
+target/
+.git/
+.idea/
+android/
+docs/
+carpeta-imagenes/
+*.md
+pruebe-humo.ps1

@@ -1,6 +1,6 @@
 # pruebe-humo.ps1 - Prueba de humo de la API (con sesiones, roles y CSRF).
 #
-# Requisitos: la app corriendo con el perfil por defecto (MySQL + datos demo):
+# Requisitos: la app corriendo con el perfil por defecto (PostgreSQL + datos demo):
 #   docker compose up -d ; .\mvnw.cmd spring-boot:run
 # y luego, en otra consola:
 #   powershell -ExecutionPolicy Bypass -File .\pruebe-humo.ps1

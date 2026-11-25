@@ -6,26 +6,40 @@ sirve) y el JavaScript habla con la API REST en vez de con los `*.php`.
 
 ## Requisitos y arranque
 
-- **JDK 21** (lo fija `pom.xml`): `$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"`
-- Spring Boot **4.1.2**, Maven Wrapper incluido (no hace falta instalar Maven).
-- **MySQL 8** (o Docker). Detalles en [`docs/base-de-datos.md`](docs/base-de-datos.md).
+- **Docker Desktop** (PostgreSQL y, si quieres, el servidor en contenedor).
+- **JDK 21** (lo fija `pom.xml`) y Maven Wrapper incluido, si corres el servidor fuera de Docker.
+- Spring Boot **4.1.2**, base de datos **PostgreSQL 16**. Detalles en [`docs/base-de-datos.md`](docs/base-de-datos.md).
+
+**Opción A — todo en contenedores** (la más simple para la sustentación):
 
 ```powershell
-cd demo
-docker compose up -d              # MySQL 8 en localhost:3306 (base flanbross, usuario flanbross)
-.\mvnw.cmd spring-boot:run        # http://localhost:8080 — Flyway crea las tablas y los datos demo
-.\mvnw.cmd test                   # contexto + pruebas de seguridad (las de persistencia usan MySQL y se omiten si no está disponible; ver `docs/pruebas.md`)
+docker compose up -d --build      # PostgreSQL + servidor FlanBross en http://localhost:8080
+docker compose logs -f app        # ver el arranque (Flyway crea las tablas y los datos demo)
+docker compose down               # apagar (añade -v para borrar también la base de datos)
 ```
 
-Sin MySQL (repositorios que leen `resources/datos/*.json`, los cambios se pierden al reiniciar):
+**Opción B — base en Docker, servidor desde Maven/IDE:**
+
+```powershell
+docker compose up -d db           # solo PostgreSQL en localhost:5432 (base flanbross, usuario flanbross)
+.\mvnw.cmd spring-boot:run        # http://localhost:8080
+.\mvnw.cmd test                   # contexto + seguridad (+ persistencia si hay PostgreSQL; ver `docs/pruebas.md`)
+```
+
+Sin base de datos (repositorios que leen `resources/datos/*.json`, los cambios se pierden al reiniciar):
 
 ```powershell
 .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=memoria"
 ```
 
+**Postman:** importa `postman/FlanBross.postman_collection.json` y `postman/FlanBross-Local.postman_environment.json`,
+elige el entorno *FlanBross Local* y ejecuta la colección con *Runner* (41 peticiones con pruebas). Ver `docs/postman.md`.
+
+**App Android:** ver `android/LEEME.md`. El emulador entra al servidor por `http://10.0.2.2:8080/`.
+
 Cuentas de prueba: clientes `laura@demo.com` / `demo1234` · personal `maria@flanbross.co` (administradora) / `admin1234`.
 
-Prueba de humo (~80 comprobaciones: inicia sesión con cada rol y revisa API, seguridad, vistas y estáticos; requiere la app y MySQL corriendo):
+Prueba de humo (~80 comprobaciones: inicia sesión con cada rol y revisa API, seguridad, vistas y estáticos; requiere la app y PostgreSQL corriendo):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\pruebe-humo.ps1
@@ -38,7 +52,7 @@ powershell -ExecutionPolicy Bypass -File .\pruebe-humo.ps1
 |------|---------|--------------|
 | 1 Modelo | `Modelo`, `Modelo.dto` | Clases de dominio y DTOs (`RespuestaApi`, `NuevoPedido`, `ItemPedido`, `SesionUsuario`). Sin Spring. |
 | Seguridad | `Seguridad` | Spring Security: sesión de servidor, roles por ruta, CSRF, límite de intentos. Ver `docs/seguridad.md`. |
-| 2 Persistencia | `Persistencia` (interfaces), `Persistencia.jdbc` (MySQL, por defecto), `Persistencia.memoria` (perfil `memoria`) | JDBC con SQL explícito y transacciones; el esquema lo versiona Flyway (`resources/db`). La implementación en memoria lee `resources/datos/*.json`. Los controladores no cambian. |
+| 2 Persistencia | `Persistencia` (interfaces), `Persistencia.jdbc` (PostgreSQL, por defecto), `Persistencia.memoria` (perfil `memoria`) | JDBC con SQL explícito y transacciones; el esquema lo versiona Flyway (`resources/db`). La implementación en memoria lee `resources/datos/*.json`. Los controladores no cambian. |
 | 3 Controlador | `Controlador.api` (REST), `Controlador.vista` (páginas), `Controlador.util` | Endpoints `/api/**` y rutas de las vistas. |
 | 4 Recursos | `resources/templates`, `resources/static`, `resources/datos` | Vistas, CSS/JS y datos de ejemplo. |
 

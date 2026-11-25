@@ -24,7 +24,7 @@ checkout, pedidos, cuenta, contacto, registro, inicio de sesión y recuperación
 | Emulador de Android Studio | `http://10.0.2.2:8080/` (ya es el valor por defecto) |
 | Celular real (misma red Wi-Fi que el PC) | En `gradle.properties`: `flanbross.apiUrl=http://IP-DE-TU-PC:8080/` |
 
-- Arranca antes el servidor: `docker compose up -d` y `.\mvnw.cmd spring-boot:run`.
+- Arranca antes el servidor: `docker compose up -d --build` (todo en contenedores) o `docker compose up -d db` + `.\mvnw.cmd spring-boot:run`.
 - Con celular real, el Firewall de Windows debe permitir el puerto 8080.
 - Cuentas de prueba (clientes): `laura@demo.com` / `demo1234`. El personal (administrador, repostero, etc.)
   **no** puede entrar a esta app: usa el panel web.

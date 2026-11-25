@@ -14,3 +14,7 @@ INSERT INTO cupon (codigo, descuento_pct, descripcion, activo) VALUES
   ('FLANBROSS10', 10, '10% en tu primera compra del mes', TRUE),
   ('BIENVENIDO',  15, '15% de bienvenida para clientes nuevos', TRUE),
   ('DULCE20',     20, '20% en pedidos superiores a $100.000', TRUE);
+
+-- Los ids se insertaron a mano: se avanzan las secuencias para que el siguiente INSERT no choque.
+SELECT setval(pg_get_serial_sequence('rol', 'id_rol'), (SELECT MAX(id_rol) FROM rol));
+SELECT setval(pg_get_serial_sequence('categoria', 'id_categoria'), (SELECT MAX(id_categoria) FROM categoria));

@@ -18,7 +18,7 @@ import com.example.demo.Persistencia.ProductoRepositorio;
  *
  * <p>Carga {@code datos/productos.json} y {@code datos/inventario.json} una sola vez
  * al arrancar y desde ahi trabaja con listas en memoria (los cambios se pierden al
- * reiniciar). Es el sustituto de MySQL mientras no hay base de datos.</p>
+ * reiniciar). Es el sustituto de PostgreSQL mientras no hay base de datos.</p>
  *
  * <p>Dos detalles que se conservan del comportamiento original:</p>
  * <ul>
