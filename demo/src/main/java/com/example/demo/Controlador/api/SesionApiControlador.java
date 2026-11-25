@@ -29,6 +29,7 @@ import com.example.demo.Modelo.dto.SesionUsuario;
 import com.example.demo.Persistencia.PersonaRepositorio;
 import com.example.demo.Seguridad.LimitadorIntentos;
 import com.example.demo.Seguridad.UsuarioActual;
+import com.example.demo.Servicio.CorreoServicio;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,19 +55,21 @@ public class SesionApiControlador {
 
     private final PersonaRepositorio personas;
     private final LimitadorIntentos limitador;
+    private final CorreoServicio correoServicio;
     private final SecurityContextRepository repositorioContexto = new HttpSessionSecurityContextRepository();
 
     /**
-     * DEMO: sin servidor de correo, el token de recuperacion se devuelve en la respuesta.
-     * Eso permite que CUALQUIERA cambie la clave de cualquier cuenta: en produccion debe ir en
-     * false y el token enviarse por correo.
+     * Solo para pruebas locales: si es true, el token se devuelve en la respuesta.
+     * En produccion debe ser false para que el token viaje unicamente por correo.
      */
     private final boolean mostrarToken;
 
     public SesionApiControlador(PersonaRepositorio personas, LimitadorIntentos limitador,
+            CorreoServicio correoServicio,
             @Value("${flanbross.recuperacion.mostrar-token:false}") boolean mostrarToken) {
         this.personas = personas;
         this.limitador = limitador;
+        this.correoServicio = correoServicio;
         this.mostrarToken = mostrarToken;
     }
 
@@ -187,12 +190,14 @@ public class SesionApiControlador {
 
         Map<String, Object> datos = new LinkedHashMap<>();
         // Contestamos igual exista o no el correo: no se revela quien esta registrado.
-        // En esta demo, sin servidor de correo, el token se devuelve para poder probar
-        // el flujo completo desde recuperar.html.
+        Optional<String> generado = personas.solicitarToken(correo);
         if (mostrarToken) {
-            personas.solicitarToken(correo).ifPresent(generado -> datos.put("token", generado));
+            // Solo para pruebas locales: el token se devuelve en la respuesta.
+            generado.ifPresent(token -> datos.put("token", token));
+        } else {
+            // Flujo seguro: el token viaja solo al correo del usuario.
+            generado.ifPresent(token -> correoServicio.enviarTokenRecuperacion(correo, token));
         }
-        // Con mostrarToken=false falta enviar el token por correo (pendiente: servidor SMTP).
 
         return ResponseEntity.ok(RespuestaApi.ok(datos,
                 "Si el correo esta registrado, recibiras las instrucciones"));
