@@ -1,0 +1,7 @@
+[
+  { "id_rol": 1, "nombre_rol": "cliente",       "descripcion": "Cliente que compra en la tienda" },
+  { "id_rol": 2, "nombre_rol": "administrador", "descripcion": "Gestiona todo el sistema" },
+  { "id_rol": 3, "nombre_rol": "repostero",     "descripcion": "Prepara los pedidos en cocina" },
+  { "id_rol": 4, "nombre_rol": "domiciliario",  "descripcion": "Realiza las entregas a domicilio" },
+  { "id_rol": 5, "nombre_rol": "contador",      "descripcion": "Gestiona finanzas y facturas" }
+]

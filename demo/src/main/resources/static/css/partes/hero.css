@@ -1,0 +1,84 @@
+/* hero.css — Sección principal de la landing */
+
+.hero {
+  min-height: 90vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+  padding: 100px 80px 60px;
+}
+
+.hero-descripcion {
+  font-size: 17px;
+  color: var(--texto-medio);
+  line-height: 1.75;
+  margin-bottom: 36px;
+  max-width: 440px;
+  font-weight: 300;
+}
+
+.hero-botones {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-estadisticas {
+  display: flex;
+  gap: 32px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--borde);
+}
+
+.estadistica-num {
+  font-family: var(--fuente-titulo);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--chocolate);
+}
+
+.estadistica-texto {
+  font-size: 12px;
+  color: var(--texto-claro);
+  margin-top: 2px;
+}
+
+.hero-imagen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plato-hero {
+  width: 420px;
+  height: 420px;
+  background: var(--crema-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 160px;
+  box-shadow: var(--sombra);
+  position: relative;
+}
+
+.franja-features {
+  background: var(--caramelo);
+  padding: 28px 80px;
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+.feature-item span:first-child { font-size: 22px; }

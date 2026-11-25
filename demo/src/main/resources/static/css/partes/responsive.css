@@ -1,0 +1,306 @@
+/* =====================================================
+   responsive.css — Mobile first, breakpoints completos
+   - 900px: tablet landscape / desktop pequeño
+   - 640px: tablet portrait / móvil grande
+   - 400px: móvil pequeño
+   ===================================================== */
+
+/* ---- 900px: tablet ---- */
+@media (max-width: 900px) {
+
+  /* Navbar */
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+
+  /* Menú hamburguesa (se activa con JS) */
+  .nav-hamburguesa {
+    display: flex !important;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+  .nav-hamburguesa span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--chocolate);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  /* Menú móvil desplegable */
+  .nav-menu-movil {
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: white;
+    border-bottom: 1px solid var(--borde);
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 0;
+    z-index: 99;
+    box-shadow: 0 4px 20px rgba(61,28,2,.10);
+    display: none;
+  }
+  .nav-menu-movil.abierto { display: flex; }
+  .nav-menu-movil a {
+    display: block;
+    padding: 13px 4px;
+    font-size: 15px;
+    color: var(--texto-medio);
+    text-decoration: none;
+    border-bottom: 1px solid var(--borde);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 500;
+  }
+  .nav-menu-movil a:last-child { border-bottom: none; }
+
+  /* Hero */
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 90px 24px 48px;
+    text-align: center;
+    min-height: auto;
+    gap: 32px;
+  }
+  .hero-imagen { display: none; }
+  .hero-botones { justify-content: center; }
+  .hero-estadisticas { justify-content: center; }
+  .hero-descripcion { margin: 0 auto 28px; }
+
+  /* Franja features */
+  .franja-features { padding: 20px 24px; gap: 16px; flex-direction: column; align-items: center; }
+
+  /* Layouts de dos columnas → una */
+  .carrito-layout,
+  .checkout-layout,
+  .dashboard-grilla  { grid-template-columns: 1fr; }
+
+  /* Resumen carrito deja de ser sticky */
+  .resumen-carrito { position: static; }
+
+  /* Auth */
+  .auth-pagina      { grid-template-columns: 1fr; }
+  .auth-visual      { display: none; }
+
+  /* Admin */
+  .admin-layout  { flex-direction: column; }
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+    gap: 2px;
+  }
+  .admin-nav-grupo-label { display: none; }
+  .admin-nav-item {
+    width: auto;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .admin-logo { width: 100%; padding: 14px 16px; }
+
+  /* KPIs */
+  .kpi-grilla    { grid-template-columns: 1fr 1fr; }
+  .dashboard-grilla { grid-template-columns: 1fr; }
+
+  /* Footer */
+  .footer-grilla { grid-template-columns: 1fr 1fr; gap: 28px; }
+  footer         { padding: 40px 24px 24px; }
+
+  /* Layout genérico */
+  .contenedor    { padding: 0 20px; }
+
+  /* Tablas admin: scroll horizontal */
+  .tabla-tarjeta { overflow-x: auto; }
+  table.tabla-admin { min-width: 600px; }
+}
+
+/* ---- 640px: móvil ---- */
+@media (max-width: 640px) {
+
+  /* Navbar */
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 20px; }
+
+  /* Hero */
+  .hero { padding: 80px 16px 40px; gap: 24px; }
+  .titulo-seccion { font-size: 30px; }
+  .hero-estadisticas { flex-wrap: wrap; gap: 20px; }
+
+  /* Grilla de productos: 2 columnas en móvil */
+  .grilla-productos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .tarjeta-imagen  { height: 140px; font-size: 56px; }
+  .tarjeta-nombre  { font-size: 16px; }
+  .tarjeta-precio  { font-size: 18px; }
+  .tarjeta-cuerpo  { padding: 12px 12px 14px; }
+  .tarjeta-descripcion { display: none; }
+
+  /* Filtros del catálogo: stack */
+  .filtros-barra { flex-direction: column; align-items: stretch; }
+  .input-buscar  { width: 100%; }
+  .select-ordenar { width: 100%; }
+  .categorias-barra { flex-wrap: nowrap; overflow-x: auto; padding: 12px 0; }
+
+  /* Carrito */
+  .carrito-layout  { gap: 20px; }
+
+  /* Checkout */
+  .checkout-layout { gap: 20px; }
+  .fila-formulario { grid-template-columns: 1fr; }
+  .pasos-checkout  { gap: 4px; }
+  .paso-texto      { display: none; }
+
+  /* Cuenta cliente */
+  .cliente-dashboard { padding: 80px 16px 40px; }
+  .saludo-titulo     { font-size: 28px; }
+
+  /* KPIs: 2 columnas en móvil */
+  .kpi-grilla  { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-valor   { font-size: 24px; }
+  .kpi-icono   { font-size: 22px; }
+  .kpi-tarjeta { padding: 14px; }
+
+  /* Admin sidebar en móvil: scroll horizontal */
+  .admin-sidebar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 6px 8px;
+  }
+  .admin-nav-item {
+    white-space: nowrap;
+    font-size: 11px;
+    padding: 7px 10px;
+    flex-shrink: 0;
+  }
+  .admin-nav-icono { display: none; }
+  .admin-contenido { padding: 16px; }
+  .admin-topbar    { padding: 12px 16px; }
+  .admin-topbar-titulo { font-size: 18px; }
+
+  /* Tabla admin scroll */
+  table.tabla-admin { min-width: 500px; }
+  table.tabla-admin th,
+  table.tabla-admin td { padding: 10px 12px; font-size: 12px; }
+
+  /* Footer: una columna */
+  .footer-grilla  { grid-template-columns: 1fr; gap: 24px; }
+  .footer-inferior { flex-direction: column; gap: 8px; text-align: center; }
+
+  /* Auth */
+  .auth-formulario { padding: 32px 20px; }
+  .auth-caja       { max-width: 100%; }
+  .auth-titulo     { font-size: 28px; }
+
+  /* Botones */
+  .btn-principal,
+  .btn-secundario { font-size: 13px; padding: 10px 20px; }
+
+  /* Contenedor base */
+  .contenedor { padding: 0 16px; }
+
+  /* Sección título */
+  .titulo-seccion { font-size: 28px; }
+  .seccion-titulo { font-size: 18px; }
+
+  /* Panel domiciliario */
+  .tarjetas-entrega { grid-template-columns: 1fr; }
+}
+
+/* ---- 400px: móvil pequeño ---- */
+@media (max-width: 400px) {
+
+  /* Grilla: 1 columna en pantallas muy pequeñas */
+  .grilla-productos { grid-template-columns: 1fr; }
+  .tarjeta-imagen   { height: 180px; font-size: 72px; }
+  .tarjeta-descripcion { display: block; }
+
+  /* KPIs: 1 columna */
+  .kpi-grilla { grid-template-columns: 1fr; }
+
+  /* Botones hero apilados */
+  .hero-botones { flex-direction: column; align-items: center; }
+
+  /* Checkout: pasos más compactos */
+  .pasos-checkout { gap: 2px; }
+  .paso-circulo   { width: 24px; height: 24px; font-size: 11px; }
+}
+
+/* ---- Touch / UX móvil ---- */
+@media (max-width: 640px) {
+
+  /* Modal de cantidad: full width en móvil */
+  #modal-cantidad-carrito > div {
+    max-width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+  }
+  #modal-cantidad-carrito {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  /* Botones más altos para dedos */
+  .btn-principal, .btn-secundario {
+    min-height: 48px;
+  }
+
+  /* Input más alto */
+  .input-campo {
+    min-height: 48px;
+    font-size: 16px; /* evita zoom automático en iOS */
+  }
+  select.input-campo { font-size: 16px; }
+
+  /* Mejorar tap en tarjeta producto */
+  .btn-agregar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  /* Resumen carrito en página de carrito */
+  .resumen-carrito {
+    margin-top: 0;
+    border-top: 2px solid var(--borde);
+    padding-top: 20px;
+  }
+
+  /* Pasos checkout más compactos */
+  .pasos-checkout {
+    margin: 20px 0 28px;
+    overflow-x: auto;
+  }
+
+  /* Admin topbar: ocultar título largo */
+  .admin-topbar-titulo { font-size: 16px; }
+  #nombre-admin-topbar { display: none; }
+
+  /* Modal empleado y producto: full screen scroll */
+  #modal-empleado > div,
+  #modal-producto > div {
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important; left: 0 !important; right: 0 !important;
+    margin: 0 !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+  }
+  #modal-empleado,
+  #modal-producto { align-items: flex-end !important; padding: 0 !important; }
+}

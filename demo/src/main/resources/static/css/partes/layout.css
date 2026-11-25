@@ -1,0 +1,45 @@
+/* layout.css — Contenedor, secciones y títulos base */
+
+.contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.contenido-pagina {
+  padding-top: 80px;
+}
+
+.etiqueta-seccion {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--caramelo);
+  margin-bottom: 10px;
+}
+
+.titulo-seccion {
+  font-family: var(--fuente-titulo);
+  font-size: 42px;
+  font-weight: 400;
+  color: var(--chocolate);
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.titulo-seccion em {
+  font-style: italic;
+  color: var(--caramelo);
+}
+
+/* Contenido interior de páginas con padding responsive */
+.pagina-interior {
+  padding: 100px 80px 60px;
+}
+@media (max-width: 900px) {
+  .pagina-interior { padding: 80px 24px 48px; }
+}
+@media (max-width: 640px) {
+  .pagina-interior { padding: 72px 16px 40px; }
+}

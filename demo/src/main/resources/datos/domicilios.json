@@ -1,0 +1,20 @@
+[
+  { "id_domicilio": 1, "direccion_entrega": "Bocagrande, Calle 5 #2-15",
+    "fecha_entrega": "2026-11-01T11:20:00", "estado_entrega": "entregado",
+    "costo_domicilio": 7000, "id_pedido": 1, "id_domiciliario": 3 },
+  { "id_domicilio": 2, "direccion_entrega": "Bocagrande, Calle 5 #2-15",
+    "fecha_entrega": "2026-11-02T15:00:00", "estado_entrega": "entregado",
+    "costo_domicilio": 7000, "id_pedido": 2, "id_domiciliario": 4 },
+  { "id_domicilio": 3, "direccion_entrega": "Bocagrande, Calle 5 #2-15",
+    "fecha_entrega": "2026-11-03T12:10:00", "estado_entrega": "entregado",
+    "costo_domicilio": 7000, "id_pedido": 3, "id_domiciliario": 3 },
+  { "id_domicilio": 4, "direccion_entrega": "Getsemaní, Calle 30 #9-80",
+    "fecha_entrega": "2026-11-05T17:15:00", "estado_entrega": "entregado",
+    "costo_domicilio": 7000, "id_pedido": 4, "id_domiciliario": 4 },
+  { "id_domicilio": 5, "direccion_entrega": "Av. Pedro Heredia #44-10",
+    "fecha_entrega": null, "estado_entrega": "en_camino",
+    "costo_domicilio": 7000, "id_pedido": 5, "id_domiciliario": 3 },
+  { "id_domicilio": 6, "direccion_entrega": "Av. Pedro Heredia #44-10",
+    "fecha_entrega": null, "estado_entrega": "pendiente",
+    "costo_domicilio": 7000, "id_pedido": 6, "id_domiciliario": null }
+]

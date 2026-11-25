@@ -1,0 +1,33 @@
+/* variables.css — Colores, tipografía y valores globales */
+
+:root {
+  --crema:       #FDF6EE;
+  --crema-2:     #F7EDE0;
+  --caramelo:    #C4622D;
+  --chocolate:   #3D1C02;
+  --texto-medio: #5C3D2A;
+  --texto-claro: #9C7B6A;
+  --borde:       rgba(61,28,2,0.12);
+  --blanco:      #FFFCF9;
+
+  --fuente-titulo: 'Georgia', serif;
+  --fuente-cuerpo: 'Segoe UI', Arial, sans-serif;
+
+  --sombra: 0 4px 20px rgba(61,28,2,0.10);
+  --radio:  14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--fuente-cuerpo);
+  background: var(--crema);
+  color: var(--texto-medio);
+  line-height: 1.6;
+}
+
+/* Animación fadeIn genérica */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

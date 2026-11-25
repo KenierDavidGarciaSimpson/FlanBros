@@ -1,0 +1,72 @@
+[
+  {
+    "id_producto": 1, "nombre_producto": "Torta Tres Leches",
+    "descripcion": "Bizcocho esponjoso bañado en tres tipos de leche con crema chantilly.",
+    "precio": 42000, "stock": 15, "categoria": "Tortas",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🎂", "badge": "Popular"
+  },
+  {
+    "id_producto": 2, "nombre_producto": "Cheesecake Maracuyá",
+    "descripcion": "Tarta fría de queso crema con coulis de maracuyá sobre base de galleta.",
+    "precio": 38000, "stock": 12, "categoria": "Cheesecakes",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍰", "badge": "Nuevo"
+  },
+  {
+    "id_producto": 3, "nombre_producto": "Brownie con Nueces",
+    "descripcion": "Brownie denso de chocolate 70% con nueces tostadas, porción individual.",
+    "precio": 8500, "stock": 40, "categoria": "Brownies",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍫", "badge": "Popular"
+  },
+  {
+    "id_producto": 4, "nombre_producto": "Macarons Surtidos x6",
+    "descripcion": "Caja de 6 macarons: vainilla, chocolate, limón, frutos rojos, pistacho y caramelo.",
+    "precio": 24000, "stock": 25, "categoria": "Macarons",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍬", "badge": null
+  },
+  {
+    "id_producto": 5, "nombre_producto": "Creme Brûlée",
+    "descripcion": "Crema francesa de vainilla con costra de azúcar caramelizada.",
+    "precio": 14000, "stock": 3, "categoria": "Postres fríos",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍮", "badge": null
+  },
+  {
+    "id_producto": 6, "nombre_producto": "Tiramisú Clásico",
+    "descripcion": "Capas de bizcochuelo con café, crema de mascarpone y cacao en polvo.",
+    "precio": 16000, "stock": 18, "categoria": "Postres fríos",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "☕", "badge": "Popular"
+  },
+  {
+    "id_producto": 7, "nombre_producto": "Cupcake Red Velvet",
+    "descripcion": "Cupcake terciopelo rojo con frosting de queso crema, decorado a mano.",
+    "precio": 7500, "stock": 30, "categoria": "Cupcakes",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🧁", "badge": "Nuevo"
+  },
+  {
+    "id_producto": 8, "nombre_producto": "Torta Selva Negra",
+    "descripcion": "Capas de bizcocho de chocolate, crema chantilly y cerezas al marrasquino.",
+    "precio": 45000, "stock": 8, "categoria": "Tortas",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍰", "badge": null
+  },
+  {
+    "id_producto": 9, "nombre_producto": "Flan de Coco",
+    "descripcion": "Flan suave de leche de coco con caramelo artesanal, porción individual.",
+    "precio": 11000, "stock": 22, "categoria": "Flanes",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍮", "badge": "Popular"
+  },
+  {
+    "id_producto": 10, "nombre_producto": "Galletas de Mantequilla x12",
+    "descripcion": "Caja de 12 galletas artesanales de mantequilla con azúcar decoradas.",
+    "precio": 19000, "stock": 35, "categoria": "Galletas",
+    "fecha_vencimiento": "2026-12-31", "estado_producto": "disponible",
+    "imagen": null, "emoji": "🍪", "badge": null
+  }
+]

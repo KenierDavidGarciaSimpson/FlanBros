@@ -1,0 +1,19 @@
+[
+  { "id_usuario": 1, "id_rol": 1, "id_cliente": 1, "id_empleado": null,
+    "correo": "laura@demo.com", "contrasena_hash": null, "contrasena_demo": "demo1234" },
+  { "id_usuario": 2, "id_rol": 1, "id_cliente": 2, "id_empleado": null,
+    "correo": "juliana@demo.com", "contrasena_hash": null, "contrasena_demo": "demo1234" },
+  { "id_usuario": 3, "id_rol": 1, "id_cliente": 3, "id_empleado": null,
+    "correo": "alex@demo.com", "contrasena_hash": null, "contrasena_demo": "demo1234" },
+
+  { "id_usuario": 4, "id_rol": 2, "id_cliente": null, "id_empleado": 1,
+    "correo": "maria@flanbross.co", "contrasena_hash": null, "contrasena_demo": "admin1234" },
+  { "id_usuario": 5, "id_rol": 3, "id_cliente": null, "id_empleado": 2,
+    "correo": "luis@flanbross.co", "contrasena_hash": null, "contrasena_demo": "admin1234" },
+  { "id_usuario": 6, "id_rol": 4, "id_cliente": null, "id_empleado": 3,
+    "correo": "vale@flanbross.co", "contrasena_hash": null, "contrasena_demo": "admin1234" },
+  { "id_usuario": 7, "id_rol": 4, "id_cliente": null, "id_empleado": 4,
+    "correo": "felipe@flanbross.co", "contrasena_hash": null, "contrasena_demo": "admin1234" },
+  { "id_usuario": 8, "id_rol": 5, "id_cliente": null, "id_empleado": 5,
+    "correo": "ana@flanbross.co", "contrasena_hash": null, "contrasena_demo": "admin1234" }
+]

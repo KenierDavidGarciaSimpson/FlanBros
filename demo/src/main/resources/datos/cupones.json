@@ -1,0 +1,8 @@
+[
+  { "codigo": "FLANBROSS10", "descuento_pct": 10, "activo": true,
+    "descripcion": "10% en tu primera compra del mes" },
+  { "codigo": "BIENVENIDO", "descuento_pct": 15, "activo": true,
+    "descripcion": "15% de bienvenida para clientes nuevos" },
+  { "codigo": "DULCE20", "descuento_pct": 20, "activo": true,
+    "descripcion": "20% en pedidos superiores a $100.000" }
+]

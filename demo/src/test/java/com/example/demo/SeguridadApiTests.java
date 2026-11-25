@@ -1,17 +1,21 @@
 package com.example.demo;
 
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -35,7 +39,7 @@ import com.example.demo.Modelo.dto.SesionUsuario;
 /**
  * Pruebas de seguridad: quien puede entrar a que.
  *
- * <p>Corren con el perfil {@code memoria} (datos de resources/datos), asi que no necesitan PostgreSQL.
+ * <p>Corren con el perfil {@code memoria} (datos de resources/datos), asi que no necesitan base de datos.
  * Cubren la matriz de roles, el token CSRF, las redirecciones al login, el limite de intentos de
  * login y que un cliente no pueda ver datos de otro.</p>
  */
@@ -91,11 +95,15 @@ class SeguridadApiTests {
     // ---------------- Sesion (la usa la app movil) ----------------
 
     @Test
-    void sesionSinLoginDevuelve401YEntregaLaCookieCsrf() throws Exception {
-        // La app movil necesita esa cookie para poder enviar su primer POST.
+    void sesionSinLoginDevuelve401YExponeElTokenCsrf() throws Exception {
+        // La app movil necesita el token CSRF para poder enviar su primer POST: el CsrfFilter
+        // corre antes que la autorizacion y deja el token en la peticion aunque responda 401.
+        // La cookie XSRF-TOKEN se comprueba con HTTP real en CookieCsrfHttpTests.
         mvc.perform(get("/api/sesion"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(cookie().exists("XSRF-TOKEN"));
+                .andExpect(request().attribute("_csrf", notNullValue()))
+                .andExpect(request().attribute("_csrf",
+                        hasProperty("token", not(emptyOrNullString()))));
     }
 
     @Test

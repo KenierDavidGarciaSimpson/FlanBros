@@ -1,0 +1,20 @@
+[
+  { "id_pago": 1, "fecha_pago": "2026-11-01T10:35:00", "monto_pago": 67500,
+    "metodo_pago": "contraentrega", "estado_pago": "aprobado",
+    "referencia_pago": null, "id_factura": 1 },
+  { "id_pago": 2, "fecha_pago": "2026-11-02T14:20:00", "monto_pago": 53000,
+    "metodo_pago": "tarjeta", "estado_pago": "aprobado",
+    "referencia_pago": "TXN-0042", "id_factura": 2 },
+  { "id_pago": 3, "fecha_pago": "2026-11-03T11:05:00", "monto_pago": 90000,
+    "metodo_pago": "billetera_digital", "estado_pago": "aprobado",
+    "referencia_pago": "NQN-1187", "id_factura": 3 },
+  { "id_pago": 4, "fecha_pago": "2026-11-05T16:35:00", "monto_pago": 110000,
+    "metodo_pago": "transferencia", "estado_pago": "aprobado",
+    "referencia_pago": "TRF-5592", "id_factura": 4 },
+  { "id_pago": 5, "fecha_pago": "2026-11-07T09:50:00", "monto_pago": 63000,
+    "metodo_pago": "contraentrega", "estado_pago": "pendiente",
+    "referencia_pago": null, "id_factura": 5 },
+  { "id_pago": 6, "fecha_pago": "2026-11-09T13:25:00", "monto_pago": 81500,
+    "metodo_pago": "tarjeta", "estado_pago": "pendiente",
+    "referencia_pago": null, "id_factura": 6 }
+]

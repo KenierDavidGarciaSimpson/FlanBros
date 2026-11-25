@@ -1,0 +1,95 @@
+/* botones.css — Botones reutilizables del proyecto */
+
+.btn-principal {
+  background: var(--caramelo);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 26px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-principal:hover {
+  background: #a34e22;
+  transform: translateY(-1px);
+}
+
+.btn-secundario {
+  background: transparent;
+  color: var(--caramelo);
+  border: 2px solid var(--caramelo);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.btn-secundario:hover {
+  background: var(--caramelo);
+  color: white;
+}
+
+/* Botones pequeños para tablas y modales */
+.btn-sm {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-sm-principal { background: var(--caramelo); color: white; }
+.btn-sm-principal:hover { background: #a34e22; }
+.btn-sm-borde {
+  background: none;
+  border: 1.5px solid var(--borde);
+  color: var(--texto-medio);
+}
+.btn-sm-borde:hover { border-color: var(--caramelo); color: var(--caramelo); }
+
+.btn-icono {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-medio);
+  transition: all 0.15s;
+}
+.btn-icono:hover { border-color: var(--caramelo); color: var(--caramelo); }
+.btn-icono.peligro:hover { border-color: #c0392b; color: #c0392b; }
+
+/* Botones del panel domiciliario */
+.btn-dom {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+.btn-dom:hover { opacity: 0.85; }
+.btn-dom-primario { background: var(--caramelo); color: white; }
+.btn-dom-exito    { background: #2d7a5f; color: white; }

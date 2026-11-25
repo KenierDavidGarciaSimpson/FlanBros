@@ -1,0 +1,32 @@
+[
+  {
+    "id_cliente": 1, "nombre": "Laura", "apellido": "Vargas",
+    "correo": "laura@demo.com", "telefono": "+57 300 111 2233",
+    "direccion": "Bocagrande, Calle 5 #2-15", "fecha_registro": "2025-03-01T09:00:00",
+    "estado_cliente": "activo"
+  },
+  {
+    "id_cliente": 2, "nombre": "Juliana", "apellido": "Mendoza",
+    "correo": "juliana@demo.com", "telefono": "+57 315 444 5566",
+    "direccion": "Av. Pedro Heredia #44-10", "fecha_registro": "2025-03-04T11:30:00",
+    "estado_cliente": "activo"
+  },
+  {
+    "id_cliente": 3, "nombre": "Alejandro", "apellido": "Gómez",
+    "correo": "alex@demo.com", "telefono": "+57 312 777 8899",
+    "direccion": "Getsemaní, Calle 30 #9-80", "fecha_registro": "2025-03-10T16:45:00",
+    "estado_cliente": "activo"
+  },
+  {
+    "id_cliente": 4, "nombre": "Isabella", "apellido": "Suárez",
+    "correo": "isa@demo.com", "telefono": "+57 318 999 0011",
+    "direccion": "El Centro, Calle 12 #3-22", "fecha_registro": "2025-03-18T10:15:00",
+    "estado_cliente": "activo"
+  },
+  {
+    "id_cliente": 5, "nombre": "Carlos", "apellido": "Pérez",
+    "correo": "carlos@demo.com", "telefono": "+57 321 222 3344",
+    "direccion": "Manga, Transv. 54 #28-15", "fecha_registro": "2025-03-22T14:00:00",
+    "estado_cliente": "activo"
+  }
+]

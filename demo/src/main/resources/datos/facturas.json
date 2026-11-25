@@ -1,0 +1,20 @@
+[
+  { "id_factura": 1, "numero_factura": "FAC-2026-0001", "fecha_factura": "2026-11-01T10:30:00",
+    "subtotal": 62500, "impuestos": 5000, "total_factura": 67500, "estado_factura": "pagada",
+    "id_cliente": 1, "id_pedido": 1 },
+  { "id_factura": 2, "numero_factura": "FAC-2026-0002", "fecha_factura": "2026-11-02T14:15:00",
+    "subtotal": 49000, "impuestos": 4000, "total_factura": 53000, "estado_factura": "pagada",
+    "id_cliente": 1, "id_pedido": 2 },
+  { "id_factura": 3, "numero_factura": "FAC-2026-0003", "fecha_factura": "2026-11-03T11:00:00",
+    "subtotal": 83000, "impuestos": 7000, "total_factura": 90000, "estado_factura": "pagada",
+    "id_cliente": 1, "id_pedido": 3 },
+  { "id_factura": 4, "numero_factura": "FAC-2026-0004", "fecha_factura": "2026-11-05T16:30:00",
+    "subtotal": 102000, "impuestos": 8000, "total_factura": 110000, "estado_factura": "pagada",
+    "id_cliente": 3, "id_pedido": 4 },
+  { "id_factura": 5, "numero_factura": "FAC-2026-0005", "fecha_factura": "2026-11-07T09:45:00",
+    "subtotal": 58000, "impuestos": 5000, "total_factura": 63000, "estado_factura": "pendiente",
+    "id_cliente": 2, "id_pedido": 5 },
+  { "id_factura": 6, "numero_factura": "FAC-2026-0006", "fecha_factura": "2026-11-09T13:20:00",
+    "subtotal": 75000, "impuestos": 6500, "total_factura": 81500, "estado_factura": "pendiente",
+    "id_cliente": 2, "id_pedido": 6 }
+]

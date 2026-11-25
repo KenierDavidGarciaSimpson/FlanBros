@@ -55,6 +55,12 @@ public class ConfiguracionSeguridad {
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http) throws Exception {
         RequestMatcher esApi = solicitud -> solicitud.getRequestURI().startsWith("/api/");
 
+        // Sin sesion: la API responde 401 (lo distingue la app movil y el JS) y las paginas
+        // redirigen al login. Se elige a mano porque con esta version de Spring Security
+        // defaultAuthenticationEntryPointFor(...) no llega a aplicarse y todo acababa en 302.
+        LoginUrlAuthenticationEntryPoint entradaPaginas = new LoginUrlAuthenticationEntryPoint("/login.html");
+        HttpStatusEntryPoint entradaApi = new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
+
         http
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -89,8 +95,9 @@ public class ConfiguracionSeguridad {
                 .anyRequest().authenticated())
             .exceptionHandling(errores -> errores
                 // Sin sesion: la API responde 401 y las paginas redirigen al login.
-                .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED), esApi)
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login.html"))
+                .authenticationEntryPoint((solicitud, respuesta, excepcion) ->
+                        (esApi.matches(solicitud) ? entradaApi : entradaPaginas)
+                                .commence(solicitud, respuesta, excepcion))
                 // Con sesion pero sin permiso (o token CSRF invalido): 403.
                 .accessDeniedHandler((solicitud, respuesta, excepcion) -> {
                     if (esApi.matches(solicitud)) {

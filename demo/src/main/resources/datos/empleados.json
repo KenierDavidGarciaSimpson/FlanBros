@@ -1,0 +1,32 @@
+[
+  {
+    "id_empleado": 1, "nombre": "María", "apellido": "Bonilla", "documento": "1.045.221.001",
+    "telefono": "+57 300 000 0001", "correo": "maria@flanbross.co", "salario": 2500000,
+    "fecha_contratacion": "2023-01-15", "estado_empleado": "activo", "id_rol": 2,
+    "nombre_rol": "administrador"
+  },
+  {
+    "id_empleado": 2, "nombre": "Luis", "apellido": "Martínez", "documento": "1.045.221.002",
+    "telefono": "+57 300 000 0002", "correo": "luis@flanbross.co", "salario": 1800000,
+    "fecha_contratacion": "2023-03-01", "estado_empleado": "activo", "id_rol": 3,
+    "nombre_rol": "repostero"
+  },
+  {
+    "id_empleado": 3, "nombre": "Valentina", "apellido": "Florez", "documento": "1.045.221.003",
+    "telefono": "+57 300 000 0003", "correo": "vale@flanbross.co", "salario": 1200000,
+    "fecha_contratacion": "2024-01-10", "estado_empleado": "activo", "id_rol": 4,
+    "nombre_rol": "domiciliario"
+  },
+  {
+    "id_empleado": 4, "nombre": "Felipe", "apellido": "Bernal", "documento": "1.045.221.004",
+    "telefono": "+57 300 000 0004", "correo": "felipe@flanbross.co", "salario": 1200000,
+    "fecha_contratacion": "2024-02-01", "estado_empleado": "activo", "id_rol": 4,
+    "nombre_rol": "domiciliario"
+  },
+  {
+    "id_empleado": 5, "nombre": "Ana", "apellido": "Rondón", "documento": "1.045.221.005",
+    "telefono": "+57 300 000 0005", "correo": "ana@flanbross.co", "salario": 2000000,
+    "fecha_contratacion": "2023-06-15", "estado_empleado": "activo", "id_rol": 5,
+    "nombre_rol": "contador"
+  }
+]

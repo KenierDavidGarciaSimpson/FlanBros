@@ -1,0 +1,98 @@
+/* cuenta.css — Dashboard del cliente y historial de pedidos */
+
+.cliente-dashboard {
+  padding: 100px 48px 60px;
+}
+
+.saludo-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 38px;
+  color: var(--chocolate);
+  margin-bottom: 6px;
+}
+
+.dashboard-grilla {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.tarjeta-dash {
+  background: white;
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tarjeta-dash-cabecera {
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--borde);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tarjeta-dash-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 20px;
+  color: var(--chocolate);
+}
+
+.tarjeta-dash-cuerpo { padding: 18px 22px; }
+
+.item-pedido {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.item-pedido:last-child { border-bottom: none; }
+
+.item-pedido-emoji { font-size: 32px; flex-shrink: 0; }
+.item-pedido-info  { flex: 1; }
+
+.item-pedido-nombre {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chocolate);
+  margin-bottom: 2px;
+}
+
+.item-pedido-fecha {
+  font-size: 12px;
+  color: var(--texto-claro);
+}
+
+.item-pedido-precio {
+  font-family: var(--fuente-titulo);
+  font-size: 18px;
+  color: var(--caramelo);
+  font-weight: 700;
+}
+
+/* Badges de estado */
+.estado-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.estado-entregado    { background: rgba(91,175,142,0.15);  color: #2d7a5f; }
+.estado-preparando   { background: rgba(196,98,45,0.12);   color: var(--caramelo); }
+.estado-pendiente    { background: rgba(212,168,83,0.15);  color: #8a6520; }
+.estado-cancelado    { background: rgba(0,0,0,0.07);       color: #888; }
+.estado-pagada       { background: rgba(91,175,142,0.15);  color: #2d7a5f; }
+.estado-emitida      { background: rgba(196,98,45,0.12);   color: var(--caramelo); }
+.estado-en-camino    { background: rgba(45,122,95,0.12);   color: #2d7a5f; }
+.estado-listo        { background: rgba(212,160,23,0.12);  color: #b8860b; }
+.estado-normal       { background: rgba(45,122,95,0.12);   color: #2d7a5f; }
+.estado-bajo         { background: rgba(212,160,23,0.12);  color: #b8860b; }
+.estado-critico      { background: rgba(192,57,43,0.12);   color: #c0392b; }
+.estado-activo       { background: rgba(91,175,142,0.15);  color: #2d7a5f; }

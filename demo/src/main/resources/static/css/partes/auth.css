@@ -1,0 +1,121 @@
+/* auth.css — Login y registro */
+
+.auth-pagina {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.auth-visual {
+  background: var(--chocolate);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.auth-visual-logo {
+  font-family: var(--fuente-titulo);
+  font-size: 48px;
+  font-style: italic;
+  color: var(--crema);
+  margin-bottom: 14px;
+}
+
+.auth-visual-texto {
+  font-size: 15px;
+  color: rgba(253,246,238,0.55);
+  text-align: center;
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.auth-formulario {
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.auth-caja {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 36px;
+  color: var(--chocolate);
+  margin-bottom: 6px;
+}
+
+.auth-subtitulo {
+  font-size: 14px;
+  color: var(--texto-claro);
+  margin-bottom: 32px;
+}
+
+.auth-tabs {
+  display: flex;
+  border: 1.5px solid var(--borde);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 9px;
+  text-align: center;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--texto-claro);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.auth-tab.activa {
+  background: var(--caramelo);
+  color: white;
+}
+
+.auth-divisor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 12px;
+  color: var(--texto-claro);
+}
+.auth-divisor::before,
+.auth-divisor::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--borde);
+}
+
+.btn-social {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--borde);
+  border-radius: 10px;
+  background: white;
+  font-family: var(--fuente-cuerpo);
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: border-color 0.2s;
+}
+.btn-social:hover { border-color: var(--caramelo); }

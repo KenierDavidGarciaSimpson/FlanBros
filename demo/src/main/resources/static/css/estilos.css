@@ -1,0 +1,17 @@
+/* estilos.css — Importa todas las partes del proyecto
+   Orden importante: variables primero, responsive al final */
+
+@import url('partes/variables.css');
+@import url('partes/navbar.css');
+@import url('partes/botones.css');
+@import url('partes/layout.css');
+@import url('partes/hero.css');
+@import url('partes/tarjetas.css');
+@import url('partes/carrito.css');
+@import url('partes/checkout.css');
+@import url('partes/auth.css');
+@import url('partes/cuenta.css');
+@import url('partes/panel-admin.css');
+@import url('partes/panel-domiciliario.css');
+@import url('partes/footer.css');
+@import url('partes/responsive.css');

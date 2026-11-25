@@ -1,0 +1,22 @@
+[
+  { "id_inventario": 1,  "id_producto": 1,  "cantidad_disponible": 15, "cantidad_minima": 5,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 2,  "id_producto": 2,  "cantidad_disponible": 12, "cantidad_minima": 5,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 3,  "id_producto": 3,  "cantidad_disponible": 40, "cantidad_minima": 10,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 4,  "id_producto": 4,  "cantidad_disponible": 25, "cantidad_minima": 8,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 5,  "id_producto": 5,  "cantidad_disponible": 3,  "cantidad_minima": 8,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "critico" },
+  { "id_inventario": 6,  "id_producto": 6,  "cantidad_disponible": 18, "cantidad_minima": 8,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 7,  "id_producto": 7,  "cantidad_disponible": 30, "cantidad_minima": 10,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 8,  "id_producto": 8,  "cantidad_disponible": 8,  "cantidad_minima": 10,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "bajo" },
+  { "id_inventario": 9,  "id_producto": 9,  "cantidad_disponible": 22, "cantidad_minima": 8,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" },
+  { "id_inventario": 10, "id_producto": 10, "cantidad_disponible": 35, "cantidad_minima": 10,
+    "fecha_actualizacion": "2025-04-29T08:00:00", "estado_inventario": "normal" }
+]
