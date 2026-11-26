@@ -20,15 +20,6 @@ import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Seguridad.UsuarioActual;
 
-/**
- * FacturasApiControlador — capa 3 (Controlador), API de facturas.
- *
- * <p>Sustituye a {@code backend/api/facturas.php}. Solo lectura: las facturas se
- * emiten automaticamente al confirmar el pedido, no se crean a mano.
- * Lo consume {@code admin-facturas.js}.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/facturas")
 public class FacturasApiControlador {
@@ -39,13 +30,8 @@ public class FacturasApiControlador {
         this.pedidos = pedidos;
     }
 
-    /**
-     * GET /api/facturas
-     * GET /api/facturas?id_cliente=2
-     */
     @GetMapping
     public RespuestaApi listar(@RequestParam(name = "id_cliente", required = false) Integer idCliente) {
-        // Un cliente solo ve SUS facturas, sin importar que id mande el navegador.
         if (UsuarioActual.clientePropio().isPresent()) {
             return RespuestaApi.ok(pedidos.listarFacturasPorCliente(UsuarioActual.clientePropio().get()));
         }
@@ -55,11 +41,6 @@ public class FacturasApiControlador {
         return RespuestaApi.ok(pedidos.listarFacturas());
     }
 
-    /**
-     * GET /api/facturas/pedido/{idPedido} — la factura completa de un pedido: productos,
-     * descuento del cupon, IVA, total, pago y domicilio. El cliente solo puede ver las
-     * suyas; administrador y contador ven cualquiera.
-     */
     @GetMapping("/pedido/{idPedido}")
     public ResponseEntity<RespuestaApi> detalle(@PathVariable int idPedido) {
         Optional<Integer> clientePropio = UsuarioActual.clientePropio();
@@ -76,8 +57,6 @@ public class FacturasApiControlador {
         Factura factura = encontrada.get();
         List<DetallePedido> lineas = pedidos.detallesDe(idPedido);
 
-        // factura.subtotal ya trae el descuento del cupon; la diferencia con la suma
-        // de las lineas es lo que se desconto.
         BigDecimal sumaLineas = lineas.stream()
                 .map(l -> l.subtotal == null ? BigDecimal.ZERO : l.subtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

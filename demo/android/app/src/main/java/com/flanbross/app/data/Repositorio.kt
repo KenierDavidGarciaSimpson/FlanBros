@@ -7,7 +7,6 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
-/** Resultado de una operacion: dato o mensaje de error listo para mostrar al usuario. */
 sealed interface Res<out T> {
     data class Ok<T>(val dato: T, val mensaje: String = "") : Res<T>
     data class Error(val mensaje: String) : Res<Nothing>
@@ -16,15 +15,8 @@ sealed interface Res<out T> {
 inline fun <reified T> leer(respuesta: Respuesta): T? =
     respuesta.datos?.let { runCatching { JsonApp.decodeFromJsonElement(serializer<T>(), it) }.getOrNull() }
 
-/**
- * Repositorio — un metodo por cada endpoint de la API que usa la app.
- * Contrato completo en docs/app-movil.md del proyecto del servidor.
- */
 class Repositorio(private val http: ClienteHttp) {
 
-    // ---------------- Sesion ----------------
-
-    /** Usuario de la sesion guardada, o null si no hay sesion (o el servidor no responde). */
     suspend fun sesionActual(): Usuario? {
         val r = http.enviar("GET", "api/sesion")
         return if (r.respuesta.exito) leer<DatosSesion>(r.respuesta)?.usuario else null
@@ -48,13 +40,11 @@ class Repositorio(private val http: ClienteHttp) {
         return usuarioDe(http.enviar("POST", "api/registro", cuerpo.toString()))
     }
 
-    /** Cierra la sesion en el servidor y borra las cookies locales. */
     suspend fun cerrarSesion() {
         http.enviar("POST", "api/logout")
         http.cookies.limpiar()
     }
 
-    /** Devuelve el token solo si el servidor esta en modo demo (sin correo); si no, null. */
     suspend fun solicitarRecuperacion(correo: String): Res<String?> {
         val cuerpo = buildJsonObject { put("correo", correo) }
         val r = http.enviar("POST", "api/recuperar", cuerpo.toString())
@@ -68,8 +58,6 @@ class Repositorio(private val http: ClienteHttp) {
         val r = http.enviar("POST", "api/recuperar", cuerpo.toString())
         return if (r.respuesta.exito) Res.Ok(Unit, r.respuesta.mensaje) else Res.Error(r.respuesta.mensaje)
     }
-
-    // ---------------- Catalogo y pedidos ----------------
 
     suspend fun productos(): Res<List<Producto>> {
         val r = http.enviar("GET", "api/productos")
@@ -90,8 +78,6 @@ class Repositorio(private val http: ClienteHttp) {
             ?: Res.Error("Respuesta inesperada del servidor")
     }
 
-    // ---------------- Cupones ----------------
-
     suspend fun validarCupon(codigo: String, subtotal: Long): Res<CuponValido> {
         val cuerpo = buildJsonObject { put("codigo", codigo); put("subtotal", subtotal) }
         val r = http.enviar("POST", "api/cupones", cuerpo.toString())
@@ -99,8 +85,6 @@ class Repositorio(private val http: ClienteHttp) {
         return leer<CuponValido>(r.respuesta)?.let { Res.Ok(it, r.respuesta.mensaje) }
             ?: Res.Error("Respuesta inesperada del servidor")
     }
-
-    // ---------------- Contacto ----------------
 
     suspend fun enviarContacto(
         nombre: String, correo: String, telefono: String?, asunto: String, mensaje: String,

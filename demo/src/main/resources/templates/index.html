@@ -6,17 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlanBross — Postres Artesanales</title>
   <link rel="stylesheet" href="css/estilos.css">
-  <!-- Fuente elegante para los títulos -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <style>
-    /* Usar la fuente Cormorant para títulos en esta página */
     :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
   </style>
 </head>
 <body>
 
-  <!-- ========== NAVEGACIÓN ========== -->
   <nav>
     <a href="index.html" class="nav-logo">FlanBross</a>
 
@@ -28,7 +25,6 @@
     </ul>
 
     <div class="nav-acciones">
-      <!-- Botón carrito con badge de cantidad -->
       <a href="carrito.html" class="btn-carrito" title="Ver carrito">
         🛒
         <span class="carrito-badge" style="display:none">0</span>
@@ -41,12 +37,10 @@
       <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
       <a href="catalogo.html" class="btn-principal" onclick="irAOrdenar(event)">Ordenar</a>
     </div>
-    <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<!-- Menú móvil desplegable -->
 <div class="nav-menu-movil" id="nav-menu-movil">
   <a href="index.html">Inicio</a>
   <a href="catalogo.html">Catálogo</a>
@@ -56,10 +50,8 @@
   <a href="carrito.html">🛒 Carrito</a>
 </div>
 
-  <!-- ========== HERO ========== -->
   <section class="hero">
     <div class="hero-contenido">
-      <!-- Etiqueta pequeña sobre el título -->
       <div class="etiqueta-seccion">Postres Artesanales · Cartagena</div>
 
       <h1 class="titulo-seccion" style="font-size:clamp(48px,6vw,80px); margin-bottom:20px">
@@ -81,7 +73,6 @@
         </a>
       </div>
 
-      <!-- Estadísticas -->
       <div class="hero-estadisticas">
         <div>
           <div class="estadistica-num">500+</div>
@@ -100,13 +91,11 @@
       </div>
     </div>
 
-    <!-- Imagen del hero -->
     <div class="hero-imagen">
       <div class="plato-hero">🎂</div>
     </div>
   </section>
 
-  <!-- ========== FRANJA DE CARACTERÍSTICAS ========== -->
   <div class="franja-features">
     <div class="feature-item">
       <span>🚀</span>
@@ -126,7 +115,6 @@
     </div>
   </div>
 
-  <!-- ========== PRODUCTOS DESTACADOS ========== -->
   <section id="productos-destacados" style="padding:80px 80px">
     <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:48px">
       <div>
@@ -141,7 +129,6 @@
       <div class="tarjeta-producto">
         <a href="producto.html?id=1">
           <div class="tarjeta-imagen" style="overflow:hidden;padding:0">
-            <!-- FOTO: pega aquí la ruta de la imagen. Ejemplo: src="img/productos/torta-tres-leches.jpg" -->
             <img src="img/productos/torta-tres-leches.jpg"
                  alt="Torta Tres Leches"
                  style="width:100%;height:100%;object-fit:cover"
@@ -164,7 +151,6 @@
       <div class="tarjeta-producto">
         <a href="producto.html?id=2">
           <div class="tarjeta-imagen" style="overflow:hidden;padding:0">
-            <!-- FOTO: pega aquí la ruta. Ejemplo: src="img/productos/cheesecake-maracuya.jpg" -->
             <img src="img/productos/cheesecake-maracuya.jpg"
                  alt="Cheesecake Maracuyá"
                  style="width:100%;height:100%;object-fit:cover"
@@ -186,7 +172,6 @@
       <div class="tarjeta-producto">
         <a href="producto.html?id=3">
           <div class="tarjeta-imagen" style="overflow:hidden;padding:0">
-            <!-- FOTO: pega aquí la ruta. Ejemplo: src="img/productos/brownie-con-nueces.jpg" -->
             <img src="img/productos/brownie-con-nueces.jpg"
                  alt="Brownie con Nueces"
                  style="width:100%;height:100%;object-fit:cover"
@@ -209,7 +194,6 @@
       <div class="tarjeta-producto">
         <a href="producto.html?id=9">
           <div class="tarjeta-imagen" style="overflow:hidden;padding:0">
-            <!-- FOTO: pega aquí la ruta. Ejemplo: src="img/productos/flan-de-coco.jpg" -->
             <img src="img/productos/flan-de-coco.jpg"
                  alt="Flan de Coco"
                  style="width:100%;height:100%;object-fit:cover"
@@ -231,7 +215,6 @@
     </div>
   </section>
 
-  <!-- ========== TESTIMONIOS ========== -->
   <section style="background:var(--crema-2); padding:80px 80px">
     <div class="etiqueta-seccion">Lo que dicen</div>
     <h2 class="titulo-seccion">Nuestros <em>clientes</em> hablan</h2>
@@ -283,7 +266,6 @@
     </div>
   </section>
 
-  <!-- ========== FOOTER ========== -->
   <footer>
     <div class="footer-grilla">
       <div>
@@ -324,7 +306,6 @@
     </div>
   </footer>
 
-  <!-- Cargar el JavaScript al final -->
   <script src="js/modules/utils.js"></script>
   <script src="js/modules/sesion.js"></script>
   <script src="js/modules/nav.js"></script>

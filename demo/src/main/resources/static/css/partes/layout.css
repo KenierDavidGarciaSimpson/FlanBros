@@ -1,5 +1,3 @@
-/* layout.css — Contenedor, secciones y títulos base */
-
 .contenedor {
   max-width: 1200px;
   margin: 0 auto;
@@ -33,7 +31,6 @@
   color: var(--caramelo);
 }
 
-/* Contenido interior de páginas con padding responsive */
 .pagina-interior {
   padding: 100px 80px 60px;
 }

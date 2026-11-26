@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 
 private const val SOLO_CLIENTES = "Esta app es para clientes. El personal usa el panel web."
 
-/** Esta app es de clientes: si entra personal del negocio, se cierra su sesion y se le avisa. */
 private suspend fun aceptarSoloClientes(usuario: Usuario): Boolean {
     if (usuario.rol == "cliente") return true
     Servicios.repositorio.cerrarSesion()
@@ -162,7 +161,6 @@ fun PantallaRegistro(sesion: SesionViewModel, onExito: () -> Unit, onVolver: () 
     }
 }
 
-/** Recuperar contraseña en dos pasos: pedir el token y definir la clave nueva. */
 @Composable
 fun PantallaRecuperar(onVolver: () -> Unit) {
     var correo by rememberSaveable { mutableStateOf("") }
@@ -201,7 +199,7 @@ fun PantallaRecuperar(onVolver: () -> Unit) {
                         is Res.Ok -> {
                             solicitado = true
                             mensaje = r.mensaje
-                            r.dato?.let { token = it } // solo llega en modo demo (servidor sin correo)
+                            r.dato?.let { token = it }
                         }
                         is Res.Error -> error = r.mensaje
                     }

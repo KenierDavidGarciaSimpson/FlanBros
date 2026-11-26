@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- NAVEGACIÓN -->
   <nav>
     <a href="index.html" class="nav-logo">FlanBross</a>
     <ul class="nav-links">
@@ -25,12 +24,10 @@
       </a>
       <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
     </div>
-    <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<!-- Menú móvil desplegable -->
 <div class="nav-menu-movil" id="nav-menu-movil">
   <a href="index.html">Inicio</a>
   <a href="catalogo.html">Catálogo</a>
@@ -40,12 +37,10 @@
   <a href="carrito.html">🛒 Carrito</a>
 </div>
 
-  <!-- CONTENIDO -->
   <main class="contenido-pagina pagina-interior">
     <div class="etiqueta-seccion">Finalizar compra</div>
     <h1 class="titulo-seccion">Checkout</h1>
 
-    <!-- INDICADOR DE PASOS -->
     <div class="pasos-checkout" style="margin:32px 0 40px">
       <div class="paso completado" id="indicador-paso-1">
         <div class="paso-circulo">✓</div>
@@ -68,13 +63,10 @@
       </div>
     </div>
 
-    <!-- LAYOUT: formulario izquierda + resumen derecha -->
     <div class="checkout-layout">
 
-      <!-- COLUMNA IZQUIERDA: Pasos del formulario -->
       <div>
 
-        <!-- PASO 2: Dirección de entrega -->
         <div id="paso-2" class="contenido-paso">
           <div class="seccion-formulario">
             <div class="seccion-titulo">📍 Dirección de entrega</div>
@@ -129,7 +121,6 @@
           </button>
         </div>
 
-        <!-- PASO 3: Método de pago -->
         <div id="paso-3" class="contenido-paso" style="display:none">
           <div class="seccion-formulario">
             <div class="seccion-titulo">💳 Método de pago</div>
@@ -183,7 +174,6 @@
           </div>
         </div>
 
-        <!-- PASO 4: Confirmar pedido -->
         <div id="paso-4" class="contenido-paso" style="display:none">
           <div class="seccion-formulario" style="text-align:center; padding:48px 28px">
             <div style="font-size:72px; margin-bottom:20px">🎉</div>
@@ -194,7 +184,6 @@
               Revisa tu pedido y confirma para que nuestros reposteros empiecen a prepararlo.
             </p>
 
-            <!-- Resumen de datos ingresados -->
             <div style="background:var(--crema-2); border-radius:12px; padding:20px; text-align:left; margin-bottom:28px">
               <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--texto-claro); margin-bottom:12px">
                 Datos del pedido
@@ -212,8 +201,6 @@
                 <span id="confirm-pago" style="color:var(--chocolate); font-weight:500">Billetera digital</span>
               </div>
 
-              <!-- Desglose del cobro. Los ids los rellena llenarResumenConfirmacion()
-                   en checkout.js cuando se llega al paso 4. -->
               <div style="height:1px; background:rgba(90,58,42,0.12); margin:14px 0"></div>
               <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px">
                 <span style="color:var(--texto-claro)">Subtotal</span>
@@ -249,14 +236,11 @@
 
       </div>
 
-      <!-- COLUMNA DERECHA: Resumen del pedido -->
       <div>
         <div class="resumen-carrito">
           <div class="resumen-titulo">Tu pedido</div>
 
-          <!-- Items del carrito -->
           <div id="items-checkout" style="margin-bottom:14px">
-            <!-- Se llena con JavaScript -->
           </div>
 
           <div class="resumen-linea"></div>

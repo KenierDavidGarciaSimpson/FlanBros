@@ -5,12 +5,6 @@ import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 
-/**
- * AlmacenCookies — guarda las cookies del servidor (JSESSIONID y XSRF-TOKEN).
- *
- * El servidor identifica al usuario con la cookie de sesion. Se persisten en SharedPreferences
- * para que la sesion sobreviva al cierre de la app; caduca en el servidor (8 h) o al cerrar sesion.
- */
 class AlmacenCookies(contexto: Context, private val urlBase: HttpUrl) : CookieJar {
 
     private val prefs = contexto.getSharedPreferences("cookies_flanbross", Context.MODE_PRIVATE)
@@ -38,7 +32,6 @@ class AlmacenCookies(contexto: Context, private val urlBase: HttpUrl) : CookieJa
         return guardadas.filter { it.matches(url) }
     }
 
-    /** Valor de una cookie por nombre (el cliente HTTP lo usa para el token CSRF). */
     @Synchronized
     fun valor(nombre: String): String? = guardadas.firstOrNull { it.name == nombre }?.value
 

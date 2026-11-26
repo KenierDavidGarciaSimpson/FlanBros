@@ -15,18 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * Pruebas del contrato HTTP real (Tomcat en un puerto libre, perfil {@code memoria}).
- *
- * <p>Comprueba lo que ve la app movil: la API responde 401 sin sesion, las paginas redirigen al
- * login y la respuesta entrega la cookie {@code XSRF-TOKEN} que el cliente devuelve como cabecera
- * {@code X-XSRF-TOKEN} en sus POST/PUT/DELETE.</p>
- *
- * <p>Esta comprobacion no se puede hacer con MockMvc: en cuanto una clase de pruebas usa
- * {@code csrf()}, spring-security-test cambia el {@code CookieCsrfTokenRepository} de la cadena
- * por un repositorio de sesion y la respuesta deja de traer la cookie. Con HTTP real se valida el
- * comportamiento del servidor tal cual.</p>
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("memoria")
 class CookieCsrfHttpTests {
@@ -38,7 +26,6 @@ class CookieCsrfHttpTests {
         return URI.create("http://localhost:" + this.puerto + ruta);
     }
 
-    /** Cliente que guarda cookies y las reenvia, como el navegador o la app. */
     private HttpClient clienteConCookies() {
         return HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
     }

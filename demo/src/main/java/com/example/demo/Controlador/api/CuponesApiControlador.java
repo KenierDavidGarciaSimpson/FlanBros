@@ -16,19 +16,6 @@ import com.example.demo.Modelo.Cupon;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.CuponRepositorio;
 
-/**
- * CuponesApiControlador — capa 3 (Controlador), API de cupones.
- *
- * <p>Sustituye a {@code backend/api/cupones.php}. {@code cupones.js} manda
- * {@code {codigo, subtotal}} y lee {@code datos.codigo} y
- * {@code datos.descuento_pct}, asi que esos dos nombres no se pueden cambiar.</p>
- *
- * <p>La validacion es de solo lectura: el descuento se aplica en el navegador y el
- * backend no lo vuelve a comprobar al crear el pedido. Es el mismo comportamiento
- * del PHP original y por eso queda anotado como limitacion conocida.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/cupones")
 public class CuponesApiControlador {
@@ -39,7 +26,6 @@ public class CuponesApiControlador {
         this.cupones = cupones;
     }
 
-    /** POST /api/cupones — valida el codigo y devuelve el porcentaje. */
     @PostMapping
     public ResponseEntity<RespuestaApi> validar(@RequestBody Map<String, Object> cuerpo) {
         String codigo = PeticionUtil.texto(cuerpo, "codigo");

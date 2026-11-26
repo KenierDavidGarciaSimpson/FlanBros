@@ -17,7 +17,6 @@
       min-height: 100vh;
     }
 
-    /* Panel lateral oscuro */
     .panel-lateral {
       background: #2A1500;
       padding: 28px 22px;
@@ -37,7 +36,6 @@
       border-bottom: 1px solid rgba(255,255,255,0.07);
     }
 
-    /* Card de estado del domiciliario */
     .estado-card {
       background: rgba(255,255,255,0.05);
       border-radius: 14px;
@@ -116,7 +114,6 @@
       margin-top: 2px;
     }
 
-    /* Estadísticas rápidas */
     .stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -146,7 +143,6 @@
       margin-top: 3px;
     }
 
-    /* Título de sección en el panel */
     .panel-seccion-titulo {
       font-size: 10px;
       font-weight: 700;
@@ -156,7 +152,6 @@
       margin-bottom: 10px;
     }
 
-    /* Tarjeta de entrega */
     .tarjeta-entrega-domicilio {
       background: rgba(255,255,255,0.05);
       border-radius: 14px;
@@ -232,7 +227,6 @@
 
     .btn-entrega.confirmar:hover { background: #a34e22; }
 
-    /* Área del mapa */
     .area-mapa {
       background: linear-gradient(135deg, #2A3D2A 0%, #1A2A1A 100%);
       position: relative;
@@ -242,7 +236,6 @@
       overflow: hidden;
     }
 
-    /* Grilla decorativa del mapa */
     .area-mapa::before {
       content: '';
       position: absolute;
@@ -262,7 +255,6 @@
     .mapa-placeholder-icono { font-size: 64px; margin-bottom: 14px; }
     .mapa-placeholder-texto { font-size: 15px; font-weight: 300; }
 
-    /* Pin en el mapa */
     .mapa-pin {
       position: absolute;
       z-index: 2;
@@ -282,7 +274,6 @@
     .pin-moto { background: var(--caramelo); }
     .pin-destino { background: #3D5A3E; }
 
-    /* Info de ruta en la parte baja del mapa */
     .ruta-info {
       position: absolute;
       bottom: 28px;
@@ -312,12 +303,10 @@
 
 <div class="domiciliario-layout">
 
-  <!-- ======= PANEL LATERAL ======= -->
   <div class="panel-lateral">
 
     <div class="panel-logo">🛵 FlanBross</div>
 
-    <!-- Perfil y estado -->
     <div class="estado-card">
       <div class="estado-header">
         <span class="estado-etiqueta">Estado de turno</span>
@@ -335,7 +324,6 @@
       </div>
     </div>
 
-    <!-- Estadísticas del día -->
     <div class="stats-row">
       <div class="stat-mini">
         <div class="stat-mini-num" id="stat-dom-encamino">0</div>
@@ -351,12 +339,9 @@
       </div>
     </div>
 
-    <!-- Lista de entregas -->
     <div>
       <div class="panel-seccion-titulo">Mis domicilios del día</div>
 
-      <!-- Lo llena renderizarDomicilios() en js/domiciliario.js con los pedidos
-           listos y los domicilios en camino del repartidor. -->
       <div id="lista-domicilios">
         <div style="padding:24px; text-align:center; color:rgba(255,255,255,0.4); font-size:14px">
           Cargando domicilios…
@@ -364,7 +349,6 @@
       </div>
     </div>
 
-    <!-- Enlace al admin -->
     <div style="margin-top:auto; padding-top:14px; border-top:1px solid rgba(255,255,255,0.07)">
       <a href="dashboard.html" style="font-size:12px; color:rgba(255,255,255,0.3); text-decoration:none">
         ← Panel administrativo
@@ -372,7 +356,6 @@
     </div>
   </div>
 
-  <!-- ======= ÁREA DEL MAPA ======= -->
   <div class="area-mapa">
     <div class="mapa-placeholder">
       <div class="mapa-placeholder-icono">🗺️</div>
@@ -382,21 +365,18 @@
       </div>
     </div>
 
-    <!-- Pin del domiciliario (posición simulada) -->
     <div class="mapa-pin" style="top:38%; left:42%">
       <div class="pin-circulo pin-moto">
         <span class="pin-contenido">🛵</span>
       </div>
     </div>
 
-    <!-- Pin del destino -->
     <div class="mapa-pin" style="top:58%; left:60%">
       <div class="pin-circulo pin-destino">
         <span class="pin-contenido">📍</span>
       </div>
     </div>
 
-    <!-- Info de ruta -->
     <div class="ruta-info">
       <div class="ruta-dato">
         <div class="ruta-valor">1.8 km</div>

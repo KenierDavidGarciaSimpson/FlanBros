@@ -15,10 +15,6 @@ sealed interface EstadoSesion {
     data object Cerrada : EstadoSesion
 }
 
-/**
- * SesionViewModel — quien esta conectado. Al abrir la app le pregunta al servidor si la cookie
- * guardada sigue vigente; si el servidor responde 401 mas adelante, la sesion pasa a Cerrada.
- */
 class SesionViewModel : ViewModel() {
 
     private val repositorio = Servicios.repositorio

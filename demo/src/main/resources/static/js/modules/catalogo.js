@@ -1,10 +1,7 @@
-// catalogo.js — Carga, filtrado y paginación de productos
-
 var categoriaActiva = 'Todos';
 var paginaActual    = 1;
 var ITEMS_POR_PAG   = 8;
 
-// Llama al backend y guarda los productos en window.PRODUCTOS
 function cargarCatalogo() {
     var grilla = document.getElementById('grilla-productos');
     if (!grilla) return;
@@ -18,12 +15,11 @@ function cargarCatalogo() {
         });
 }
 
-// Filtra, ordena y pagina los productos
 function filtrarProductos() {
     var grilla   = document.getElementById('grilla-productos');
     if (!grilla) return;
 
-    paginaActual = 1; // resetear a la primera página al filtrar
+    paginaActual = 1;
 
     var busqueda = (document.getElementById('buscador')?.value || '').toLowerCase();
     var orden    = document.getElementById('ordenar')?.value || 'popular';
@@ -40,11 +36,10 @@ function filtrarProductos() {
     if (orden === 'precio-desc') lista.sort(function(a,b) { return b.precio - a.precio; });
     if (orden === 'nombre')      lista.sort(function(a,b) { return a.nombre_producto.localeCompare(b.nombre_producto); });
 
-    window._LISTA_FILTRADA = lista; // guardar para uso en paginación
+    window._LISTA_FILTRADA = lista;
     renderizarPagina();
 }
 
-// Dibuja la página actual de productos
 function renderizarPagina() {
     var grilla = document.getElementById('grilla-productos');
     if (!grilla) return;
@@ -99,7 +94,6 @@ function renderizarPagina() {
     renderizarPaginacion(totalPags);
 }
 
-// Dibuja los controles de paginación
 function renderizarPaginacion(totalPags) {
     var cont = document.getElementById('paginacion-catalogo');
     if (!cont) return;
@@ -108,12 +102,10 @@ function renderizarPaginacion(totalPags) {
 
     var html = '<div style="display:flex;gap:8px;justify-content:center;margin-top:40px;flex-wrap:wrap">';
 
-    // Botón anterior
     html += '<button onclick="cambiarPagina(' + (paginaActual - 1) + ')" '
           + (paginaActual === 1 ? 'disabled' : '')
           + ' style="padding:8px 16px;border:1.5px solid var(--borde);border-radius:8px;background:white;cursor:pointer;color:var(--chocolate)">← Anterior</button>';
 
-    // Páginas numeradas
     for (var i = 1; i <= totalPags; i++) {
         var activo = i === paginaActual;
         html += '<button onclick="cambiarPagina(' + i + ')" style="'
@@ -124,7 +116,6 @@ function renderizarPaginacion(totalPags) {
               + '">' + i + '</button>';
     }
 
-    // Botón siguiente
     html += '<button onclick="cambiarPagina(' + (paginaActual + 1) + ')" '
           + (paginaActual === totalPags ? 'disabled' : '')
           + ' style="padding:8px 16px;border:1.5px solid var(--borde);border-radius:8px;background:white;cursor:pointer;color:var(--chocolate)">Siguiente →</button>';
@@ -138,7 +129,6 @@ function cambiarPagina(num) {
     if (num < 1 || num > totalPags) return;
     paginaActual = num;
     renderizarPagina();
-    // Scroll suave arriba del catálogo
     var grilla = document.getElementById('grilla-productos');
     if (grilla) grilla.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

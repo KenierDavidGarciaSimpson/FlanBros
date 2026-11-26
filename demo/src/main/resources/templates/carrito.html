@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- NAVEGACIÓN -->
   <nav>
     <a href="index.html" class="nav-logo">FlanBross</a>
     <ul class="nav-links">
@@ -30,12 +29,10 @@
         </span>
         <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
       </div>
-    <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<!-- Menú móvil desplegable -->
 <div class="nav-menu-movil" id="nav-menu-movil">
   <a href="index.html">Inicio</a>
   <a href="catalogo.html">Catálogo</a>
@@ -45,17 +42,13 @@
   <a href="carrito.html">🛒 Carrito</a>
 </div>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="contenido-pagina pagina-interior">
     <div class="etiqueta-seccion">Tu selección</div>
     <h1 class="titulo-seccion">Mi <em>carrito</em></h1>
 
-    <!-- Layout de 2 columnas: lista izquierda + resumen derecha -->
     <div class="carrito-layout">
 
-      <!-- COLUMNA IZQUIERDA: Lista de items -->
       <div>
-        <!-- Cabecera de la lista -->
         <div style="background:white; border-radius:var(--radio); border:1px solid var(--borde); overflow:hidden">
           <div style="padding:18px 24px; border-bottom:1px solid var(--borde); display:flex; justify-content:space-between; align-items:center">
             <span style="font-family:var(--fuente-titulo); font-size:18px; color:var(--chocolate)">
@@ -63,13 +56,11 @@
             </span>
             <button class="btn-eliminar" onclick="if (confirmarVaciar()) vaciarCarrito()">Vaciar carrito</button>
           </div>
-          <!-- Aquí JavaScript inserta los items del carrito -->
           <div id="lista-carrito" style="padding:0 24px">
             Cargando...
           </div>
         </div>
 
-        <!-- Cupón de descuento -->
         <div style="margin-top:14px; padding:16px 18px; background:var(--crema-2); border-radius:var(--radio); border:1px solid var(--borde)">
           <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--texto-claro); margin-bottom:10px">
             Código de descuento
@@ -85,7 +76,6 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA: Resumen del pedido -->
       <div class="resumen-carrito">
         <div class="resumen-titulo">Resumen del pedido</div>
 
@@ -121,7 +111,6 @@
           ← Seguir comprando
         </a>
 
-        <!-- Sellos de confianza -->
         <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--borde); display:flex; flex-direction:column; gap:6px">
           <div style="font-size:12px; color:var(--texto-claro); display:flex; gap:6px; align-items:center">Pago 100% seguro</div>
           <div style="font-size:12px; color:var(--texto-claro); display:flex; gap:6px; align-items:center">Sin cargos ocultos</div>
@@ -132,7 +121,6 @@
     </div>
   </main>
 
-  <!-- FOOTER SIMPLE -->
   <footer>
     <div class="footer-inferior">
       <span>© 2025 FlanBross</span>
@@ -150,14 +138,12 @@
   <script src="js/modules/cuenta.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // El carrito es solo para clientes con sesión iniciada.
     if (!obtenerSesion()) {
       try { sessionStorage.setItem('fb_volver', '/carrito.html'); } catch (e) {}
       window.location.replace('/login.html');
     } else {
       renderizarCarrito();
       pintarEstadoCupon();
-      // Al entrar, poner al día precios y stock con el servidor.
       sincronizarCarrito().then(function () { renderizarCarrito(); actualizarBadgeCarrito(); });
     }
     function confirmarVaciar() {

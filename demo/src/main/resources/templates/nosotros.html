@@ -10,7 +10,6 @@
   <style>
     :root { --fuente-titulo: 'Cormorant Garamond', Georgia, serif; }
 
-    /* ---- Hero de la página ---- */
     .nosotros-hero {
       background: var(--chocolate);
       padding: 120px 80px 80px;
@@ -60,7 +59,6 @@
       font-size: 140px;
     }
 
-    /* ---- Sección de historia ---- */
     .historia {
       padding: 90px 80px;
       display: grid;
@@ -82,7 +80,6 @@
       overflow: hidden;
     }
 
-    /* Detalle decorativo de la imagen */
     .historia-imagen::after {
       content: '🎂';
       position: absolute;
@@ -102,7 +99,6 @@
       margin-bottom: 18px;
     }
 
-    /* ---- Valores ---- */
     .valores {
       background: var(--crema-2);
       padding: 80px;
@@ -148,7 +144,6 @@
       font-weight: 300;
     }
 
-    /* ---- Equipo ---- */
     .equipo {
       padding: 90px 80px;
     }
@@ -208,7 +203,6 @@
       font-weight: 300;
     }
 
-    /* ---- Estadísticas ---- */
     .estadisticas {
       background: var(--caramelo);
       padding: 70px 80px;
@@ -235,7 +229,6 @@
       font-weight: 300;
     }
 
-    /* ---- CTA final ---- */
     .cta-final {
       background: var(--chocolate);
       padding: 80px;
@@ -269,7 +262,6 @@
       justify-content: center;
     }
 
-    /* Responsive */
     @media (max-width: 900px) {
       .nosotros-hero { grid-template-columns: 1fr; padding: 100px 24px 50px; }
       .nosotros-hero-imagen { display: none; }
@@ -289,7 +281,6 @@
 </head>
 <body>
 
-  <!-- NAVEGACIÓN -->
   <nav>
     <a href="index.html" class="nav-logo">FlanBross</a>
     <ul class="nav-links">
@@ -311,12 +302,10 @@
         <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
         <a href="catalogo.html" class="btn-principal" onclick="irAOrdenar(event)">Ordenar</a>
     </div>
-    <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<!-- Menú móvil desplegable -->
 <div class="nav-menu-movil" id="nav-menu-movil">
   <a href="index.html">Inicio</a>
   <a href="catalogo.html">Catálogo</a>
@@ -326,7 +315,6 @@
   <a href="carrito.html">🛒 Carrito</a>
 </div>
 
-  <!-- HERO -->
   <section class="nosotros-hero">
     <div>
       <div class="etiqueta-seccion" style="color:rgba(196,98,45,0.8)">Nuestra historia</div>
@@ -346,7 +334,6 @@
     </div>
   </section>
 
-  <!-- HISTORIA -->
   <section class="historia">
     <div class="historia-imagen">🍮</div>
     <div class="historia-contenido">
@@ -373,7 +360,6 @@
     </div>
   </section>
 
-  <!-- VALORES -->
   <section class="valores">
     <div style="text-align:center">
       <div class="etiqueta-seccion">Lo que nos mueve</div>
@@ -437,7 +423,6 @@
     </div>
   </section>
 
-  <!-- ESTADÍSTICAS -->
   <div class="estadisticas">
     <div class="estadistica-item">
       <div class="estadistica-numero">500+</div>
@@ -457,7 +442,6 @@
     </div>
   </div>
 
-  <!-- EQUIPO -->
   <section class="equipo">
     <div style="text-align:center">
       <div class="etiqueta-seccion">Las personas detrás</div>
@@ -503,7 +487,6 @@
     </div>
   </section>
 
-  <!-- CTA FINAL -->
   <section class="cta-final">
     <h2>¿Listo para probar<br>nuestros <em>postres</em>?</h2>
     <p>Haz tu pedido hoy y recíbelo en menos de 45 minutos en Cartagena.</p>
@@ -517,7 +500,6 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <div class="footer-grilla">
       <div>

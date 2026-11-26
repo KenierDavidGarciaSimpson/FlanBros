@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flanbross.app.data.Pedido
 import com.flanbross.app.data.Usuario
 
-/** Historial de pedidos del cliente. El servidor devuelve solo los de la sesion. */
 @Composable
 fun PantallaPedidos(usuario: Usuario?, vm: PedidosViewModel, onLogin: () -> Unit, onRegistro: () -> Unit) {
     if (usuario == null) {

@@ -1,5 +1,3 @@
-// sesion.js — Manejo de autenticación y roles
-
 const FB_USUARIO_KEY = 'fb_usuario';
 
 function obtenerSesion() {
@@ -13,19 +11,16 @@ function guardarSesion(usuario) {
 
 function cerrarSesion() {
     localStorage.removeItem(FB_USUARIO_KEY);
-    // Cierra tambien la sesion del servidor (invalida la cookie JSESSIONID).
     var ir = function () { window.location.href = '/login.html'; };
     fetch('/api/logout', { method: 'POST' }).then(ir, ir);
 }
 
-// Redirige al login si no hay sesión activa
 function requiereSesion() {
     if (!obtenerSesion()) {
         window.location.href = '/login.html';
     }
 }
 
-// Redirige si el usuario no tiene un rol admin
 function requiereAdmin() {
     const u = obtenerSesion();
     const rolesAdmin = ['administrador', 'repostero', 'contador', 'domiciliario'];

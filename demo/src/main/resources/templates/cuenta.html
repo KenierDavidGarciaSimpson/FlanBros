@@ -26,12 +26,10 @@
       <button class="btn-secundario" onclick="cerrarSesion()">Salir</button>
       <a href="/admin/dashboard.html" id="btn-nav-panel" class="btn-secundario" style="display:none">Mi panel</a>
     </div>
-    <!-- Botón hamburguesa (solo móvil) -->
   <button class="nav-hamburguesa" id="btn-hamburguesa" style="display:none" onclick="toggleMenuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<!-- Menú móvil desplegable -->
 <div class="nav-menu-movil" id="nav-menu-movil">
   <a href="index.html">Inicio</a>
   <a href="catalogo.html">Catálogo</a>
@@ -43,7 +41,6 @@
 
   <main class="cliente-dashboard">
 
-    <!-- Banner de pedido confirmado -->
     <div id="banner-exito" style="display:none;background:rgba(91,175,142,0.12);border:1px solid rgba(91,175,142,0.35);border-radius:12px;padding:18px 22px;margin-bottom:28px;align-items:center;gap:14px">
       <span style="font-size:28px">🎉</span>
       <div>
@@ -56,7 +53,6 @@
     <h1 class="saludo-titulo">Hola, <em id="nombre-usuario" style="font-style:italic;color:var(--caramelo)">—</em></h1>
     <p style="color:var(--texto-claro);font-size:15px;margin-top:4px">Bienvenido de nuevo a FlanBross</p>
 
-    <!-- Estadísticas -->
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;max-width:480px">
       <div style="background:white;border-radius:var(--radio);padding:20px;border:1px solid var(--borde)">
         <div id="stat-pedidos" style="font-family:var(--fuente-titulo);font-size:34px;color:var(--chocolate)">—</div>
@@ -70,9 +66,7 @@
 
     <div class="dashboard-grilla">
 
-      <!-- Historial de pedidos -->
       <div>
-        <!-- Pedido activo -->
         <div id="pedido-activo" style="display:none;background:linear-gradient(135deg,var(--chocolate),#6B3A1F);border-radius:var(--radio);padding:22px 26px;margin-bottom:20px;color:white">
           <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px">Pedido activo</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
@@ -92,7 +86,6 @@
         </div>
       </div>
 
-      <!-- Perfil -->
       <div>
         <div class="tarjeta-dash">
           <div class="tarjeta-dash-cabecera">
@@ -127,7 +120,6 @@
   <script src="js/modules/checkout.js"></script>
   <script src="js/modules/cuenta.js"></script>
 <script>
-// Mostrar aviso de pedido recién confirmado si viene del checkout
 (function() {
   var num = localStorage.getItem('fb_pedido_confirmado');
   if (!num) return;
@@ -144,7 +136,6 @@
 </script>
   <script src="js/app.js"></script>
   <script>
-    // Verifica sesión y carga los datos del cliente al entrar
     requiereSesion();
     cargarMiCuenta();
   </script>

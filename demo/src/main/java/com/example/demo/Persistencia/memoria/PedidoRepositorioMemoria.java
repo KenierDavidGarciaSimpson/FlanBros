@@ -26,46 +26,20 @@ import com.example.demo.Persistencia.PersonaRepositorio;
 import com.example.demo.Persistencia.ProductoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 
-/**
- * PedidoRepositorioMemoria — capa 2 (Persistencia), implementacion en memoria.
- *
- * <p>Es la antigua transaccion de {@code pedidos.php} escrita en Java: al confirmar
- * un pedido se escribe la cabecera, sus lineas, la factura con IVA, el pago
- * pendiente, el domicilio y se descuenta el inventario. Todo o nada.</p>
- *
- * <p>Depende de {@link ProductoRepositorio} (para validar y descontar stock) y de
- * {@link PersonaRepositorio} (para poner nombre y correo en las listas, que en SQL
- * eran JOIN). La dependencia va en un solo sentido: ni Producto ni Persona conocen
- * a Pedido, asi que no hay ciclo de beans.</p>
- *
- * <p>Decisiones de negocio que se conservan del PHP:</p>
- * <ul>
- *   <li>El IVA es del 8% sobre el subtotal y el domicilio se cobra aparte.</li>
- *   <li>El numero de factura es FAC-ANO-CONSECUTIVO del pedido.</li>
- *   <li>"entregado" arrastra factura pagada, pago aprobado y domicilio entregado.</li>
- * </ul>
- *
- * <p>Capa: Persistencia. Implementa {@link PedidoRepositorio}.</p>
- */
 @Profile("memoria")
 @Repository
 public class PedidoRepositorioMemoria implements PedidoRepositorio {
 
-    /** IVA aplicado en la factura (8%, el mismo que usaba pedidos.php). */
     private static final BigDecimal TASA_IVA = new BigDecimal("0.08");
 
-    /** Costo fijo del domicilio en pesos. */
     private static final BigDecimal COSTO_DOMICILIO = new BigDecimal("7000");
 
-    /** Metodos de pago que acepta el checkout (ENUM de la tabla Pago). */
     private static final List<String> METODOS_PAGO = List.of(
             "contraentrega", "tarjeta", "transferencia", "billetera_digital");
 
-    /** Estados validos de un pedido (ENUM de la tabla Pedido). */
     private static final List<String> ESTADOS_PEDIDO = List.of(
             "pendiente", "en_preparacion", "listo", "entregado", "cancelado");
 
-    /** Estados validos de un pago (ENUM de la tabla Pago). */
     private static final List<String> ESTADOS_PAGO = List.of(
             "pendiente", "aprobado", "rechazado");
 
@@ -105,7 +79,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
 
     @Override
     public synchronized Pedido crear(NuevoPedido solicitud) {
-        // ---- 1. Validar TODAS las lineas antes de escribir nada -------------
         List<Producto> productosPedidos = new ArrayList<>();
         for (ItemPedido item : solicitud.items) {
             if (!item.esValido()) {
@@ -128,7 +101,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
             productosPedidos.add(producto);
         }
 
-        // ---- 2. Cabecera del pedido ----------------------------------------
         Pedido pedido = new Pedido();
         pedido.id_pedido = siguientePedidoId++;
         pedido.fecha_pedido = LocalDateTime.now();
@@ -138,7 +110,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        // ---- 3. Lineas y descuento de inventario ---------------------------
         for (int i = 0; i < solicitud.items.size(); i++) {
             ItemPedido item = solicitud.items.get(i);
             Producto producto = productosPedidos.get(i);
@@ -148,7 +119,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
             linea.id_pedido = pedido.id_pedido;
             linea.id_producto = producto.id_producto;
             linea.cantidad = item.cantidad;
-            // El precio bueno es el del producto, no el que manda el navegador.
             linea.precio_unitario = producto.precio;
             linea.subtotal = linea.calcularSubtotal();
             linea.nombre_producto = producto.nombre_producto;
@@ -163,7 +133,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         pedido.total_pedido = total;
         pedidos.add(pedido);
 
-        // ---- 4. Factura (subtotal + IVA) -----------------------------------
         BigDecimal impuestos = total.multiply(TASA_IVA).setScale(0, RoundingMode.HALF_UP);
 
         Factura factura = new Factura();
@@ -178,7 +147,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         factura.id_pedido = pedido.id_pedido;
         facturas.add(factura);
 
-        // ---- 5. Pago pendiente ---------------------------------------------
         Pago pago = new Pago();
         pago.id_pago = siguientePagoId++;
         pago.fecha_pago = LocalDateTime.now();
@@ -189,7 +157,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         pago.id_factura = factura.id_factura;
         pagos.add(pago);
 
-        // ---- 6. Domicilio ---------------------------------------------------
         Domicilio domicilio = new Domicilio();
         domicilio.id_domicilio = siguienteDomicilioId++;
         domicilio.direccion_entrega = solicitud.direccion_entrega;
@@ -198,17 +165,12 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         domicilio.id_pedido = pedido.id_pedido;
         domicilios.add(domicilio);
 
-        // ---- 7. Devolver el pedido con su factura ---------------------------
         pedido.numero_factura = factura.numero_factura;
         pedido.total_factura = factura.total_factura;
         pedido.estado_factura = factura.estado_factura;
         completarDatosCliente(pedido);
         return pedido;
     }
-
-    // ------------------------------------------------------------------
-    // Cambio de estado
-    // ------------------------------------------------------------------
 
     @Override
     public synchronized boolean cambiarEstado(int idPedido, String estado) {
@@ -224,7 +186,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         }
         encontrado.get().estado_pedido = nuevoEstado;
 
-        // Efectos en cascada, exactamente como los hacia pedidos.php.
         switch (nuevoEstado) {
             case "listo" -> cambiarEstadoDomicilioDe(idPedido, "en_camino");
             case "entregado" -> {
@@ -240,7 +201,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
             }
             case "cancelado" -> cambiarEstadoDomicilioDe(idPedido, "fallido");
             default -> {
-                // pendiente y en_preparacion no mueven nada mas.
             }
         }
         return true;
@@ -251,10 +211,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
                 .filter(domicilio -> domicilio.id_pedido == idPedido)
                 .forEach(domicilio -> domicilio.estado_entrega = estado);
     }
-
-    // ------------------------------------------------------------------
-    // Pedidos
-    // ------------------------------------------------------------------
 
     @Override
     public synchronized List<Pedido> listarRecientes(int limite) {
@@ -297,10 +253,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         completarNombresDeProducto(lineas);
         return lineas;
     }
-
-    // ------------------------------------------------------------------
-    // Facturas y pagos
-    // ------------------------------------------------------------------
 
     @Override
     public synchronized List<Factura> listarFacturas() {
@@ -346,10 +298,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
                 })
                 .orElse(false);
     }
-
-    // ------------------------------------------------------------------
-    // Domicilios
-    // ------------------------------------------------------------------
 
     @Override
     public synchronized List<Domicilio> listarDomicilios() {
@@ -397,10 +345,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         return true;
     }
 
-    // ------------------------------------------------------------------
-    // Apoyo: los JOIN que en SQL hacia el motor
-    // ------------------------------------------------------------------
-
     private static final Comparator<Pedido> POR_FECHA_DESC = Comparator.comparing(
             (Pedido pedido) -> pedido.fecha_pedido == null
                     ? LocalDateTime.MIN : pedido.fecha_pedido).reversed();
@@ -409,12 +353,10 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
             (Factura factura) -> factura.fecha_factura == null
                     ? LocalDateTime.MIN : factura.fecha_factura).reversed();
 
-    /** FAC-2026-0007: ano de la factura y consecutivo del pedido con cuatro digitos. */
     private String numeroFactura(int idPedido) {
         return "FAC-" + Year.now().getValue() + "-" + String.format("%04d", idPedido);
     }
 
-    /** Rellena nombre, apellido y correo del cliente (JOIN con Cliente). */
     private void completarDatosCliente(Pedido pedido) {
         Cliente cliente = personas.buscarCliente(pedido.id_cliente).orElse(null);
         if (cliente != null) {
@@ -491,7 +433,6 @@ public class PedidoRepositorioMemoria implements PedidoRepositorio {
         return domicilio;
     }
 
-    /** Pone el nombre del producto en las lineas (JOIN con Producto). */
     private void completarNombresDeProducto(List<DetallePedido> lineas) {
         lineas.forEach(linea -> {
             if (linea.nombre_producto == null) {

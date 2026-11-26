@@ -1,5 +1,3 @@
-// admin-productos.js — CRUD de productos y modal
-
 function cargarProductosAdmin() {
     fetch('/api/productos')
         .then(function(r) { return r.json(); })
@@ -22,7 +20,6 @@ function cargarProductosAdmin() {
         });
 }
 
-// Abre el modal con datos del producto (null = nuevo)
 function abrirModalProducto(p) {
     var m = document.getElementById('modal-producto');
     if (!m) return;
@@ -37,7 +34,6 @@ function abrirModalProducto(p) {
     document.getElementById('mp-img-file').value    = '';
     document.getElementById('mp-img-estado').textContent = '';
 
-    // Mostrar preview si ya tiene imagen
     var thumb = document.getElementById('mp-img-thumb');
     var holder = document.getElementById('mp-img-placeholder');
     if (p && p.imagen) {
@@ -58,7 +54,6 @@ function previsualizarImagen(input) {
     var thumb    = document.getElementById('mp-img-thumb');
     var holder   = document.getElementById('mp-img-placeholder');
 
-    // Preview local inmediato
     var reader = new FileReader();
     reader.onload = function(e) {
         thumb.src = e.target.result;
@@ -67,7 +62,6 @@ function previsualizarImagen(input) {
     };
     reader.readAsDataURL(file);
 
-    // Subir al servidor
     estadoEl.textContent = 'Subiendo imagen...';
     estadoEl.style.color = 'var(--texto-claro)';
 

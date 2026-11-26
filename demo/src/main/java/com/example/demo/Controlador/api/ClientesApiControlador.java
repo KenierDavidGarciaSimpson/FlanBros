@@ -22,18 +22,6 @@ import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Persistencia.PersonaRepositorio;
 
-/**
- * ClientesApiControlador — capa 3 (Controlador), API de clientes del panel.
- *
- * <p>Sustituye a {@code backend/api/clientes.php}. El {@code total_pedidos} que
- * pinta {@code admin-clientes.js} era un COUNT con JOIN en SQL; aqui se cuenta con
- * los pedidos que entrega la capa 2, en una sola pasada.</p>
- *
- * <p>Este controlador es el unico sitio donde se cruzan personas y pedidos, y por
- * eso inyecta dos repositorios: la capa 2 no se conoce a si misma en circulo.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/clientes")
 public class ClientesApiControlador {
@@ -48,7 +36,6 @@ public class ClientesApiControlador {
         this.pedidos = pedidos;
     }
 
-    /** GET /api/clientes — listado con el total de pedidos de cada uno. */
     @GetMapping
     public RespuestaApi listar() {
         Map<Integer, Integer> pedidosPorCliente = pedidos.listarRecientes(0).stream()
@@ -63,7 +50,6 @@ public class ClientesApiControlador {
         return RespuestaApi.ok(clientes);
     }
 
-    /** PUT /api/clientes — activar o desactivar una cuenta. */
     @PutMapping
     public ResponseEntity<RespuestaApi> cambiarEstado(@RequestBody Map<String, Object> cuerpo) {
         int idCliente = PeticionUtil.entero(cuerpo, "id_cliente");
@@ -81,10 +67,6 @@ public class ClientesApiControlador {
                 personas.buscarCliente(idCliente).orElse(null), "Cliente actualizado"));
     }
 
-    /**
-     * POST /api/clientes/{id}/empleado — pasa un cliente a empleado (solo administrador).
-     * Conserva su correo y su contrasena; el cliente queda inactivo con su historial.
-     */
     @PostMapping("/{id}/empleado")
     public ResponseEntity<RespuestaApi> convertirEnEmpleado(@PathVariable int id,
                                                             @RequestBody Map<String, Object> cuerpo) {
@@ -100,7 +82,6 @@ public class ClientesApiControlador {
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(RespuestaApi.error(
                             "Ese cliente no existe o ya fue pasado a empleado")));
         } catch (DuplicateKeyException e) {
-            // La transaccion se deshace: el cliente sigue igual que antes.
             return ResponseEntity.badRequest().body(RespuestaApi.error(EmpleadosApiControlador.mensajeDuplicado(e)));
         }
     }

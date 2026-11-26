@@ -56,7 +56,6 @@ fun ErrorReintentar(mensaje: String, onReintentar: () -> Unit) {
     }
 }
 
-/** Pantalla para cuando la accion necesita una cuenta (pedidos, cuenta, checkout). */
 @Composable
 fun PedirSesion(texto: String, onLogin: () -> Unit, onRegistro: () -> Unit) {
     Column(
@@ -84,7 +83,6 @@ fun CampoTexto(
     secreto: Boolean = false,
     lineas: Int = 1,
 ) {
-    // En los campos de contraseña, el botón Mostrar/Ocultar deja ver lo que se escribe.
     var visible by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = valor,
@@ -105,7 +103,6 @@ fun CampoTexto(
     )
 }
 
-/** Foto del producto; si el servidor no tiene imagen, usa el emoji del producto. */
 @Composable
 fun ImagenProducto(producto: Producto, alto: Dp, tamanoEmoji: TextUnit) {
     val url = Servicios.urlImagen(producto.imagen)

@@ -1,6 +1,3 @@
-/* estilos.css — Importa todas las partes del proyecto
-   Orden importante: variables primero, responsive al final */
-
 @import url('partes/variables.css');
 @import url('partes/navbar.css');
 @import url('partes/botones.css');

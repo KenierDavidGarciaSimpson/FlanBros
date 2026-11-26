@@ -18,16 +18,6 @@ import com.example.demo.Modelo.Inventario;
 import com.example.demo.Modelo.Producto;
 import com.example.demo.Persistencia.ProductoRepositorio;
 
-/**
- * ProductoRepositorioJdbc — capa 2 (Persistencia), catalogo e inventario en PostgreSQL.
- *
- * <p>El stock vive solo en la tabla {@code inventario}; {@code Producto.stock} se lee de
- * ahi con un JOIN. El descuento de existencias es atomico:
- * {@code UPDATE ... WHERE cantidad_disponible >= ?}, asi dos compras simultaneas nunca
- * dejan el stock en negativo.</p>
- *
- * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
- */
 @Repository
 @Profile("!memoria")
 public class ProductoRepositorioJdbc implements ProductoRepositorio {
@@ -57,10 +47,6 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
     public ProductoRepositorioJdbc(JdbcTemplate plantilla) {
         this.jdbc = JdbcClient.create(plantilla);
     }
-
-    // ------------------------------------------------------------------
-    // Productos
-    // ------------------------------------------------------------------
 
     @Override
     public List<Producto> listarDisponibles() {
@@ -154,7 +140,6 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
         if (filas == 0) {
             return false;
         }
-        // El panel edita el stock desde el formulario del producto: se refleja en inventario.
         jdbc.sql("""
                 UPDATE inventario
                    SET cantidad_disponible = :cantidad, fecha_actualizacion = :ahora
@@ -173,10 +158,6 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
                 .param("id", idProducto)
                 .update() > 0;
     }
-
-    // ------------------------------------------------------------------
-    // Inventario
-    // ------------------------------------------------------------------
 
     @Override
     public List<Inventario> listarInventario() {
@@ -209,10 +190,6 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
         return buscarInventario(idProducto).map(Inventario::calcularEstado).orElse("critico");
     }
 
-    /**
-     * Descuento atomico: la condicion {@code cantidad_disponible >= :cantidad} va dentro del
-     * UPDATE, de modo que la comprobacion y la resta son una sola operacion de la base.
-     */
     @Override
     public boolean descontarInventario(int idProducto, int cantidad) {
         return jdbc.sql("""
@@ -227,11 +204,6 @@ public class ProductoRepositorioJdbc implements ProductoRepositorio {
                 .update() == 1;
     }
 
-    // ------------------------------------------------------------------
-    // Apoyo
-    // ------------------------------------------------------------------
-
-    /** Devuelve el id de la categoria; si no existe todavia, la crea. */
     private int idCategoria(String nombre) {
         String limpio = nombre == null || nombre.isBlank() ? "Otros" : nombre.trim();
         Optional<Integer> existente = jdbc.sql("SELECT id_categoria FROM categoria WHERE nombre = :nombre")

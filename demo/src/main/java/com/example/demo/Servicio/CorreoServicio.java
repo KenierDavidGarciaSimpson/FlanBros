@@ -14,25 +14,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-/**
- * CorreoServicio — envia los correos transaccionales de la aplicacion.
- *
- * <p>Se usa para la recuperacion de contrasena: el token generado por el backend
- * viaja UNICAMENTE al correo del usuario, nunca en la respuesta HTTP.</p>
- *
- * <p>Dos formas de enviar, en este orden:</p>
- * <ol>
- *   <li><b>API HTTP de Brevo</b> ({@code BREVO_API_KEY}). Es la que se usa en Render:
- *       el plan gratuito de Render bloquea los puertos SMTP (25, 465 y 587), pero no
- *       el 443 (HTTPS), que es por donde va esta API.</li>
- *   <li><b>SMTP</b> ({@code MAIL_USUARIO}, por ejemplo Gmail con contrasena de
- *       aplicacion). Sirve para correr el proyecto en un computador local.</li>
- * </ol>
- *
- * <p>Si no hay ninguna configurada, no se envia nada y se registra una advertencia;
- * el endpoint responde igual ("si el correo esta registrado, recibiras instrucciones")
- * para no revelar que cuentas existen.</p>
- */
 @Service
 public class CorreoServicio {
 
@@ -57,7 +38,6 @@ public class CorreoServicio {
         this.claveBrevo = claveBrevo;
     }
 
-    /** Envia el token de recuperacion al correo indicado. */
     public void enviarTokenRecuperacion(String destino, String token) {
         String asunto = "Recuperación de contraseña - FlanBross";
         String texto = "Hola,\n\n"
@@ -70,10 +50,6 @@ public class CorreoServicio {
         enviar(destino, asunto, texto);
     }
 
-    /**
-     * Envia un correo de texto plano. Devuelve true si el proveedor lo acepto.
-     * Lo usan la recuperacion de contrasena y la respuesta a los mensajes de contacto.
-     */
     public boolean enviar(String destino, String asunto, String texto) {
         if (tieneTexto(claveBrevo)) {
             return enviarConBrevo(destino, asunto, texto);
@@ -112,7 +88,6 @@ public class CorreoServicio {
             log.error("Brevo rechazo el correo a {}: HTTP {} {}", destino,
                     respuesta.statusCode(), respuesta.body());
         } catch (Exception e) {
-            // No se propaga: quien llama decide que decirle al usuario.
             log.error("No se pudo enviar el correo a {} (Brevo): {}", destino, e.getMessage());
         }
         return false;
@@ -139,7 +114,6 @@ public class CorreoServicio {
         return s != null && !s.isBlank();
     }
 
-    /** Convierte un texto en una cadena JSON con sus caracteres escapados. */
     private static String json(String s) {
         StringBuilder sb = new StringBuilder("\"");
         for (char c : s.toCharArray()) {

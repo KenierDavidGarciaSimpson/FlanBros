@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** CatalogoViewModel — productos disponibles (publico: no requiere sesion). */
 class CatalogoViewModel : ViewModel() {
 
     private val _estado = MutableStateFlow<Cargable<List<Producto>>>(Cargable.Cargando)

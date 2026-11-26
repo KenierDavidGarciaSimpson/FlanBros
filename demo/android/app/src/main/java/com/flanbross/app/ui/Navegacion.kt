@@ -53,7 +53,6 @@ private val pestanas = listOf(
     PestanaInferior(Rutas.CUENTA, "👤", "Cuenta"),
 )
 
-/** Raiz de la app: barra inferior + grafo de navegacion. Los ViewModels viven a nivel de Activity. */
 @Composable
 fun Raiz() {
     val sesionVm: SesionViewModel = viewModel()
@@ -65,7 +64,6 @@ fun Raiz() {
     val lineas by carritoVm.lineas.collectAsStateWithLifecycle()
     val usuario = (estadoSesion as? EstadoSesion.Activa)?.usuario
 
-    // El carrito es de cada cliente: si cierra sesion o entra otra cuenta, se vacia.
     var duenoCarrito by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(usuario?.correo) {
         val actual = usuario?.correo

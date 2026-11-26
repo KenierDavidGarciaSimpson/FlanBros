@@ -1,5 +1,3 @@
-// admin-dashboard.js — KPIs y resúmenes del panel principal
-
 function cargarDashboard() {
     fetch('/api/dashboard')
         .then(function(r) { return r.json(); })

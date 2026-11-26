@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** PedidosViewModel — historial de pedidos del cliente con sesion iniciada. */
 class PedidosViewModel : ViewModel() {
 
     private val _estado = MutableStateFlow<Cargable<List<Pedido>>>(Cargable.Cargando)

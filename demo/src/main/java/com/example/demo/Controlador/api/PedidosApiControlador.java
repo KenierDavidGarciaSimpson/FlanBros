@@ -27,23 +27,6 @@ import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 import com.example.demo.Seguridad.UsuarioActual;
 
-/**
- * PedidosApiControlador — capa 3 (Controlador), API de pedidos.
- *
- * <p>Sustituye a {@code backend/api/pedidos.php}. Tres usos:</p>
- * <ul>
- *   <li>{@code checkout.js} hace POST y solo lee {@code datos.numero_factura}.</li>
- *   <li>{@code cuenta.js} hace GET con {@code id_cliente} y pinta el historial
- *       ({@code total_pedido}, {@code estado_pedido}, {@code numero_factura}).</li>
- *   <li>{@code admin-pedidos.js} hace GET sin filtro y PUT para mover el estado.</li>
- * </ul>
- *
- * <p>El controlador NO calcula precios ni stock: valida la forma de la peticion y
- * delega. Toda la transaccion vive en la capa 2, para que no haya dos sitios donde
- * se pueda cobrar mal.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidosApiControlador {
@@ -61,15 +44,9 @@ public class PedidosApiControlador {
         this.cupones = cupones;
     }
 
-    /**
-     * GET /api/pedidos                     -> ultimos pedidos (panel)
-     * GET /api/pedidos?id_cliente=2        -> historial de un cliente (cuenta)
-     * GET /api/pedidos?id=5                -> un pedido con sus lineas
-     */
     @GetMapping
     public RespuestaApi listar(@RequestParam(required = false) Integer id,
                                @RequestParam(name = "id_cliente", required = false) Integer idCliente) {
-        // Un cliente solo ve SUS pedidos, sin importar que id mande el navegador.
         Optional<Integer> propio = UsuarioActual.clientePropio();
         if (propio.isPresent()) {
             int idPropio = propio.get();
@@ -92,10 +69,8 @@ public class PedidosApiControlador {
         return RespuestaApi.ok(pedidos.listarRecientes(0));
     }
 
-    /** POST /api/pedidos — confirma el carrito y emite la factura. */
     @PostMapping
     public ResponseEntity<RespuestaApi> crear(@RequestBody NuevoPedido solicitud) {
-        // El pedido se asigna al cliente de la sesion, no al id_cliente que mande el navegador.
         UsuarioActual.clientePropio().ifPresent(idPropio -> solicitud.id_cliente = idPropio);
         if (!solicitud.estaCompleto()) {
             return ResponseEntity.badRequest().body(RespuestaApi.error(
@@ -118,17 +93,10 @@ public class PedidosApiControlador {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(RespuestaApi.ok(datos, "Pedido creado correctamente"));
         } catch (StockInsuficienteException e) {
-            // 400 con la misma forma de respuesta: el toast del checkout muestra
-            // tal cual el texto de e.getMessage().
             return ResponseEntity.badRequest().body(RespuestaApi.error(e.getMessage()));
         }
     }
 
-    /**
-     * Reglas del pedido que no dependen de la base de datos. El stock y la
-     * existencia de cada producto los revisa el repositorio dentro de la transaccion.
-     * Si viene un cupon valido, deja el porcentaje listo en la solicitud.
-     */
     private String validar(NuevoPedido solicitud) {
         solicitud.direccion_entrega = solicitud.direccion_entrega.trim();
         if (solicitud.observaciones != null) {
@@ -169,7 +137,6 @@ public class PedidosApiControlador {
         return null;
     }
 
-    /** PUT /api/pedidos — mueve el estado y aplica los efectos en cascada. */
     @PutMapping
     public ResponseEntity<RespuestaApi> cambiarEstado(@RequestBody Map<String, Object> cuerpo) {
         int idPedido = PeticionUtil.entero(cuerpo, "id_pedido");
@@ -177,7 +144,6 @@ public class PedidosApiControlador {
         if (estado == null) {
             return ResponseEntity.badRequest().body(RespuestaApi.error("Falta el nuevo estado"));
         }
-        // El repartidor solo puede poner el pedido en camino (listo) o entregarlo.
         if (UsuarioActual.domiciliarioPropio().isPresent()
                 && !List.of("listo", "entregado").contains(estado)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)

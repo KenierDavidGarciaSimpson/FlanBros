@@ -1,20 +1,15 @@
-// utils.js — Funciones de apoyo usadas en todo el proyecto
-
 const API = '/api';
 
-// Precio colombiano: 42000 → "$42.000"
 function formatearPrecio(num) {
     return '$' + Math.round(num).toLocaleString('es-CO');
 }
 
-// Fecha ISO a texto: "2026-05-19" → "19 may. 2026"
 function formatearFecha(fechaStr) {
     if (!fechaStr) return '—';
     const f = new Date(fechaStr);
     return f.toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' });
 }
 
-// Estado del pedido a texto en español
 function etiquetaEstado(estado) {
     const map = {
         'pendiente':      'Pendiente',
@@ -26,7 +21,6 @@ function etiquetaEstado(estado) {
     return map[estado] || estado;
 }
 
-// "Torta Tres Leches" → "torta-tres-leches"
 function slugificar(texto) {
     return texto.toLowerCase()
         .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ñ/g,'n')
@@ -34,7 +28,6 @@ function slugificar(texto) {
         .trim().replace(/\s+/g,'-');
 }
 
-// Toast flotante — tipo puede ser 'error' o vacío (verde)
 function mostrarToast(mensaje, tipo) {
     const toast = document.createElement('div');
     const color = tipo === 'error' ? '#c0392b' : '#2d7a5f';

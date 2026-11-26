@@ -47,7 +47,6 @@ import com.flanbross.app.data.Servicios
 import com.flanbross.app.data.Usuario
 import kotlinx.coroutines.launch
 
-/** Carrito: lineas con cantidad, resumen de cobro y paso al checkout. */
 @Composable
 fun PantallaCarrito(
     carrito: CarritoViewModel,
@@ -111,7 +110,6 @@ fun PantallaCarrito(
                 }
             }
         }
-        // Cupon de descuento
         Column(Modifier.padding(horizontal = 16.dp)) {
             val actual = cupon
             if (actual != null) {
@@ -154,7 +152,6 @@ fun PantallaCarrito(
     }
 }
 
-/** Resumen con las mismas reglas del servidor: IVA 8 %; el domicilio se registra aparte. */
 @Composable
 private fun ResumenCobro(subtotal: Long, porcentaje: Int) {
     val descuento = Cobro.descuento(subtotal, porcentaje)
@@ -186,7 +183,6 @@ private val metodosDePago = listOf(
     "billetera_digital" to "Billetera digital",
 )
 
-/** Checkout: direccion, observaciones y metodo de pago; crea el pedido en el servidor. */
 @Composable
 fun PantallaCheckout(
     usuario: Usuario?,
@@ -255,7 +251,6 @@ fun PantallaCheckout(
                 )
                 if (error == null) alcance.launch {
                     enviando = true
-                    // Antes de enviar, confirmar precios y stock con el servidor.
                     val catalogo = Servicios.repositorio.productos()
                     if (catalogo is Res.Ok) {
                         val avisos = carrito.sincronizar(catalogo.dato)
@@ -286,7 +281,6 @@ fun PantallaCheckout(
     }
 }
 
-/** Pantalla final: confirma el pedido recien creado. */
 @Composable
 fun PantallaExito(carrito: CarritoViewModel, onVerPedidos: () -> Unit, onSeguirComprando: () -> Unit) {
     val pedido by carrito.ultimoPedido.collectAsStateWithLifecycle()

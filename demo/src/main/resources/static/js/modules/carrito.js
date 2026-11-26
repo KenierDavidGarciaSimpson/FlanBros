@@ -1,20 +1,6 @@
-// carrito.js — Lógica del carrito de compras
-//
-// Reglas:
-//  - Solo un cliente con sesión iniciada puede tener carrito.
-//  - Cada usuario tiene su propio carrito en este navegador (la clave incluye su id).
-//  - Los datos del producto (precio, stock) siempre salen de la API, nunca de listas
-//    escritas a mano en las páginas.
-//  - Nunca se deja agregar más unidades de las disponibles.
-//  - Los totales se calculan igual que el servidor: subtotal − cupón + IVA 8 %.
-//    El domicilio ($7.000) se paga al recibir y no hace parte de la factura.
-
 var TASA_IVA        = 0.08;
 var COSTO_DOMICILIO = 7000;
 
-// ---------------------------------------------------------------
-// Almacenamiento (un carrito por usuario)
-// ---------------------------------------------------------------
 function claveCarrito() {
     var u = obtenerSesion();
     return u ? 'fb_carrito_' + (u.id_usuario || u.id_entidad || u.correo) : null;
@@ -40,16 +26,12 @@ function cantidadEnCarrito(idProducto) {
     return item ? item.cantidad : 0;
 }
 
-// Escapa texto antes de meterlo en HTML.
 function escaparHTML(texto) {
     return String(texto == null ? '' : texto)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// ---------------------------------------------------------------
-// Productos desde la API (con caché en la página)
-// ---------------------------------------------------------------
 var _promesaProductos = null;
 
 function obtenerProductos(forzar) {
@@ -83,7 +65,6 @@ function estaDisponible(p) {
     return p && p.stock > 0 && (p.estado_producto || 'disponible') === 'disponible';
 }
 
-// Si no hay sesión, guarda a dónde volver y manda al login.
 function exigirSesionParaComprar() {
     var u = obtenerSesion();
     if (u && u.nombre_rol && u.nombre_rol !== 'cliente') {
@@ -91,17 +72,12 @@ function exigirSesionParaComprar() {
         return false;
     }
     if (u) return true;
-    try { sessionStorage.setItem('fb_volver', window.location.pathname + window.location.search); } catch (e) { /* sin storage */ }
+    try { sessionStorage.setItem('fb_volver', window.location.pathname + window.location.search); } catch (e) {  }
     mostrarToast('Inicia sesión para agregar productos al carrito', 'error');
     setTimeout(function () { window.location.href = '/login.html'; }, 900);
     return false;
 }
 
-// ---------------------------------------------------------------
-// Agregar al carrito
-// ---------------------------------------------------------------
-
-// Botón "+" de las tarjetas: recibe el id (o un objeto con id) y abre el modal.
 function agregarAlCarrito(productoOId) {
     if (!exigirSesionParaComprar()) return;
     var id = idDe(productoOId);
@@ -120,7 +96,6 @@ function agregarAlCarrito(productoOId) {
         .catch(function () { mostrarToast('No se pudo conectar con el servidor', 'error'); });
 }
 
-// Agrega una cantidad exacta (página de detalle). Devuelve true si se agregó.
 function agregarCantidadAlCarrito(p, cant) {
     if (!exigirSesionParaComprar()) return false;
     cant = parseInt(cant, 10) || 0;
@@ -160,9 +135,6 @@ function agregarCantidadAlCarrito(p, cant) {
     return true;
 }
 
-// ---------------------------------------------------------------
-// Modal de cantidad
-// ---------------------------------------------------------------
 var _productoModal = null;
 var _modalTimeout  = null;
 
@@ -274,9 +246,6 @@ function cerrarModalCantidad() {
     _productoModal = null;
 }
 
-// ---------------------------------------------------------------
-// Edición del carrito
-// ---------------------------------------------------------------
 function cambiarCantidad(idProducto, nuevaCantidad) {
     if (nuevaCantidad <= 0) { eliminarDelCarrito(idProducto); return; }
     var carrito = obtenerCarrito();
@@ -301,13 +270,12 @@ function eliminarDelCarrito(idProducto) {
 
 function vaciarCarrito() {
     guardarCarrito([]);
-    try { localStorage.removeItem('fb_cupon'); localStorage.removeItem('fb_cupon_data'); } catch (e) { /* sin storage */ }
+    try { localStorage.removeItem('fb_cupon'); localStorage.removeItem('fb_cupon_data'); } catch (e) {  }
     if (typeof quitarCupon === 'function') quitarCupon(true);
     renderizarCarrito();
     actualizarBadgeCarrito();
 }
 
-// Pone al día precios y stock con la API; quita lo que ya no se puede comprar.
 function sincronizarCarrito() {
     var carrito = obtenerCarrito();
     if (carrito.length === 0) return Promise.resolve(false);
@@ -332,9 +300,6 @@ function sincronizarCarrito() {
     }).catch(function () { return false; });
 }
 
-// ---------------------------------------------------------------
-// Totales (misma fórmula que el servidor)
-// ---------------------------------------------------------------
 function calcularSubtotal() {
     return obtenerCarrito().reduce(function (acc, i) { return acc + i.precio * i.cantidad; }, 0);
 }
@@ -355,9 +320,6 @@ function actualizarBadgeCarrito() {
     });
 }
 
-// ---------------------------------------------------------------
-// Página carrito.html
-// ---------------------------------------------------------------
 function renderizarCarrito() {
     var contenedor = document.getElementById('lista-carrito');
     if (!contenedor) return;
@@ -410,7 +372,6 @@ function actualizarResumenCarrito() {
     poner('resumen-total',     formatearPrecio(t.total));
 }
 
-// Botón "Ir al pago": revisa sesión, carrito vacío y stock antes de pasar.
 function irAlPago(evento) {
     if (evento) evento.preventDefault();
     if (!exigirSesionParaComprar()) return;

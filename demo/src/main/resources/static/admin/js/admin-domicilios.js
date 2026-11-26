@@ -1,5 +1,3 @@
-// admin-domicilios.js — Tabla de domicilios y asignación de repartidores
-
 function cargarDomiciliosAdmin() {
     fetch('/api/domicilios')
         .then(function(r) { return r.json(); })

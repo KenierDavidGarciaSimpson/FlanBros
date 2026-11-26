@@ -19,21 +19,6 @@ import com.example.demo.Modelo.Domicilio;
 import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Seguridad.UsuarioActual;
 
-/**
- * DomiciliosApiControlador — capa 3 (Controlador), API de envios.
- *
- * <p>Sustituye a {@code backend/api/domicilios.php}. Dos vistas:</p>
- * <ul>
- *   <li>El panel ve todos los envios con cliente, factura y repartidor.</li>
- *   <li>El domiciliario ({@code domiciliario.html}) ve solo los suyos: pendientes y
- *       en camino, filtrados por {@code id_domiciliario}.</li>
- * </ul>
- *
- * <p>Al asignar un repartidor el {@code id_domiciliario} puede llegar en null (para
- * liberar el envio); por eso se lee con {@link PeticionUtil#enteroOpcional}.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/domicilios")
 public class DomiciliosApiControlador {
@@ -46,13 +31,8 @@ public class DomiciliosApiControlador {
         this.pedidos = pedidos;
     }
 
-    /**
-     * GET /api/domicilios                        -> todos (panel)
-     * GET /api/domicilios?id_domiciliario=4      -> los de un repartidor
-     */
     @GetMapping
     public RespuestaApi listar(@RequestParam(name = "id_domiciliario", required = false) Integer idDomiciliario) {
-        // Un repartidor solo ve SUS entregas.
         Optional<Integer> propio = UsuarioActual.domiciliarioPropio();
         if (propio.isPresent()) {
             return RespuestaApi.ok(pedidos.listarDomiciliosPorDomiciliario(propio.get()));
@@ -63,12 +43,6 @@ public class DomiciliosApiControlador {
         return RespuestaApi.ok(pedidos.listarDomicilios());
     }
 
-    /**
-     * PUT /api/domicilios — {id_domicilio, estado_entrega, id_domiciliario}.
-     *
-     * <p>{@code domiciliario.js} no conoce el id del domicilio cuando el pedido todavia
-     * esta "listo": manda {@code id_pedido} y el backend resuelve cual es su envio.</p>
-     */
     @PutMapping
     public ResponseEntity<RespuestaApi> actualizar(@RequestBody Map<String, Object> cuerpo) {
         String estado = PeticionUtil.texto(cuerpo, "estado_entrega", PeticionUtil.texto(cuerpo, "estado"));
@@ -95,7 +69,6 @@ public class DomiciliosApiControlador {
             }
         }
 
-        // Un repartidor no puede tocar entregas de otro ni asignarlas a otra persona.
         Optional<Integer> propio = UsuarioActual.domiciliarioPropio();
         if (propio.isPresent()) {
             final int objetivo = idDomicilio;

@@ -1,5 +1,3 @@
-// admin-pagos.js — Tabla de pagos registrados
-
 function cargarPagosAdmin() {
     fetch('/api/pagos')
         .then(function(r) { return r.json(); })

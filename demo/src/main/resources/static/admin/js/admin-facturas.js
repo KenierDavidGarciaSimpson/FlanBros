@@ -1,5 +1,3 @@
-// admin-facturas.js — Tabla de facturas emitidas
-
 function cargarFacturasAdmin() {
     fetch('/api/facturas')
         .then(function(r) { return r.json(); })

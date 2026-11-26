@@ -40,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flanbross.app.data.Producto
 import com.flanbross.app.data.Usuario
 
-/** Catalogo: filtro por categoria y cuadricula de productos. No requiere sesion. */
 @Composable
 fun PantallaCatalogo(vm: CatalogoViewModel, onProducto: (Int) -> Unit) {
     val estado by vm.estado.collectAsStateWithLifecycle()
@@ -111,7 +110,6 @@ private fun TarjetaProducto(producto: Producto, onClick: () -> Unit) {
     }
 }
 
-/** Detalle de un producto, con selector de cantidad y boton para agregarlo al carrito. */
 @Composable
 fun PantallaProducto(
     id: Int,
@@ -154,7 +152,6 @@ fun PantallaProducto(
 
             if (producto.stock > 0 && producto.estado == "disponible") {
                 if (usuario == null) {
-                    // El carrito es solo para clientes con sesion iniciada.
                     Text("Inicia sesión para agregar productos al carrito.", style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(8.dp))
                     Button(onClick = onLogin, modifier = Modifier.fillMaxWidth()) { Text("Iniciar sesión") }

@@ -1,5 +1,3 @@
-// nav.js — Estado del nav según sesión activa
-
 function actualizarNav() {
     const usuario  = obtenerSesion();
     const btnLogin = document.getElementById('btn-nav-login');
@@ -18,7 +16,6 @@ function actualizarNav() {
         if (nomNav)   nomNav.textContent = '';
     }
 
-    // Empleados y administradores pueden saltar a su panel desde la tienda.
     if (btnPanel) {
         if (usuario && rolesPanel.includes(usuario.nombre_rol)) {
             btnPanel.href = usuario.nombre_rol === 'domiciliario'
@@ -31,7 +28,6 @@ function actualizarNav() {
     }
 }
 
-// "Ordenar" solo entra al catálogo con sesión activa; si no, manda al login.
 function irAOrdenar(evento) {
     if (evento) evento.preventDefault();
     window.location.href = obtenerSesion() ? '/catalogo.html' : '/login.html';

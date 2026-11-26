@@ -13,28 +13,6 @@ import com.example.demo.Modelo.Inventario;
 import com.example.demo.Modelo.Producto;
 import com.example.demo.Persistencia.ProductoRepositorio;
 
-/**
- * ProductoRepositorioMemoria — capa 2 (Persistencia), implementacion en memoria.
- *
- * <p>Carga {@code datos/productos.json} y {@code datos/inventario.json} una sola vez
- * al arrancar y desde ahi trabaja con listas en memoria (los cambios se pierden al
- * reiniciar). Es el sustituto de PostgreSQL mientras no hay base de datos.</p>
- *
- * <p>Dos detalles que se conservan del comportamiento original:</p>
- * <ul>
- *   <li>El stock se escribe en los dos sitios ({@code Producto.stock} e
- *       {@code Inventario.cantidad_disponible}), como hacia {@code inventario.php}.</li>
- *   <li>Borrar un producto es desactivarlo, nunca quitarlo: los pedidos viejos lo
- *       siguen nombrando.</li>
- * </ul>
- *
- * <p>Correccion respecto al PHP: al crear un producto tambien se crea su fila de
- * inventario. Antes el INSERT solo tocaba {@code Producto} y luego el checkout
- * rechazaba ese producto con "Stock insuficiente" porque no encontraba su fila en
- * {@code Inventario}.</p>
- *
- * <p>Capa: Persistencia. Implementa {@link ProductoRepositorio}.</p>
- */
 @Profile("memoria")
 @Repository
 public class ProductoRepositorioMemoria implements ProductoRepositorio {
@@ -106,7 +84,6 @@ public class ProductoRepositorioMemoria implements ProductoRepositorio {
         }
         productos.add(producto);
 
-        // Sin esta fila el producto se podria vender pero el checkout lo rechazaria.
         Inventario fila = new Inventario();
         fila.id_inventario = siguienteInventarioId++;
         fila.id_producto = producto.id_producto;
@@ -139,7 +116,6 @@ public class ProductoRepositorioMemoria implements ProductoRepositorio {
             producto.estado_producto = cambios.estado_producto;
         }
 
-        // El stock se mantiene sincronizado con el inventario, como en el PHP.
         buscarInventario(cambios.id_producto).ifPresent(fila -> {
             fila.cantidad_disponible = Math.max(producto.stock, 0);
             fila.estado_inventario = fila.calcularEstado();
@@ -157,10 +133,6 @@ public class ProductoRepositorioMemoria implements ProductoRepositorio {
                 })
                 .orElse(false);
     }
-
-    // ------------------------------------------------------------------
-    // Inventario
-    // ------------------------------------------------------------------
 
     @Override
     public synchronized List<Inventario> listarInventario() {
@@ -212,11 +184,6 @@ public class ProductoRepositorioMemoria implements ProductoRepositorio {
         return true;
     }
 
-    // ------------------------------------------------------------------
-    // Apoyo
-    // ------------------------------------------------------------------
-
-    /** Rellena los campos que en SQL traia el JOIN con Producto. */
     private void completarConProducto(Inventario fila) {
         productos.stream()
                 .filter(producto -> producto.id_producto == fila.id_producto)

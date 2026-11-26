@@ -1,5 +1,3 @@
-// domiciliario.js — Panel del repartidor
-
 var _u = obtenerSesion();
 if (!_u || _u.nombre_rol !== 'domiciliario') {
     window.location.href = '../login.html';
@@ -13,18 +11,14 @@ if (_elAva && _u) _elAva.textContent = ((_u.nombre || '')[0] + (_u.apellido || '
 cargarDomicilios();
 
 function cargarDomicilios() {
-    // Usamos el endpoint de domicilios filtrado por domiciliario
-    // También traemos todos los pedidos 'listo' para ver cuáles puede tomar
     fetch('/api/pedidos')
         .then(function(r) { return r.json(); })
         .then(function(resp) {
             if (!resp.exito) return;
-            // Pedidos 'listo' (disponibles para salir) o cuyo domiciliario es este usuario
             var pedidos = resp.datos.filter(function(p) {
                 return p.estado_pedido === 'listo' || p.estado_pedido === 'en_preparacion';
             });
 
-            // También buscar si hay domicilios 'en_camino' asignados a este usuario
             fetch('/api/domicilios?id_domiciliario=' + _u.id_entidad)
                 .then(function(r2) { return r2.json(); })
                 .then(function(resp2) {
@@ -52,7 +46,6 @@ function renderizarDomicilios(pedidosListos, domEnCamino) {
 
     var html = '';
 
-    // Domicilios en camino (asignados a este domiciliario)
     domEnCamino.forEach(function(d) {
         html += '<div class="domicilio-card" id="dom-card-d' + d.id_domicilio + '">'
             + '<div class="domicilio-card-header">'
@@ -68,7 +61,6 @@ function renderizarDomicilios(pedidosListos, domEnCamino) {
             + '</div>';
     });
 
-    // Pedidos listos para salir
     pedidosListos.forEach(function(p) {
         html += '<div class="domicilio-card" id="dom-card-' + p.id_pedido + '">'
             + '<div class="domicilio-card-header">'
@@ -93,16 +85,11 @@ function actualizarStatsDOM(pedidosListos, domEnCamino) {
     if (elCamin) elCamin.textContent = domEnCamino.length;
 }
 
-// El domiciliario toma un pedido listo: actualiza estado del pedido
-// El estado 'listo' → el admin lo cambia a 'entregado'; el domiciliario
-// actualiza el estado del Domicilio directamente
 function tomarDomicilio(idPedido) {
-    // Actualizar el domicilio a en_camino y asignar a este domiciliario
     fetch('/api/domicilios', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            // Buscamos el domicilio por id_pedido — necesitamos obtenerlo primero
             id_pedido: idPedido,
             estado_entrega: 'en_camino',
             id_domiciliario: _u.id_entidad
@@ -110,7 +97,6 @@ function tomarDomicilio(idPedido) {
     })
     .then(function(r) { return r.json(); })
     .then(function(resp) {
-        // Actualizar también el estado del pedido
         return fetch('/api/pedidos', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

@@ -32,16 +32,6 @@ import com.example.demo.Persistencia.PedidoRepositorio;
 import com.example.demo.Persistencia.ProductoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 
-/**
- * PedidoRepositorioJdbc — capa 2 (Persistencia), pedidos, facturas, pagos y domicilios en PostgreSQL.
- *
- * <p>Conserva las reglas del repositorio en memoria (IVA 8 %, domicilio $7.000, factura
- * {@code FAC-AAAA-000N}, cascada al cambiar el estado del pedido) pero ahora cada operacion
- * que toca varias tablas corre en <b>una sola transaccion</b>: si falta stock en la tercera
- * linea, el pedido, la factura, el pago y el domicilio no se guardan.</p>
- *
- * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
- */
 @Repository
 @Profile("!memoria")
 public class PedidoRepositorioJdbc implements PedidoRepositorio {
@@ -109,14 +99,9 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
         this.productos = productos;
     }
 
-    // ------------------------------------------------------------------
-    // Crear pedido (una sola transaccion)
-    // ------------------------------------------------------------------
-
     @Override
     @Transactional
     public Pedido crear(NuevoPedido solicitud) {
-        // ---- 1. Validar TODAS las lineas antes de escribir nada -------------
         List<Producto> productosPedidos = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
         for (ItemPedido item : solicitud.items) {
@@ -136,11 +121,9 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 throw StockInsuficienteException.para(item.id_producto, disponible, item.cantidad);
             }
             productosPedidos.add(producto);
-            // El precio bueno es el del producto, no el que manda el navegador.
             total = total.add(producto.precio.multiply(BigDecimal.valueOf(item.cantidad)));
         }
 
-        // ---- 1b. Cupon (el controlador ya lo valido contra la tabla cupon) ---
         String observaciones = solicitud.observaciones;
         if (solicitud.descuento_pct > 0) {
             BigDecimal descuento = total.multiply(BigDecimal.valueOf(solicitud.descuento_pct))
@@ -151,7 +134,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
             observaciones = observaciones == null ? nota : observaciones + " | " + nota;
         }
 
-        // ---- 2. Cabecera del pedido ----------------------------------------
         LocalDateTime ahora = LocalDateTime.now();
         KeyHolder llavePedido = new GeneratedKeyHolder();
         jdbc.sql("""
@@ -165,7 +147,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .update(llavePedido, "id_pedido");
         int idPedido = llavePedido.getKey().intValue();
 
-        // ---- 3. Lineas y descuento atomico de inventario ---------------------
         for (int i = 0; i < solicitud.items.size(); i++) {
             ItemPedido item = solicitud.items.get(i);
             Producto producto = productosPedidos.get(i);
@@ -180,13 +161,11 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                     .param("subtotal", producto.precio.multiply(BigDecimal.valueOf(item.cantidad)))
                     .update();
             if (!productos.descontarInventario(producto.id_producto, item.cantidad)) {
-                // RuntimeException: Spring deshace toda la transaccion (pedido, lineas y descuentos).
                 throw StockInsuficienteException.para(producto.id_producto,
                         disponibleDe(producto.id_producto, producto), item.cantidad);
             }
         }
 
-        // ---- 4. Factura (subtotal + IVA) -------------------------------------
         BigDecimal impuestos = total.multiply(TASA_IVA).setScale(0, RoundingMode.HALF_UP);
         BigDecimal totalFactura = total.add(impuestos);
         KeyHolder llaveFactura = new GeneratedKeyHolder();
@@ -205,7 +184,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .update(llaveFactura, "id_factura");
         int idFactura = llaveFactura.getKey().intValue();
 
-        // ---- 5. Pago pendiente -----------------------------------------------
         String metodo = METODOS_PAGO.contains(solicitud.metodo_pago) ? solicitud.metodo_pago : "contraentrega";
         jdbc.sql("""
                 INSERT INTO pago (fecha_pago, monto_pago, metodo_pago, estado_pago, id_factura)
@@ -217,7 +195,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .param("factura", idFactura)
                 .update();
 
-        // ---- 6. Domicilio ----------------------------------------------------
         jdbc.sql("""
                 INSERT INTO domicilio (direccion_entrega, estado_entrega, costo_domicilio, id_pedido)
                 VALUES (:direccion, 'pendiente', :costo, :pedido)
@@ -227,13 +204,8 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .param("pedido", idPedido)
                 .update();
 
-        // ---- 7. Devolver el pedido con su factura ----------------------------
         return buscarPorId(idPedido).orElseThrow();
     }
-
-    // ------------------------------------------------------------------
-    // Cambio de estado (cascada en una sola transaccion)
-    // ------------------------------------------------------------------
 
     @Override
     @Transactional
@@ -249,7 +221,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
         if (filas == 0) {
             return false;
         }
-        // Efectos en cascada, exactamente como los hacia pedidos.php.
         switch (nuevoEstado) {
             case "listo" -> cambiarEstadoDomicilioDe(idPedido, "en_camino");
             case "entregado" -> {
@@ -266,7 +237,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
             }
             case "cancelado" -> cambiarEstadoDomicilioDe(idPedido, "fallido");
             default -> {
-                // pendiente y en_preparacion no mueven nada mas.
             }
         }
         return true;
@@ -282,19 +252,13 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
         }
     }
 
-    /** Sella la hora de entrega solo si todavia no la tenia. */
     private void marcarFechaEntrega(String columnaClave, int valor) {
-        // columnaClave es una constante interna ("id_pedido" o "id_domicilio"), nunca entrada del usuario.
         jdbc.sql("UPDATE domicilio SET fecha_entrega = :ahora WHERE " + columnaClave
                         + " = :id AND fecha_entrega IS NULL")
                 .param("ahora", LocalDateTime.now())
                 .param("id", valor)
                 .update();
     }
-
-    // ------------------------------------------------------------------
-    // Pedidos
-    // ------------------------------------------------------------------
 
     @Override
     public List<Pedido> listarRecientes(int limite) {
@@ -334,10 +298,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .query(PedidoRepositorioJdbc::detalle).list();
     }
 
-    // ------------------------------------------------------------------
-    // Facturas y pagos
-    // ------------------------------------------------------------------
-
     @Override
     public List<Factura> listarFacturas() {
         return jdbc.sql(SELECT_FACTURA + " ORDER BY f.fecha_factura DESC, f.id_factura DESC")
@@ -368,10 +328,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
                 .param("id", idPago)
                 .update() > 0;
     }
-
-    // ------------------------------------------------------------------
-    // Domicilios
-    // ------------------------------------------------------------------
 
     @Override
     public List<Domicilio> listarDomicilios() {
@@ -424,10 +380,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
         return true;
     }
 
-    // ------------------------------------------------------------------
-    // Apoyo
-    // ------------------------------------------------------------------
-
     private int disponibleDe(int idProducto, Producto producto) {
         return productos.buscarInventario(idProducto)
                 .map(fila -> fila.cantidad_disponible)
@@ -438,7 +390,6 @@ public class PedidoRepositorioJdbc implements PedidoRepositorio {
         return "FAC-" + Year.now().getValue() + "-" + String.format("%04d", idPedido);
     }
 
-    /** Una sola consulta trae las lineas de todos los pedidos listados (evita N+1). */
     private List<Pedido> conDetalles(List<Pedido> lista) {
         if (lista.isEmpty()) {
             return lista;

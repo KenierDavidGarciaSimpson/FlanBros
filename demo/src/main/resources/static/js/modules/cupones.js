@@ -1,7 +1,3 @@
-// cupones.js — Cupones de descuento.
-// El navegador solo muestra el descuento: el servidor vuelve a validar el código
-// al crear el pedido (codigo_cupon) y es él quien lo aplica a la factura.
-
 var _cuponAplicado = null;
 
 function claveCupon() {

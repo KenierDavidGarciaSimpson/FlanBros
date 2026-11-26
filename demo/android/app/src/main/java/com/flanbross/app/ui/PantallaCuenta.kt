@@ -55,10 +55,6 @@ fun PantallaCuenta(
     }
 }
 
-/**
- * Formulario de contacto. Requiere sesion: el servidor toma nombre, correo y telefono
- * de la cuenta, asi que aqui solo se escribe el mensaje (igual que en la web).
- */
 @Composable
 fun PantallaContacto(usuario: Usuario?, onVolver: () -> Unit) {
     var mensaje by rememberSaveable { mutableStateOf("") }

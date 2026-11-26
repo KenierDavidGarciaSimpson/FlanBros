@@ -1,5 +1,3 @@
-// admin-empleados.js — Listado, creación y desactivación de empleados
-
 function cargarEmpleadosAdmin() {
     fetch('/api/empleados')
         .then(function(r) { return r.json(); })
@@ -22,7 +20,6 @@ function cargarEmpleadosAdmin() {
         });
 }
 
-// Abre el modal (null = nuevo empleado, objeto = editar)
 function abrirModalEmpleado(e) {
     var m = document.getElementById('modal-empleado');
     if (!m) return;
@@ -35,10 +32,8 @@ function abrirModalEmpleado(e) {
     document.getElementById('me-salario').value     = e ? e.salario       : '';
     document.getElementById('me-fecha').value       = e ? (e.fecha_contratacion||'') : '';
     document.getElementById('me-rol').value         = e ? e.id_rol        : '2';
-    // La contraseña inicial solo se pide al crear; al editar no se toca.
     document.getElementById('me-contrasena').value  = '';
     document.getElementById('me-grupo-contrasena').style.display = e ? 'none' : 'block';
-    // El correo es su usuario para entrar: no se cambia al editar.
     document.getElementById('me-correo').readOnly = !!e;
     document.getElementById('me-correo').style.opacity = e ? '0.6' : '1';
     m.style.display = 'flex';

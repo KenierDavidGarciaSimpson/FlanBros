@@ -1,5 +1,3 @@
-// admin-clientes.js — Listado y activación/desactivación de clientes
-
 var clientesAdmin = [];
 
 function cargarClientesAdmin() {
@@ -41,7 +39,6 @@ function toggleCliente(id, est) {
     });
 }
 
-// ---- Pasar un cliente a empleado ----
 function abrirConvertir(id) {
     var c = clientesAdmin.find(function(x) { return x.id_cliente === id; });
     if (!c) return;

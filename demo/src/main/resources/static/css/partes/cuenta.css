@@ -1,5 +1,3 @@
-/* cuenta.css — Dashboard del cliente y historial de pedidos */
-
 .cliente-dashboard {
   padding: 100px 48px 60px;
 }
@@ -73,7 +71,6 @@
   font-weight: 700;
 }
 
-/* Badges de estado */
 .estado-badge {
   display: inline-block;
   padding: 3px 10px;

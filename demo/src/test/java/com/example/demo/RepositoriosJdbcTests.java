@@ -30,18 +30,6 @@ import com.example.demo.Persistencia.PersonaRepositorio;
 import com.example.demo.Persistencia.ProductoRepositorio;
 import com.example.demo.Persistencia.StockInsuficienteException;
 
-/**
- * Pruebas de los repositorios JDBC contra PostgreSQL REAL (no mocks): transacciones, restricciones
- * de la base, BCrypt y tokens de recuperacion.
- *
- * <p>Usan una base aparte, {@code flanbross_test}, que crea docker/init al levantar el contenedor la primera vez (si ya tenias el contenedor: {@code docker compose down -v} y volver a subirlo). Antes de cada prueba se hace
- * {@code flyway.clean()} + {@code migrate()}, asi que cada una parte de los datos demo y no
- * depende de las demas. Si no hay PostgreSQL en localhost:5432 (por ejemplo {@code docker compose up -d}),
- * toda la clase se OMITE en lugar de fallar.</p>
- *
- * <p>Credenciales por defecto: flanbross/flanbross (las del docker-compose). Se cambian con las variables
- * DB_TEST_URL, DB_TEST_USUARIO y DB_TEST_CLAVE.</p>
- */
 @SpringBootTest(properties = {
         "spring.datasource.url=${DB_TEST_URL:jdbc:postgresql://localhost:5432/flanbross_test}",
         "spring.datasource.username=${DB_TEST_USUARIO:flanbross}",
@@ -76,8 +64,6 @@ class RepositoriosJdbcTests {
         flyway.migrate();
     }
 
-    // ---------------- Utilidades ----------------
-
     private int stock(int idProducto) {
         return jdbc.queryForObject(
                 "SELECT cantidad_disponible FROM inventario WHERE id_producto = ?", Integer.class, idProducto);
@@ -103,12 +89,10 @@ class RepositoriosJdbcTests {
         return nuevo;
     }
 
-    // ---------------- Pedidos ----------------
-
     @Test
     void crearPedidoDescuentaStockYEmiteFacturaPagoYDomicilio() {
-        int stockAntes = stock(3); // brownie, $8.500
-        Pedido pedido = pedidos.crear(solicitud(1, linea(3, 2), linea(10, 1))); // 2 x 8.500 + 1 x 19.000
+        int stockAntes = stock(3);
+        Pedido pedido = pedidos.crear(solicitud(1, linea(3, 2), linea(10, 1)));
 
         assertEquals(0, new BigDecimal("36000").compareTo(pedido.total_pedido));
         assertEquals(0, new BigDecimal("38880").compareTo(pedido.total_factura), "IVA 8 %: 36.000 + 2.880");
@@ -125,8 +109,6 @@ class RepositoriosJdbcTests {
 
     @Test
     void siFallaUnaLineaNoQuedaNadaAMedias() {
-        // El producto 5 tiene 3 unidades. Cada linea (2) pasa la validacion por separado, pero la
-        // segunda resta ya no alcanza: el descuento atomico falla DESPUES de escribir pedido y lineas.
         int pedidosAntes = contar("pedido");
         int detallesAntes = contar("detalle_pedido");
         int facturasAntes = contar("factura");
@@ -175,8 +157,6 @@ class RepositoriosJdbcTests {
                 "SELECT estado_entrega FROM domicilio WHERE id_pedido = ?", String.class, pedido.id_pedido));
     }
 
-    // ---------------- Inventario y catalogo ----------------
-
     @Test
     void elDescuentoDeInventarioNuncaDejaStockNegativo() {
         assertFalse(productos.descontarInventario(5, 99));
@@ -203,8 +183,6 @@ class RepositoriosJdbcTests {
         assertEquals(7, productos.buscarInventario(creado.id_producto).orElseThrow().cantidad_disponible);
         assertEquals("Categoria Nueva", productos.buscarPorId(creado.id_producto).orElseThrow().categoria);
     }
-
-    // ---------------- Cuentas ----------------
 
     @Test
     void loginUsaBcryptYBloqueaCuentasInactivas() {
@@ -251,8 +229,6 @@ class RepositoriosJdbcTests {
         assertTrue(personas.autenticar("laura@demo.com", "demo1234").isEmpty());
         assertTrue(personas.solicitarToken("noexiste@demo.com").isEmpty());
     }
-
-    // ---------------- Restricciones de la base ----------------
 
     @Test
     void laBaseRechazaDatosInvalidosAunqueFalleLaAplicacion() {

@@ -36,13 +36,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.example.demo.Modelo.dto.SesionUsuario;
 
-/**
- * Pruebas de seguridad: quien puede entrar a que.
- *
- * <p>Corren con el perfil {@code memoria} (datos de resources/datos), asi que no necesitan base de datos.
- * Cubren la matriz de roles, el token CSRF, las redirecciones al login, el limite de intentos de
- * login y que un cliente no pueda ver datos de otro.</p>
- */
 @SpringBootTest
 @ActiveProfiles("memoria")
 class SeguridadApiTests {
@@ -57,7 +50,6 @@ class SeguridadApiTests {
         mvc = MockMvcBuilders.webAppContextSetup(contexto).apply(springSecurity()).build();
     }
 
-    /** Simula una sesion ya iniciada con el rol e id de entidad indicados. */
     private static RequestPostProcessor como(String rol, int idEntidad) {
         SesionUsuario sesion = new SesionUsuario();
         sesion.id_usuario = 900 + idEntidad;
@@ -67,8 +59,6 @@ class SeguridadApiTests {
         return authentication(UsernamePasswordAuthenticationToken.authenticated(sesion, null,
                 List.of(new SimpleGrantedAuthority("ROLE_" + rol.toUpperCase(Locale.ROOT)))));
     }
-
-    // ---------------- Publico y sin sesion ----------------
 
     @Test
     void catalogoEsPublico() throws Exception {
@@ -92,13 +82,8 @@ class SeguridadApiTests {
                 .andExpect(header().string("Location", endsWith("/login.html")));
     }
 
-    // ---------------- Sesion (la usa la app movil) ----------------
-
     @Test
     void sesionSinLoginDevuelve401YExponeElTokenCsrf() throws Exception {
-        // La app movil necesita el token CSRF para poder enviar su primer POST: el CsrfFilter
-        // corre antes que la autorizacion y deja el token en la peticion aunque responda 401.
-        // La cookie XSRF-TOKEN se comprueba con HTTP real en CookieCsrfHttpTests.
         mvc.perform(get("/api/sesion"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(request().attribute("_csrf", notNullValue()))
@@ -112,8 +97,6 @@ class SeguridadApiTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos.usuario.nombre_rol").value("cliente"));
     }
-
-    // ---------------- Roles ----------------
 
     @Test
     void clienteNoPuedeVerPagos() throws Exception {
@@ -139,8 +122,6 @@ class SeguridadApiTests {
         mvc.perform(get("/api/domicilios").with(como("repostero", 2))).andExpect(status().isForbidden());
     }
 
-    // ---------------- CSRF ----------------
-
     @Test
     void escrituraSinTokenCsrfSeRechaza() throws Exception {
         mvc.perform(post("/api/pedidos").with(como("cliente", 1))
@@ -150,13 +131,10 @@ class SeguridadApiTests {
 
     @Test
     void escrituraConTokenCsrfLlegaAlControlador() throws Exception {
-        // Cuerpo vacio: el controlador responde 400 (faltan datos), lo que prueba que paso la seguridad.
         mvc.perform(post("/api/pedidos").with(como("cliente", 1)).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isBadRequest());
     }
-
-    // ---------------- Login ----------------
 
     @Test
     void loginConClaveIncorrectaDevuelve401() throws Exception {
@@ -184,11 +162,8 @@ class SeguridadApiTests {
                 .andExpect(status().isTooManyRequests());
     }
 
-    // ---------------- Propiedad de los datos ----------------
-
     @Test
     void clienteSoloVeSusPropiosPedidos() throws Exception {
-        // Pide los del cliente 2 estando autenticado como cliente 1: debe recibir solo los suyos.
         mvc.perform(get("/api/pedidos").param("id_cliente", "2").with(como("cliente", 1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.datos[*].id_cliente", everyItem(equalTo(1))));

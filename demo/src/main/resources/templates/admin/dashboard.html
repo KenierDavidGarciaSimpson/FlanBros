@@ -13,7 +13,6 @@
 
 <div class="admin-layout">
 
-  <!-- ======== SIDEBAR ======== -->
   <aside class="admin-sidebar">
     <div class="admin-logo">🎂 FlanBross</div>
 
@@ -61,12 +60,9 @@
     </div>
   </aside>
 
-  <!-- ======== CONTENIDO PRINCIPAL ======== -->
   <div class="admin-main">
 
-    <!-- Topbar -->
     <div class="admin-topbar">
-      <!-- Botón para mostrar/ocultar sidebar en móvil -->
       <button id="admin-hamburguesa" onclick="toggleSidebarMovil()"
         style="display:none;background:none;border:none;cursor:pointer;padding:4px;margin-right:12px;flex-shrink:0"
         aria-label="Menú">
@@ -87,7 +83,6 @@
 
     <div class="admin-contenido">
 
-      <!-- ===== SECCIÓN: DASHBOARD ===== -->
       <div id="sec-dashboard">
         <div class="kpi-grilla">
           <div class="kpi-tarjeta">
@@ -123,7 +118,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: PEDIDOS ===== -->
       <div id="sec-pedidos" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera">
@@ -136,7 +130,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: PRODUCTOS ===== -->
       <div id="sec-productos" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera">
@@ -148,7 +141,6 @@
             <tbody id="tabla-productos"><tr><td colspan="6" style="color:var(--texto-claro);padding:16px">Cargando...</td></tr></tbody>
           </table>
         </div>
-        <!-- Modal para crear/editar producto -->
         <div id="modal-producto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
           <div style="background:white;border-radius:16px;padding:32px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto">
             <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:20px;color:var(--chocolate)">Producto</h3>
@@ -178,7 +170,6 @@
             </div>
             <div class="grupo-campo">
               <label class="label-campo">Imagen del producto</label>
-              <!-- Preview de la imagen actual -->
               <div id="mp-img-preview" style="width:100%;height:140px;background:var(--crema-2);border-radius:10px;border:2px dashed var(--borde);display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:border-color .2s" onclick="document.getElementById('mp-img-file').click()">
                 <div id="mp-img-placeholder" style="text-align:center;color:var(--texto-claro)">
                   <div style="font-size:32px;margin-bottom:6px">📷</div>
@@ -199,7 +190,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: INVENTARIO ===== -->
       <div id="sec-inventario" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera"><div class="tabla-titulo">Control de Inventario</div></div>
@@ -210,7 +200,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: CLIENTES ===== -->
       <div id="sec-clientes" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera"><div class="tabla-titulo">Gestión de Clientes</div></div>
@@ -220,7 +209,6 @@
           </table>
         </div>
 
-        <!-- Modal: pasar un cliente a empleado -->
         <div id="modal-convertir" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
           <div style="background:white;border-radius:16px;padding:32px;width:460px;max-width:95vw">
             <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:8px;color:var(--chocolate)">Pasar a empleado</h3>
@@ -248,7 +236,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: PAGOS ===== -->
       <div id="sec-pagos" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera"><div class="tabla-titulo">Registro de Pagos</div></div>
@@ -259,7 +246,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: FACTURAS ===== -->
       <div id="sec-facturas" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera"><div class="tabla-titulo">Facturas Emitidas</div></div>
@@ -270,7 +256,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: DOMICILIOS ===== -->
       <div id="sec-domicilios" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera"><div class="tabla-titulo">Control de Domicilios</div></div>
@@ -281,7 +266,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: EMPLEADOS ===== -->
       <div id="sec-empleados" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera">
@@ -293,7 +277,6 @@
             <tbody id="tabla-empleados"><tr><td colspan="6" style="color:var(--texto-claro);padding:16px">Cargando...</td></tr></tbody>
           </table>
         </div>
-        <!-- Modal crear/editar empleado -->
         <div id="modal-empleado" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
           <div style="background:white;border-radius:16px;padding:32px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto">
             <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:20px;color:var(--chocolate)">Empleado</h3>
@@ -333,7 +316,6 @@
         </div>
       </div>
 
-      <!-- ===== SECCIÓN: MENSAJES ===== -->
       <div id="sec-mensajes" style="display:none">
         <div class="tabla-tarjeta">
           <div class="tabla-cabecera">
@@ -346,7 +328,6 @@
           </table>
         </div>
 
-        <!-- Modal: responder un mensaje de contacto -->
         <div id="modal-responder" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
           <div style="background:white;border-radius:16px;padding:32px;width:520px;max-width:95vw">
             <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:8px;color:var(--chocolate)">Responder mensaje</h3>
@@ -383,7 +364,6 @@
 <script src="js/admin-domicilios.js"></script>
 <script src="js/admin-mensajes.js"></script>
 <script>
-// buscar en tabla activa (buscador del topbar)
 function buscarEnTabla(inputId, tablaId) {
   var q = document.getElementById(inputId)?.value.toLowerCase() || '';
   document.querySelectorAll('.tabla-admin tbody tr').forEach(function(tr) {

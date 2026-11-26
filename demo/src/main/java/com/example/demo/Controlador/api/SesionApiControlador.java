@@ -35,19 +35,6 @@ import com.example.demo.Servicio.CorreoServicio;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * SesionApiControlador — capa 3 (Controlador), API de cuentas.
- *
- * <p>Une los tres endpoints de identidad del PHP original: {@code login.php},
- * {@code registro.php} y {@code recuperar.php}. Comparten un contrato que el
- * frontend da por hecho: <b>la sesion viaja siempre como {@code datos.usuario}</b>,
- * porque {@code login.html} y {@code registro.html} hacen
- * {@code guardarSesion(resp.datos.usuario)} sin comprobar nada mas.</p>
- *
- * <p>Ninguna respuesta incluye la contrasena: solo {@link SesionUsuario}.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api")
 public class SesionApiControlador {
@@ -59,10 +46,6 @@ public class SesionApiControlador {
     private final CorreoServicio correoServicio;
     private final SecurityContextRepository repositorioContexto = new HttpSessionSecurityContextRepository();
 
-    /**
-     * Solo para pruebas locales: si es true, el token se devuelve en la respuesta.
-     * En produccion debe ser false para que el token viaje unicamente por correo.
-     */
     private final boolean mostrarToken;
 
     public SesionApiControlador(PersonaRepositorio personas, LimitadorIntentos limitador,
@@ -74,7 +57,6 @@ public class SesionApiControlador {
         this.mostrarToken = mostrarToken;
     }
 
-    /** POST /api/login — {correo, contrasena} -> {exito, mensaje, datos:{usuario}}. */
     @PostMapping("/login")
     public ResponseEntity<RespuestaApi> login(@RequestBody Map<String, Object> cuerpo,
             HttpServletRequest solicitud, HttpServletResponse respuesta) {
@@ -103,12 +85,6 @@ public class SesionApiControlador {
                 "Bienvenido, " + sesion.get().nombre));
     }
 
-    /** POST /api/registro — alta de cliente; el rol lo fija el backend, no el formulario. */
-    /**
-     * Quien soy segun la sesion del SERVIDOR. La app movil lo llama al abrirse para saber si su
-     * cookie de sesion sigue vigente (200 con el usuario, o 401). Tambien sirve para que el servidor
-     * entregue la cookie XSRF-TOKEN antes del primer POST.
-     */
     @GetMapping("/sesion")
     public ResponseEntity<RespuestaApi> sesionActual() {
         return UsuarioActual.obtener()
@@ -155,7 +131,6 @@ public class SesionApiControlador {
         cliente.direccion = direccion;
         personas.registrarCliente(cliente, contrasena);
 
-        // Se devuelve la sesion ya autenticada: registro.html entra directo a la cuenta.
         Optional<SesionUsuario> sesion = personas.autenticar(correo, contrasena);
         if (sesion.isEmpty()) {
             return ResponseEntity.ok(RespuestaApi.ok(null,
@@ -166,10 +141,6 @@ public class SesionApiControlador {
                 .body(RespuestaApi.ok(conUsuario(sesion.get()), "Cuenta creada correctamente"));
     }
 
-    /**
-     * POST /api/recuperar — dos pasos en el mismo endpoint, como el PHP original:
-     * con {@code correo} genera el token; con {@code token + nueva_contrasena} lo canjea.
-     */
     @PostMapping("/recuperar")
     public ResponseEntity<RespuestaApi> recuperar(@RequestBody Map<String, Object> cuerpo) {
         String token = PeticionUtil.texto(cuerpo, "token");
@@ -203,13 +174,10 @@ public class SesionApiControlador {
         }
 
         Map<String, Object> datos = new LinkedHashMap<>();
-        // Contestamos igual exista o no el correo: no se revela quien esta registrado.
         Optional<String> generado = personas.solicitarToken(correo);
         if (mostrarToken) {
-            // Solo para pruebas locales: el token se devuelve en la respuesta.
             generado.ifPresent(token -> datos.put("token", token));
         } else {
-            // Flujo seguro: el token viaja solo al correo del usuario.
             generado.ifPresent(token -> correoServicio.enviarTokenRecuperacion(correo, token));
         }
 
@@ -217,10 +185,6 @@ public class SesionApiControlador {
                 "Si el correo está registrado, recibirás las instrucciones"));
     }
 
-    /**
-     * Crea la sesion HTTP del servidor. Se renueva el id de sesion (contra fijacion de sesion)
-     * y el rol queda como autoridad {@code ROLE_<NOMBRE>}, que es lo que evaluan las rutas.
-     */
     private void iniciarSesion(SesionUsuario sesion, HttpServletRequest solicitud,
             HttpServletResponse respuesta) {
         if (solicitud.getSession(false) != null) {

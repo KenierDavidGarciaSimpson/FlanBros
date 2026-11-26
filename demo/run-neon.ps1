@@ -1,5 +1,3 @@
-# Arranca FlanBross apuntando a la base de datos remota de Neon.
-# Las credenciales se leen de .env (ignorado por git).
 $ErrorActionPreference = 'Stop'
 
 $raiz    = Split-Path -Parent $MyInvocation.MyCommand.Path

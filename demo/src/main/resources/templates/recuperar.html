@@ -13,7 +13,6 @@
 
 <div class="auth-pagina">
 
-  <!-- Lado decorativo -->
   <div class="auth-visual">
     <div style="position:relative;z-index:1">
       <div class="auth-visual-logo">FlanBross</div>
@@ -21,11 +20,9 @@
     </div>
   </div>
 
-  <!-- Formulario -->
   <div class="auth-formulario">
     <div class="auth-caja">
 
-      <!-- PASO 1: ingresar correo -->
       <div id="paso-correo">
         <h1 class="auth-titulo">¿Olvidaste tu contraseña?</h1>
         <p class="auth-subtitulo">Ingresa tu correo y te enviaremos un código de recuperación.</p>
@@ -48,7 +45,6 @@
         </p>
       </div>
 
-      <!-- PASO 2: ingresar token + nueva contraseña (aparece al recibir el token) -->
       <div id="paso-token" style="display:none">
         <h1 class="auth-titulo">Nueva contraseña</h1>
         <p class="auth-subtitulo">Ingresa el token que recibiste en tu correo y tu nueva contraseña.</p>
@@ -74,7 +70,6 @@
         </button>
       </div>
 
-      <!-- PASO 3: éxito -->
       <div id="paso-exito" style="display:none;text-align:center;padding:20px 0">
         <div style="font-size:72px;margin-bottom:16px">✅</div>
         <h2 style="font-family:var(--fuente-titulo);font-size:30px;color:var(--chocolate);margin-bottom:10px">¡Contraseña actualizada!</h2>
@@ -119,7 +114,6 @@
           document.getElementById('paso-token').style.display  = 'block';
         }, 2000);
       } else {
-        // Por seguridad, siempre mostramos mensaje positivo aunque no exista el correo
         okEl.textContent = 'Si el correo está registrado, recibirás las instrucciones pronto.';
         okEl.style.display = 'block';
         btn.disabled = false; btn.textContent = 'Enviar instrucciones';

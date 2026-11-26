@@ -5,10 +5,6 @@ import com.flanbross.app.BuildConfig
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-/**
- * Servicios — punto unico de acceso a la red (inyeccion manual de dependencias).
- * Se inicializa una sola vez en FlanBrossApp.onCreate().
- */
 object Servicios {
     lateinit var urlBase: HttpUrl
         private set
@@ -23,7 +19,6 @@ object Servicios {
         repositorio = Repositorio(http)
     }
 
-    /** Convierte la ruta que guarda el servidor ("/img/productos/x.png") en una URL completa. */
     fun urlImagen(ruta: String?): String? =
         ruta?.takeIf { it.isNotBlank() }?.let { urlBase.resolve(it.removePrefix("/"))?.toString() }
 }

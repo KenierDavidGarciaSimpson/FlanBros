@@ -1,7 +1,3 @@
-# Entorno con Docker:
-#   docker compose up -d db          -> solo PostgreSQL (el servidor se corre desde IntelliJ/Maven)
-#   docker compose up -d --build     -> PostgreSQL + servidor FlanBross, todo en contenedores
-# El emulador de Android entra por http://10.0.2.2:8080 en cualquiera de los dos casos.
 services:
   db:
     image: postgres:16

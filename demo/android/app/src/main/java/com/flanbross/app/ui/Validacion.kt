@@ -1,10 +1,5 @@
 package com.flanbross.app.ui
 
-/**
- * Validacion — mismas reglas de formato que la web (validaciones.js) y el servidor
- * (ValidacionUtil.java). La app avisa antes de enviar; el servidor siempre vuelve a validar.
- * Cada funcion devuelve null si el dato esta bien, o el mensaje de error.
- */
 object Validacion {
 
     private val CORREO = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$")
@@ -50,6 +45,5 @@ object Validacion {
     fun cupon(valor: String): String? =
         if (CUPON.matches(valor.trim().uppercase())) null else "El código del cupón solo lleva letras y números."
 
-    /** El primer error no nulo, o null si todo esta bien. */
     fun primero(vararg errores: String?): String? = errores.firstOrNull { it != null }
 }

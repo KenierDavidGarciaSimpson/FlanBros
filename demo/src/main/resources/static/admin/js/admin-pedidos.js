@@ -1,5 +1,3 @@
-// admin-pedidos.js — Tabla de pedidos y cambio de estado
-
 function cargarPedidosAdmin() {
     fetch('/api/pedidos')
         .then(function(r) { return r.json(); })

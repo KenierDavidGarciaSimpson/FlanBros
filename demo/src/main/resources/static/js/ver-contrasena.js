@@ -1,5 +1,3 @@
-// ver-contrasena.js — agrega a cada campo de contraseña un botón para mostrarla u ocultarla
-// mientras se escribe. Se carga en login, registro, recuperar y el panel de administración.
 (function () {
     function agregarBoton(input) {
         if (input.dataset.verContrasena) return;

@@ -23,18 +23,6 @@ import com.example.demo.Modelo.Empleado;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.PersonaRepositorio;
 
-/**
- * EmpleadosApiControlador — capa 3 (Controlador), API de empleados.
- *
- * <p>Sustituye a {@code backend/api/empleados.php} (listar, crear, editar y dar de
- * baja). Lo usa {@code admin-empleados.js}.</p>
- *
- * <p>Crear un empleado NO crea su cuenta de acceso: en el diseno original el alta de
- * credenciales se hace aparte. Se respeta tal cual para no inventar un flujo de
- * seguridad nuevo en esta fase.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/empleados")
 public class EmpleadosApiControlador {
@@ -45,13 +33,11 @@ public class EmpleadosApiControlador {
         this.personas = personas;
     }
 
-    /** GET /api/empleados — solo los activos, con el nombre de su rol. */
     @GetMapping
     public RespuestaApi listar() {
         return RespuestaApi.ok(personas.listarEmpleadosActivos());
     }
 
-    /** POST /api/empleados — alta de personal. */
     @PostMapping
     public ResponseEntity<RespuestaApi> crear(@RequestBody Map<String, Object> cuerpo) {
         String nombre = PeticionUtil.texto(cuerpo, "nombre");
@@ -99,7 +85,6 @@ public class EmpleadosApiControlador {
         }
     }
 
-    /** PUT /api/empleados — edicion de datos, salario y rol (el rol tambien cambia en su cuenta). */
     @PutMapping
     public ResponseEntity<RespuestaApi> actualizar(@RequestBody Map<String, Object> cuerpo) {
         int idEmpleado = PeticionUtil.entero(cuerpo, "id_empleado");
@@ -138,13 +123,11 @@ public class EmpleadosApiControlador {
                 personas.buscarEmpleado(idEmpleado).orElse(null), "Empleado actualizado"));
     }
 
-    /** DELETE /api/empleados/{id} — baja logica. */
     @DeleteMapping("/{id}")
     public ResponseEntity<RespuestaApi> desactivar(@PathVariable int id) {
         return desactivarPorId(id);
     }
 
-    /** Alias con el id en la query o en el cuerpo ({@code {"id_empleado": N}}). */
     @DeleteMapping
     public ResponseEntity<RespuestaApi> desactivarPorParametro(
             @RequestParam(required = false) Integer id,
@@ -166,7 +149,6 @@ public class EmpleadosApiControlador {
         return ResponseEntity.ok(RespuestaApi.ok(null, "Empleado desactivado"));
     }
 
-    /** Traduce un dato repetido en la base (correo o documento) a un mensaje claro. */
     static String mensajeDuplicado(DuplicateKeyException e) {
         String detalle = String.valueOf(e.getMessage());
         if (detalle.contains("documento")) {

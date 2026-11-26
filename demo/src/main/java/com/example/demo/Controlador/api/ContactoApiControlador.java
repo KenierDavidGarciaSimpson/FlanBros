@@ -23,18 +23,6 @@ import com.example.demo.Persistencia.PersonaRepositorio;
 import com.example.demo.Seguridad.UsuarioActual;
 import com.example.demo.Servicio.CorreoServicio;
 
-/**
- * ContactoApiControlador — capa 3 (Controlador), API del formulario de contacto.
- *
- * <p>El mensaje solo puede enviarse con sesion iniciada. El nombre, el correo y el
- * telefono se toman de la cuenta del usuario (nunca del formulario); por eso
- * {@code contacto.html} solo envia {@code {mensaje}}.</p>
- *
- * <p>El mensaje queda en la bandeja del panel de administracion
- * ({@code mensaje_contacto}).</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/contacto")
 public class ContactoApiControlador {
@@ -50,7 +38,6 @@ public class ContactoApiControlador {
         this.correo = correo;
     }
 
-    /** POST /api/contacto — guarda el mensaje del usuario autenticado. */
     @PostMapping
     public ResponseEntity<RespuestaApi> enviar(@RequestBody Map<String, Object> cuerpo) {
         Optional<SesionUsuario> sesion = UsuarioActual.obtener();
@@ -68,7 +55,6 @@ public class ContactoApiControlador {
         SesionUsuario usuario = sesion.get();
         String nombre = (usuario.nombre + " "
                 + (usuario.apellido == null ? "" : usuario.apellido)).trim();
-        // El telefono no viaja en la sesion: se toma de la ficha del cliente o empleado.
         String telefono = "cliente".equals(usuario.nombre_rol)
                 ? personas.buscarCliente(usuario.id_entidad).map(c -> c.telefono).orElse(null)
                 : personas.buscarEmpleado(usuario.id_entidad).map(e -> e.telefono).orElse(null);
@@ -85,13 +71,11 @@ public class ContactoApiControlador {
                         "Mensaje enviado. Te responderemos pronto"));
     }
 
-    /** GET /api/contacto — bandeja de mensajes para el panel. */
     @GetMapping
     public RespuestaApi listar() {
         return RespuestaApi.ok(mensajes.listar());
     }
 
-    /** PUT /api/contacto — marca un mensaje como leido (solo administrador). */
     @PutMapping
     public ResponseEntity<RespuestaApi> marcarLeido(@RequestBody Map<String, Object> cuerpo) {
         int id = PeticionUtil.entero(cuerpo, "id_mensaje");
@@ -106,10 +90,6 @@ public class ContactoApiControlador {
         return ResponseEntity.ok(RespuestaApi.ok(null, "Mensaje marcado como leido"));
     }
 
-    /**
-     * POST /api/contacto/{id}/respuesta — el administrador responde el mensaje.
-     * La respuesta llega al correo de quien escribio y el mensaje queda como leido.
-     */
     @PostMapping("/{id}/respuesta")
     public ResponseEntity<RespuestaApi> responder(@PathVariable int id,
                                                   @RequestBody Map<String, Object> cuerpo) {

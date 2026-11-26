@@ -15,11 +15,6 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.Modelo.MensajeContacto;
 import com.example.demo.Persistencia.ContactoRepositorio;
 
-/**
- * ContactoRepositorioJdbc — capa 2 (Persistencia), buzon de contacto en PostgreSQL.
- *
- * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
- */
 @Repository
 @Profile("!memoria")
 public class ContactoRepositorioJdbc implements ContactoRepositorio {

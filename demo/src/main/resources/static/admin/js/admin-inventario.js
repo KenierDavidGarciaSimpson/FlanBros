@@ -1,5 +1,3 @@
-// admin-inventario.js — Stock disponible por producto
-
 function cargarInventarioAdmin() {
     fetch('/api/inventario')
         .then(function(r) { return r.json(); })

@@ -1,6 +1,3 @@
-// admin-mensajes.js — Bandeja de mensajes del formulario de contacto
-
-// Escapa el texto del usuario antes de insertarlo como HTML.
 function _escaparHtml(texto) {
     return String(texto == null ? '' : texto)
         .replace(/&/g, '&amp;')
@@ -72,7 +69,6 @@ function marcarMensajeLeido(id) {
     });
 }
 
-// ---- Responder un mensaje por correo ----
 function abrirResponder(id) {
     var m = mensajesAdmin.find(function(x) { return x.id_mensaje === id; });
     if (!m) return;

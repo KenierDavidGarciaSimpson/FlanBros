@@ -1,8 +1,3 @@
-// validaciones.js — Reglas de formato de los formularios.
-// Son las mismas que aplica el servidor (ValidacionUtil.java): aquí se revisan primero
-// para avisar rápido, pero el servidor siempre vuelve a validar.
-// Cada función devuelve null si el dato está bien, o el mensaje de error.
-
 var VALIDA = {
     correo: function (v) {
         v = (v || '').trim();
@@ -37,14 +32,12 @@ var VALIDA = {
         if (maximo && v.length > maximo) return 'El campo ' + campo + ' no puede tener más de ' + maximo + ' caracteres.';
         return null;
     },
-    // Devuelve el primer error no nulo.
     primero: function () {
         for (var i = 0; i < arguments.length; i++) { if (arguments[i]) return arguments[i]; }
         return null;
     }
 };
 
-// Muestra un error en un div de mensaje (o en un toast si no existe).
 function mostrarError(div, mensaje) {
     if (div) { div.textContent = mensaje; div.style.display = 'block'; }
     else { mostrarToast(mensaje, 'error'); }

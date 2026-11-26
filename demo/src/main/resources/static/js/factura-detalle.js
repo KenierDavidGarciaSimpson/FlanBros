@@ -1,6 +1,3 @@
-// factura-detalle.js — muestra la factura completa de un pedido en una ventana y permite imprimirla.
-// La usan "Mi cuenta" (cliente) y el panel (administrador y contador). El servidor decide
-// quién puede ver qué: el cliente solo recibe sus propias facturas.
 (function () {
     var METODOS = {
         contraentrega: 'Contraentrega', tarjeta: 'Tarjeta',
@@ -113,7 +110,6 @@
         return m;
     }
 
-    // Abre la factura del pedido indicado.
     window.verFactura = function (idPedido) {
         var m = asegurarModal();
         var cont = document.getElementById('fd-contenido');

@@ -143,7 +143,6 @@ function toggleMenuMovil() {
   var abierto = menu.classList.toggle('abierto');
   btn.setAttribute('aria-expanded', abierto);
 }
-// Cerrar menú al hacer clic en un enlace
 document.querySelectorAll('#nav-menu-movil a').forEach(function(a) {
   a.addEventListener('click', function() {
     document.getElementById('nav-menu-movil').classList.remove('abierto');

@@ -13,13 +13,11 @@ data class LineaCarrito(val producto: Producto, val cantidad: Int) {
     val subtotal: Long get() = producto.precio.toLong() * cantidad
 }
 
-/** CarritoViewModel — carrito en memoria, compartido por todas las pantallas de compra. */
 class CarritoViewModel : ViewModel() {
 
     private val _lineas = MutableStateFlow<List<LineaCarrito>>(emptyList())
     val lineas: StateFlow<List<LineaCarrito>> = _lineas.asStateFlow()
 
-    /** Cupon validado por el servidor (o null). El servidor lo revisa otra vez al crear el pedido. */
     private val _cupon = MutableStateFlow<CuponValido?>(null)
     val cupon: StateFlow<CuponValido?> = _cupon.asStateFlow()
 
@@ -30,17 +28,11 @@ class CarritoViewModel : ViewModel() {
     private val _ultimoPedido = MutableStateFlow<PedidoCreado?>(null)
     val ultimoPedido: StateFlow<PedidoCreado?> = _ultimoPedido.asStateFlow()
 
-    /** Unidades de este producto que ya estan en el carrito. */
     fun enCarrito(idProducto: Int): Int =
         _lineas.value.firstOrNull { it.producto.id == idProducto }?.cantidad ?: 0
 
-    /** Cuantas unidades mas se pueden agregar sin pasar del stock. */
     fun libres(producto: Producto): Int = (producto.stock - enCarrito(producto.id)).coerceAtLeast(0)
 
-    /**
-     * Agrega unidades sin pasar del stock disponible.
-     * Devuelve null si se agrego todo, o el mensaje que explica por que no.
-     */
     fun agregar(producto: Producto, cantidad: Int = 1): String? {
         if (producto.stock <= 0 || producto.estado != "disponible") return "${producto.nombre} está agotado"
         if (cantidad < 1) return "Elige una cantidad válida"
@@ -61,7 +53,6 @@ class CarritoViewModel : ViewModel() {
         return null
     }
 
-    /** Pone al dia precio y stock con el catalogo; quita lo agotado. Devuelve los avisos. */
     fun sincronizar(catalogo: List<Producto>): List<String> {
         val avisos = mutableListOf<String>()
         _lineas.update { actuales ->

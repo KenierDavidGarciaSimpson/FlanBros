@@ -28,15 +28,6 @@ import com.example.demo.Modelo.Empleado;
 import com.example.demo.Modelo.dto.SesionUsuario;
 import com.example.demo.Persistencia.PersonaRepositorio;
 
-/**
- * PersonaRepositorioJdbc — capa 2 (Persistencia), cuentas, clientes y personal en PostgreSQL.
- *
- * <p>Las contrasenas se guardan con BCrypt ({@code usuario.contrasena_hash}). El token de
- * recuperacion se entrega una sola vez a quien lo pide y en la base queda su SHA-256: si
- * alguien lee la tabla no puede usar los tokens vigentes.</p>
- *
- * <p>Capa: Persistencia (JDBC). Activo en cualquier perfil distinto de {@code memoria}.</p>
- */
 @Repository
 @Profile("!memoria")
 public class PersonaRepositorioJdbc implements PersonaRepositorio {
@@ -64,10 +55,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
         this.jdbc = JdbcClient.create(plantilla);
     }
 
-    // ------------------------------------------------------------------
-    // Acceso
-    // ------------------------------------------------------------------
-
     @Override
     public Optional<SesionUsuario> autenticar(String correo, String contrasena) {
         if (correo == null || contrasena == null) {
@@ -93,7 +80,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .map(Credencial::sesion);
     }
 
-    /** Hash guardado + sesion ya armada; la clave se compara fuera de la consulta. */
     private record Credencial(String hash, SesionUsuario sesion) {
     }
 
@@ -185,10 +171,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .update() > 0;
     }
 
-    // ------------------------------------------------------------------
-    // Clientes
-    // ------------------------------------------------------------------
-
     @Override
     public List<Cliente> listarClientes() {
         return jdbc.sql(SELECT_CLIENTE + " ORDER BY c.fecha_registro DESC, c.id_cliente DESC")
@@ -212,10 +194,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .param("id", idCliente)
                 .update() > 0;
     }
-
-    // ------------------------------------------------------------------
-    // Personal
-    // ------------------------------------------------------------------
 
     @Override
     public List<Empleado> listarEmpleadosActivos() {
@@ -248,7 +226,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .update(llave, "id_empleado");
         int idEmpleado = llave.getKey().intValue();
 
-        // Cuenta de acceso en la misma transaccion: si falla, tampoco queda el empleado.
         jdbc.sql("""
                 INSERT INTO usuario (id_rol, id_empleado, correo, contrasena_hash)
                 VALUES (:rol, :empleado, :correo, :hash)
@@ -291,7 +268,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .update(llave, "id_empleado");
         int idEmpleado = llave.getKey().intValue();
 
-        // La misma cuenta (correo y contrasena) pasa a ser del empleado, con su nuevo rol.
         jdbc.sql("""
                 UPDATE usuario
                    SET id_cliente = NULL, id_empleado = :empleado, id_rol = :rol
@@ -348,7 +324,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
         if (filas == 0) {
             return false;
         }
-        // Mismo rol en la cuenta de acceso: de aqui sale el rol de la sesion al iniciar.
         jdbc.sql("UPDATE usuario SET id_rol = :rol WHERE id_empleado = :id")
                 .param("rol", idRol)
                 .param("id", idEmpleado)
@@ -371,10 +346,6 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .param("id", idEmpleado)
                 .query(PersonaRepositorioJdbc::empleado).optional();
     }
-
-    // ------------------------------------------------------------------
-    // Apoyo
-    // ------------------------------------------------------------------
 
     private static String normalizar(String correo) {
         return correo == null ? null : correo.trim().toLowerCase(Locale.ROOT);

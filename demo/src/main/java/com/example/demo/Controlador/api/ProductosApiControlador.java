@@ -30,25 +30,12 @@ import com.example.demo.Modelo.Producto;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.ProductoRepositorio;
 
-/**
- * ProductosApiControlador — capa 3 (Controlador), API del catalogo.
- *
- * <p>Es el sustituto de {@code backend/api/productos.php}: mismo JSON, mismos
- * campos, mismos filtros. Lo consumen {@code catalogo.js} (GET publico) y
- * {@code admin-productos.js} (GET/POST/PUT/DELETE).</p>
- *
- * <p>Solo habla con {@link ProductoRepositorio}: no sabe si los datos estan en
- * memoria, en PostgreSQL o en un archivo. Eso es lo que hace sustituible la capa 2.</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/productos")
 public class ProductosApiControlador {
 
     private final ProductoRepositorio productos;
 
-    /** Carpeta donde se guardan las imagenes que sube el panel (configurable). */
     private final Path carpetaImagenes;
 
     public ProductosApiControlador(ProductoRepositorio productos,
@@ -57,11 +44,6 @@ public class ProductosApiControlador {
         this.carpetaImagenes = Paths.get(carpetaImagenes).toAbsolutePath().normalize();
     }
 
-    /**
-     * GET /api/productos
-     * GET /api/productos?id=3
-     * GET /api/productos?categoria=Tortas
-     */
     @GetMapping
     public RespuestaApi listar(@RequestParam(required = false) Integer id,
                                @RequestParam(required = false) String categoria) {
@@ -76,7 +58,6 @@ public class ProductosApiControlador {
         return RespuestaApi.ok(productos.listarDisponibles());
     }
 
-    /** POST /api/productos — alta desde el panel. */
     @PostMapping
     public ResponseEntity<RespuestaApi> crear(@RequestBody Map<String, Object> cuerpo) {
         String nombre = PeticionUtil.texto(cuerpo, "nombre_producto");
@@ -101,7 +82,6 @@ public class ProductosApiControlador {
                 .body(RespuestaApi.ok(productos.crear(producto), "Producto creado correctamente"));
     }
 
-    /** PUT /api/productos — edicion desde el panel (los campos que no llegan se conservan). */
     @PutMapping
     public ResponseEntity<RespuestaApi> actualizar(@RequestBody Map<String, Object> cuerpo) {
         int id = PeticionUtil.entero(cuerpo, "id_producto");
@@ -134,18 +114,11 @@ public class ProductosApiControlador {
                 "Producto actualizado correctamente"));
     }
 
-    /** DELETE /api/productos/{id} — baja logica, nunca borrado fisico. */
     @DeleteMapping("/{id}")
     public ResponseEntity<RespuestaApi> desactivar(@PathVariable int id) {
         return desactivarPorId(id);
     }
 
-    /**
-     * DELETE /api/productos con el id en el cuerpo o en la query.
-     *
-     * <p>admin-productos.js manda {@code {"id_producto": N}} en el cuerpo, y {@code fetch}
-     * no admite la forma {@code /api/productos/7}; por eso se aceptan las dos.</p>
-     */
     @DeleteMapping
     public ResponseEntity<RespuestaApi> desactivarPorParametro(
             @RequestParam(required = false) Integer id,
@@ -168,21 +141,8 @@ public class ProductosApiControlador {
                 "Producto desactivado correctamente"));
     }
 
-    // ------------------------------------------------------------------
-    // Imagen del producto
-    // ------------------------------------------------------------------
-
-    /** Extensiones de imagen que se aceptan al subir desde el panel. */
     private static final List<String> EXTENSIONES = List.of("jpg", "jpeg", "png", "webp", "gif");
 
-    /**
-     * POST /api/productos/imagen — guarda la imagen del formulario de producto.
-     *
-     * <p>Es el sustituto de {@code upload_imagen.php}: {@code admin-productos.js} manda
-     * el archivo en el campo {@code imagen} y espera de vuelta
-     * {@code datos.nombre_archivo} para dejarlo escrito en {@code Producto.imagen}.
-     * El archivo se sirve despues como {@code /img/productos/<nombre_archivo>}.</p>
-     */
     @PostMapping("/imagen")
     public ResponseEntity<RespuestaApi> subirImagen(@RequestParam("imagen") MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
@@ -208,11 +168,6 @@ public class ProductosApiControlador {
         return ResponseEntity.ok(RespuestaApi.ok(datos, "Imagen subida correctamente"));
     }
 
-    /**
-     * Deja el nombre del archivo en algo que no pueda salirse de la carpeta: fuera
-     * barras, acentos y puntos iniciales. Se antepone la marca de tiempo para que dos
-     * subidas del mismo nombre no se pisen.
-     */
     private static String nombreArchivoSeguro(String original) {
         String base = original == null ? "" : original.replaceAll("[^A-Za-z0-9._-]", "-");
         base = base.replaceAll("^[.-]+", "");

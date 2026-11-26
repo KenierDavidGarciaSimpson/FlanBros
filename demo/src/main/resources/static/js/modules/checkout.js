@@ -1,9 +1,6 @@
-// checkout.js — Flujo de pago en varios pasos (2: datos, 3: pago, 4: confirmar)
-
 var pasoActual = 2;
 var METODOS_VALIDOS = ['contraentrega', 'tarjeta', 'transferencia', 'billetera_digital'];
 
-// Revisa los datos de entrega. Devuelve el primer error o null.
 function validarDatosEntrega() {
     var v = function (id) { return (document.getElementById(id) || {}).value || ''; };
     var direccion = v('direccion').trim();
@@ -24,7 +21,6 @@ function metodoPagoElegido() {
 }
 
 function irAPaso(paso) {
-    // No se avanza con datos incompletos.
     if (paso > pasoActual) {
         if (pasoActual <= 2 && paso >= 3) {
             var error = validarDatosEntrega();
@@ -82,7 +78,6 @@ function confirmarPedido() {
     var restaurar = function () { if (btn) { btn.disabled = false; btn.textContent = textoBtn; } };
     if (btn) { btn.disabled = true; btn.textContent = 'Procesando...'; }
 
-    // Antes de enviar, confirmar precios y stock con el servidor.
     sincronizarCarrito().then(function (cambio) {
         if (cambio) {
             mostrarResumenCheckout();
@@ -136,7 +131,6 @@ function seleccionarPago(elemento) {
     if (radio) radio.checked = true;
 }
 
-// Resumen lateral del checkout.
 function mostrarResumenCheckout() {
     var carrito = obtenerCarrito();
     var contenedor = document.getElementById('items-checkout');
@@ -163,7 +157,6 @@ function mostrarResumenCheckout() {
     poner('checkout-total',     formatearPrecio(t.total));
 }
 
-// Arranque de checkout.html
 function iniciarCheckout() {
     var u = obtenerSesion();
     if (!u) { requiereSesion(); return; }

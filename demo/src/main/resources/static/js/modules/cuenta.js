@@ -1,5 +1,3 @@
-// cuenta.js — Perfil e historial de pedidos del cliente
-
 function cargarMiCuenta() {
     const usuario = obtenerSesion();
     if (!usuario) { window.location.href = 'login.html'; return; }
@@ -14,7 +12,6 @@ function cargarMiCuenta() {
     if (elCorreo) elCorreo.textContent = usuario.correo;
     if (elAvatar) elAvatar.textContent = ((usuario.nombre || '')[0] + (usuario.apellido || '')[0]).toUpperCase();
 
-    // Banner de confirmación si viene de hacer un pedido
     const factura = localStorage.getItem('fb_pedido_confirmado');
     if (factura) {
         const banner = document.getElementById('banner-exito');
@@ -40,7 +37,6 @@ function renderizarPedidosCliente(pedidos) {
     const elGasto = document.getElementById('stat-gasto');
     if (elTotal) elTotal.textContent = pedidos.length;
     if (elGasto) {
-        // Lo que paga el cliente es el total de la factura (con cupón e IVA).
         const suma = pedidos.reduce(function(acc, p) { return acc + parseFloat(p.total_factura || p.total_pedido || 0); }, 0);
         elGasto.textContent = formatearPrecio(suma);
     }
@@ -50,7 +46,6 @@ function renderizarPedidosCliente(pedidos) {
         return;
     }
 
-    // Pedido activo = el más reciente que no esté entregado ni cancelado
     const activo   = pedidos.find(function(p) { return p.estado_pedido !== 'entregado' && p.estado_pedido !== 'cancelado'; });
     const elActivo = document.getElementById('pedido-activo');
     if (elActivo && activo) {

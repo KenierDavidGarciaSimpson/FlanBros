@@ -1,5 +1,3 @@
-/* panel-admin.css — Layout, sidebar, tablas y KPIs del panel */
-
 .admin-layout {
   display: flex;
   min-height: 100vh;
@@ -89,7 +87,6 @@
 
 .admin-contenido { padding: 26px 28px; }
 
-/* KPIs */
 .kpi-grilla {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -124,7 +121,6 @@
   margin-top: 4px;
 }
 
-/* Tablas */
 .tabla-tarjeta {
   background: white;
   border-radius: var(--radio);
@@ -203,7 +199,6 @@ table.tabla-admin tr:hover td { background: rgba(253,246,238,0.7); }
 
 .acciones-tabla { display: flex; gap: 6px; }
 
-/* Barra de inventario */
 .barra-inv-contenedor {
   background: var(--crema-2);
   border-radius: 999px;
@@ -216,7 +211,6 @@ table.tabla-admin tr:hover td { background: rgba(253,246,238,0.7); }
 .barra-bajo      { background: #D4A853; }
 .barra-critico   { background: #E05252; }
 
-/* Sidebar toggled desde botón hamburguesa en móvil */
 @media (max-width: 900px) {
   #admin-hamburguesa { display: flex !important; flex-direction: column; }
 

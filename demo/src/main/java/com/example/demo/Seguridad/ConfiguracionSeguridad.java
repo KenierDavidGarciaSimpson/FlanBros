@@ -14,23 +14,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * ConfiguracionSeguridad — quien puede llamar a que, decidido en el SERVIDOR.
- *
- * <p>Antes la sesion vivia solo en {@code localStorage} y cualquiera podia llamar a
- * {@code /api/**} sin iniciar sesion. Ahora:</p>
- * <ul>
- *   <li>El login crea una sesion HTTP (cookie {@code JSESSIONID}, HttpOnly, SameSite=Lax).</li>
- *   <li>Cada ruta de la API exige un rol (matriz de abajo); lo no listado se deniega.</li>
- *   <li>Las peticiones que modifican datos exigen el token CSRF.</li>
- *   <li>Las paginas {@code /admin/**} y {@code /cuenta} redirigen al login si no hay sesion.</li>
- * </ul>
- *
- * <p>La propiedad de los datos (un cliente solo ve SUS pedidos) la aplican los controladores
- * con {@link UsuarioActual}.</p>
- *
- * <p>Capa: Seguridad.</p>
- */
 @Configuration
 public class ConfiguracionSeguridad {
 
@@ -55,9 +38,6 @@ public class ConfiguracionSeguridad {
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http) throws Exception {
         RequestMatcher esApi = solicitud -> solicitud.getRequestURI().startsWith("/api/");
 
-        // Sin sesion: la API responde 401 (lo distingue la app movil y el JS) y las paginas
-        // redirigen al login. Se elige a mano porque con esta version de Spring Security
-        // defaultAuthenticationEntryPointFor(...) no llega a aplicarse y todo acababa en 302.
         LoginUrlAuthenticationEntryPoint entradaPaginas = new LoginUrlAuthenticationEntryPoint("/login.html");
         HttpStatusEntryPoint entradaApi = new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
 
@@ -66,7 +46,6 @@ public class ConfiguracionSeguridad {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new SolicitudCsrfSpa()))
             .authorizeHttpRequests(rutas -> rutas
-                // ---- Publico ----
                 .requestMatchers(RECURSOS_ESTATICOS).permitAll()
                 .requestMatchers(PAGINAS_PUBLICAS).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/login", "/api/registro", "/api/recuperar",
@@ -74,7 +53,6 @@ public class ConfiguracionSeguridad {
                 .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/sesion").authenticated()
 
-                // ---- API por rol ----
                 .requestMatchers("/api/productos", "/api/productos/**",
                         "/api/inventario", "/api/inventario/**").hasAnyRole(ADMIN, REPOSTERO)
                 .requestMatchers("/api/pagos", "/api/pagos/**").hasAnyRole(ADMIN, CONTADOR)
@@ -90,16 +68,13 @@ public class ConfiguracionSeguridad {
                         "/api/contacto", "/api/contacto/**").hasRole(ADMIN)
                 .requestMatchers("/api/**").denyAll()
 
-                // ---- Paginas con sesion ----
                 .requestMatchers("/cuenta", "/cuenta.html").authenticated()
                 .requestMatchers("/admin/**").hasAnyRole(ADMIN, REPOSTERO, CONTADOR, DOMICILIARIO)
                 .anyRequest().authenticated())
             .exceptionHandling(errores -> errores
-                // Sin sesion: la API responde 401 y las paginas redirigen al login.
                 .authenticationEntryPoint((solicitud, respuesta, excepcion) ->
                         (esApi.matches(solicitud) ? entradaApi : entradaPaginas)
                                 .commence(solicitud, respuesta, excepcion))
-                // Con sesion pero sin permiso (o token CSRF invalido): 403.
                 .accessDeniedHandler((solicitud, respuesta, excepcion) -> {
                     if (esApi.matches(solicitud)) {
                         String mensaje = excepcion instanceof CsrfException

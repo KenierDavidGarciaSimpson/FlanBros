@@ -1,17 +1,3 @@
-# pruebe-humo.ps1 - Prueba de humo de la API (con sesiones, roles y CSRF).
-#
-# Requisitos: la app corriendo con el perfil por defecto (PostgreSQL + datos demo):
-#   docker compose up -d ; .\mvnw.cmd spring-boot:run
-# y luego, en otra consola:
-#   powershell -ExecutionPolicy Bypass -File .\pruebe-humo.ps1
-#
-# El script inicia sesion como cliente, administrador, repostero, contador y domiciliarios,
-# guarda las cookies de cada uno (WebSession) y envia la cabecera X-XSRF-TOKEN en los POST/PUT/DELETE,
-# igual que hace static/js/seguridad.js en el navegador.
-#
-# Nota: PowerShell 5.1 decodifica las respuestas con la pagina de codigos local; aqui se leen los
-# bytes crudos y se decodifican como UTF-8, que es lo que manda el servidor.
-
 $base = 'http://localhost:8080'
 
 $OutputEncoding = [System.Text.Encoding]::UTF8
@@ -20,15 +6,12 @@ try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 $informe = Join-Path $env:TEMP 'humo-flanbross.txt'
 Start-Transcript -Path $informe -Force | Out-Null
 
-# ---------------------------------------------------------------- utilidades
-
 function TokenCsrf($sesion) {
     $cookie = $sesion.Cookies.GetCookies([Uri]$base) | Where-Object { $_.Name -eq 'XSRF-TOKEN' } | Select-Object -First 1
     if ($cookie) { return $cookie.Value }
     return $null
 }
 
-# $sesion: WebRequestSession (cookies). -SinCsrf: no envia el token. -SinRedireccion: no sigue el 302.
 function Peticion($metodo, $ruta, $cuerpo = $null, $sesion = $null, [switch]$SinCsrf, [switch]$SinRedireccion) {
     $parametros = @{
         Uri             = "$base$ruta"
@@ -68,7 +51,6 @@ function Peticion($metodo, $ruta, $cuerpo = $null, $sesion = $null, [switch]$Sin
     }
 }
 
-# Sesion nueva: visita el login para recibir la cookie XSRF-TOKEN. Sin credenciales = anonima.
 function NuevaSesion() {
     $sesion = New-Object Microsoft.PowerShell.Commands.WebRequestSession
     [void](Peticion 'GET' '/login.html' $null $sesion)
@@ -94,7 +76,6 @@ function Esperar($titulo, $respuesta, $patron, $estadoEsperado = 200) {
     }
 }
 
-# La respuesta debe tener el estado esperado y NO contener el patron.
 function EsperarSin($titulo, $respuesta, $patronProhibido, $estadoEsperado = 200) {
     $cumple = ($respuesta.estado -eq $estadoEsperado) -and -not ($respuesta.texto -match $patronProhibido)
     $marca = if ($cumple) { 'OK   ' } else { 'FALLA' }
@@ -109,8 +90,6 @@ function Mostrar($titulo, $respuesta) {
     Write-Output "=== $titulo (HTTP $($respuesta.estado)) ==="
     Write-Output $respuesta.texto
 }
-
-# ---------------------------------------------------------------- sesiones
 
 Write-Output '--- Inicio de sesion de cada rol ---'
 $anonimo   = NuevaSesion
@@ -141,7 +120,6 @@ Write-Output '--- Carrito y checkout (cliente Laura) ---'
 Mostrar 'POST /api/cupones DULCE20' (Peticion 'POST' '/api/cupones' @{ codigo = 'DULCE20'; subtotal = 100000 } $laura)
 Esperar 'POST /api/cupones inventado' (Peticion 'POST' '/api/cupones' @{ codigo = 'NOEXISTE'; subtotal = 50000 } $laura) '"exito":false' 400
 
-# Se manda id_cliente = 2 a proposito: el servidor debe asignar el pedido a Laura (cliente 1), la de la sesion.
 $checkout = @{
     id_cliente        = 2
     direccion_entrega = 'Bocagrande, Calle 5 #2-15'
@@ -228,8 +206,6 @@ Esperar 'POST /api/contacto' (Peticion 'POST' '/api/contacto' @{
     asunto = 'Pedido especial'; mensaje = 'Necesito una torta para el sabado'
 } $anonimo) '"exito":true' 201
 
-# ---------------------------------------------------------------- SEGURIDAD
-
 Write-Output ''
 Write-Output '--- Seguridad: sin sesion ---'
 Esperar 'GET /api/pagos sin sesion' (Peticion 'GET' '/api/pagos' $null $anonimo) '.*' 401
@@ -280,8 +256,6 @@ Esperar 'sesion de Alex activa' (Peticion 'GET' '/api/pedidos?id_cliente=3' $nul
 Esperar 'POST /api/logout' (Peticion 'POST' '/api/logout' $null $temporal) '.*' 204
 Esperar 'tras cerrar sesion la API responde 401' (Peticion 'GET' '/api/pedidos?id_cliente=3' $null $temporal) '.*' 401
 
-# ---------------------------------------------------------------- vistas y estaticos
-
 Write-Output ''
 Write-Output '--- Vistas (Thymeleaf) ---'
 $paginasPublicas = @(
@@ -307,7 +281,6 @@ Esperar 'GET /admin/js/admin-nav.js' (Peticion 'GET' '/admin/js/admin-nav.js' $n
 Write-Output ''
 Write-Output '--- Subida de imagen (multipart, administrador) ---'
 $imagen = Join-Path $env:TEMP 'prueba-smoke.png'
-# PNG 1x1 minimo: basta para comprobar que el archivo llega y se guarda.
 [System.IO.File]::WriteAllBytes($imagen, [Convert]::FromBase64String('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AAAwAB/wD/9ZcAAAAASUVORK5CYII='))
 $galletas = ($admin.Cookies.GetCookies([Uri]$base) | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join '; '
 $tokenAdmin = TokenCsrf $admin

@@ -19,29 +19,10 @@ import com.example.demo.Modelo.Usuario;
 import com.example.demo.Modelo.dto.SesionUsuario;
 import com.example.demo.Persistencia.PersonaRepositorio;
 
-/**
- * PersonaRepositorioMemoria — capa 2 (Persistencia), implementacion en memoria.
- *
- * <p>Carga {@code datos/roles.json}, {@code clientes.json}, {@code empleados.json} y
- * {@code usuarios.json}, y resuelve con ellos lo que antes hacian tres JOIN en
- * {@code login.php}: quien es la persona, que rol tiene y que id de entidad usar.</p>
- *
- * <p><b>Contrasenas:</b> sin base de datos no hay bcrypt, asi que la comparacion se
- * hace contra {@code contrasena_demo}. Es el UNICO punto que habria que cambiar al
- * conectar PostgreSQL: dos lineas dentro de {@link #contrasenaIgual(Usuario, String)}.
- * El controlador ya no ve contrasenas en ningun caso.</p>
- *
- * <p>No conoce el repositorio de pedidos a proposito: asi no hay dependencia
- * circular. El {@code total_pedidos} de cada cliente lo rellena la capa Controlador,
- * que si puede ver las dos cosas.</p>
- *
- * <p>Capa: Persistencia. Implementa {@link PersonaRepositorio}.</p>
- */
 @Profile("memoria")
 @Repository
 public class PersonaRepositorioMemoria implements PersonaRepositorio {
 
-    /** id_rol del rol "cliente" (el que asigna registro.php, nunca lo elige quien se registra). */
     private static final int ROL_CLIENTE = 1;
 
     private final List<Rol> roles;
@@ -83,20 +64,10 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
                 .map(this::construirSesion);
     }
 
-    // ------------------------------------------------------------------
-    // Cuentas y sesion
-    // ------------------------------------------------------------------
-
-    /**
-     * DEMO: compara contra la copia en claro del archivo de datos.
-     * Con base de datos seria: {@code BCryptPasswordEncoder.matches(contrasena, hash)}.
-     * Es el unico punto del proyecto que conoce una contrasena.
-     */
     private boolean contrasenaIgual(Usuario usuario, String contrasena) {
         return usuario.contrasena_demo != null && usuario.contrasena_demo.equals(contrasena);
     }
 
-    /** Arma el objeto que guarda el navegador: quien soy, que rol tengo y que id usar. */
     private SesionUsuario construirSesion(Usuario usuario) {
         SesionUsuario sesion = new SesionUsuario();
         sesion.id_usuario = usuario.id_usuario;
@@ -146,8 +117,6 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
         cliente.estado_cliente = "activo";
         clientes.add(cliente);
 
-        // El rol NO lo elige quien se registra: entra siempre como cliente y el
-        // administrador lo confirma despues (regla de seguridad del proyecto).
         Usuario cuenta = new Usuario();
         cuenta.id_usuario = siguienteUsuarioId++;
         cuenta.id_rol = ROL_CLIENTE;
@@ -169,8 +138,6 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
                 .filter(usuario -> mismoCorreo(usuario.correo, buscado))
                 .findFirst();
         if (cuenta.isEmpty()) {
-            // No se distingue "no existe" de "existe": asi no se pueden enumerar
-            // los correos registrados desde el formulario de recuperacion.
             return Optional.empty();
         }
         Usuario usuario = cuenta.get();
@@ -201,11 +168,6 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
         return false;
     }
 
-
-    // ------------------------------------------------------------------
-    // Clientes
-    // ------------------------------------------------------------------
-
     @Override
     public synchronized List<Cliente> listarClientes() {
         return clientes.stream()
@@ -235,10 +197,6 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
                 .orElse(false);
     }
 
-    // ------------------------------------------------------------------
-    // Empleados
-    // ------------------------------------------------------------------
-
     @Override
     public synchronized List<Empleado> listarEmpleadosActivos() {
         return empleados.stream()
@@ -257,7 +215,6 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
         empleados.add(empleado);
         completarRol(empleado);
 
-        // Cuenta de acceso del empleado, con el mismo rol.
         Usuario cuenta = new Usuario();
         cuenta.id_usuario = siguienteUsuarioId++;
         cuenta.id_rol = empleado.id_rol;
@@ -364,16 +321,11 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
                 .findFirst();
     }
 
-    // ------------------------------------------------------------------
-    // Apoyo
-    // ------------------------------------------------------------------
-
     private boolean mismoCorreo(String correoGuardado, String buscado) {
         return correoGuardado != null
                 && correoGuardado.trim().toLowerCase(Locale.ROOT).equals(buscado);
     }
 
-    /** Nombre del rol, que en SQL venia del JOIN con la tabla Rol. */
     private String nombreRol(int idRol) {
         return roles.stream()
                 .filter(rol -> rol.id_rol == idRol)

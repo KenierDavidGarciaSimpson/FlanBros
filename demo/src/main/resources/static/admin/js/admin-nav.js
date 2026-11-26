@@ -1,5 +1,3 @@
-// admin-nav.js — Acceso, permisos y navegación entre secciones
-
 var _u = obtenerSesion();
 var _rolesAdmin = ['administrador', 'repostero', 'contador', 'domiciliario'];
 
@@ -11,11 +9,9 @@ if (!_u || !_rolesAdmin.includes(_u.nombre_rol)) {
     window.location.replace('domiciliario.html');
 }
 
-// Nombre en la topbar (ahora dinámico desde la sesión)
 var _elAdmin = document.getElementById('nombre-admin-topbar');
 if (_elAdmin && _u) _elAdmin.textContent = _u.nombre + ' · ' + _u.nombre_rol;
 
-// Secciones visibles según rol
 var _permisos = {
     administrador: ['dashboard','pedidos','productos','inventario','clientes','pagos','facturas','domicilios','empleados','mensajes'],
     repostero:     ['productos','inventario'],

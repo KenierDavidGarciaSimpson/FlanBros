@@ -15,16 +15,6 @@ import com.example.demo.Controlador.util.PeticionUtil;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.PedidoRepositorio;
 
-/**
- * PagosApiControlador — capa 3 (Controlador), API de pagos.
- *
- * <p>Sustituye a {@code backend/api/pagos.php}. El panel lista los pagos con su
- * factura y su cliente ya cruzados y puede aprobarlos o rechazarlos a mano.
- * Lo normal es que se aprueben solos cuando el pedido se marca entregado
- * (ver {@code PedidoRepositorio.cambiarEstado}).</p>
- *
- * <p>Capa: Controlador (API REST).</p>
- */
 @RestController
 @RequestMapping("/api/pagos")
 public class PagosApiControlador {
@@ -37,13 +27,11 @@ public class PagosApiControlador {
         this.pedidos = pedidos;
     }
 
-    /** GET /api/pagos — todos los pagos con factura y cliente. */
     @GetMapping
     public RespuestaApi listar() {
         return RespuestaApi.ok(pedidos.listarPagos());
     }
 
-    /** PUT /api/pagos — {id_pago, estado_pago}. */
     @PutMapping
     public ResponseEntity<RespuestaApi> cambiarEstado(@RequestBody Map<String, Object> cuerpo) {
         int idPago = PeticionUtil.entero(cuerpo, "id_pago");

@@ -1,5 +1,3 @@
-/* botones.css — Botones reutilizables del proyecto */
-
 .btn-principal {
   background: var(--caramelo);
   color: white;
@@ -42,7 +40,6 @@
   color: white;
 }
 
-/* Botones pequeños para tablas y modales */
 .btn-sm {
   padding: 8px 14px;
   border-radius: 999px;
@@ -80,7 +77,6 @@
 .btn-icono:hover { border-color: var(--caramelo); color: var(--caramelo); }
 .btn-icono.peligro:hover { border-color: #c0392b; color: #c0392b; }
 
-/* Botones del panel domiciliario */
 .btn-dom {
   padding: 8px 16px;
   border-radius: 8px;
