@@ -67,20 +67,28 @@ public class CorreoServicio {
                 + "Si no solicitaste este cambio, ignora este mensaje.\n\n"
                 + "FlanBross";
 
-        if (tieneTexto(claveBrevo)) {
-            enviarConBrevo(destino, asunto, texto);
-        } else if (tieneTexto(usuarioSmtp)) {
-            enviarConSmtp(destino, asunto, texto);
-        } else {
-            log.warn("Recuperacion: no hay correo configurado (BREVO_API_KEY o MAIL_USUARIO). "
-                    + "No se envio el token a {}", destino);
-        }
+        enviar(destino, asunto, texto);
     }
 
-    private void enviarConBrevo(String destino, String asunto, String texto) {
+    /**
+     * Envia un correo de texto plano. Devuelve true si el proveedor lo acepto.
+     * Lo usan la recuperacion de contrasena y la respuesta a los mensajes de contacto.
+     */
+    public boolean enviar(String destino, String asunto, String texto) {
+        if (tieneTexto(claveBrevo)) {
+            return enviarConBrevo(destino, asunto, texto);
+        }
+        if (tieneTexto(usuarioSmtp)) {
+            return enviarConSmtp(destino, asunto, texto);
+        }
+        log.warn("Correo: no hay envio configurado (BREVO_API_KEY o MAIL_USUARIO). No se envio a {}", destino);
+        return false;
+    }
+
+    private boolean enviarConBrevo(String destino, String asunto, String texto) {
         if (!tieneTexto(remitente)) {
-            log.error("Recuperacion: falta MAIL_REMITENTE (correo verificado en Brevo). No se envio a {}", destino);
-            return;
+            log.error("Correo: falta MAIL_REMITENTE (correo verificado en Brevo). No se envio a {}", destino);
+            return false;
         }
         String cuerpo = "{"
                 + "\"sender\":{\"name\":\"FlanBross\",\"email\":" + json(remitente) + "},"
@@ -98,18 +106,19 @@ public class CorreoServicio {
                     .build();
             HttpResponse<String> respuesta = http.send(peticion, HttpResponse.BodyHandlers.ofString());
             if (respuesta.statusCode() / 100 == 2) {
-                log.info("Token de recuperacion enviado a {} (Brevo)", destino);
-            } else {
-                log.error("Brevo rechazo el correo a {}: HTTP {} {}", destino,
-                        respuesta.statusCode(), respuesta.body());
+                log.info("Correo enviado a {} (Brevo): {}", destino, asunto);
+                return true;
             }
+            log.error("Brevo rechazo el correo a {}: HTTP {} {}", destino,
+                    respuesta.statusCode(), respuesta.body());
         } catch (Exception e) {
-            // No se propaga: la respuesta al usuario debe ser generica.
-            log.error("No se pudo enviar el correo de recuperacion a {} (Brevo): {}", destino, e.getMessage());
+            // No se propaga: quien llama decide que decirle al usuario.
+            log.error("No se pudo enviar el correo a {} (Brevo): {}", destino, e.getMessage());
         }
+        return false;
     }
 
-    private void enviarConSmtp(String destino, String asunto, String texto) {
+    private boolean enviarConSmtp(String destino, String asunto, String texto) {
         String desde = tieneTexto(remitente) ? remitente : usuarioSmtp;
         try {
             SimpleMailMessage mensaje = new SimpleMailMessage();
@@ -118,9 +127,11 @@ public class CorreoServicio {
             mensaje.setSubject(asunto);
             mensaje.setText(texto);
             mailSender.send(mensaje);
-            log.info("Token de recuperacion enviado a {} (SMTP)", destino);
+            log.info("Correo enviado a {} (SMTP): {}", destino, asunto);
+            return true;
         } catch (Exception e) {
-            log.error("No se pudo enviar el correo de recuperacion a {} (SMTP): {}", destino, e.getMessage());
+            log.error("No se pudo enviar el correo a {} (SMTP): {}", destino, e.getMessage());
+            return false;
         }
     }
 

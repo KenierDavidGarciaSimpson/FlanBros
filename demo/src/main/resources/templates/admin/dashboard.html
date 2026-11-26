@@ -345,6 +345,25 @@
             <tbody id="tabla-mensajes"><tr><td colspan="7" style="color:var(--texto-claro);padding:16px">Cargando...</td></tr></tbody>
           </table>
         </div>
+
+        <!-- Modal: responder un mensaje de contacto -->
+        <div id="modal-responder" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
+          <div style="background:white;border-radius:16px;padding:32px;width:520px;max-width:95vw">
+            <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:8px;color:var(--chocolate)">Responder mensaje</h3>
+            <p id="mr-para" style="color:var(--texto-claro);font-size:14px;margin-bottom:8px"></p>
+            <p id="mr-original" style="background:#f7f1ea;border-radius:8px;padding:10px 12px;font-size:13px;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:120px;overflow-y:auto"></p>
+            <input type="hidden" id="mr-id">
+            <div class="grupo-campo">
+              <label class="label-campo">Tu respuesta</label>
+              <textarea id="mr-texto" class="input-campo" rows="5" maxlength="2000" placeholder="Escribe la respuesta (mínimo 5 caracteres)"></textarea>
+            </div>
+            <small style="color:var(--texto-claro);font-size:12px;display:block;margin-bottom:12px">Se envía al correo de la persona y el mensaje queda como leído.</small>
+            <div style="display:flex;gap:10px">
+              <button id="mr-enviar" class="btn-principal" style="flex:1;justify-content:center" onclick="enviarRespuesta()">Enviar respuesta</button>
+              <button class="btn-secundario" style="flex:1;justify-content:center" onclick="cerrarResponder()">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
 
 <script src="../js/modules/utils.js"></script>

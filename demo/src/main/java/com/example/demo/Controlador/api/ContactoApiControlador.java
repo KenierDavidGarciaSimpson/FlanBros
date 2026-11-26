@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import com.example.demo.Modelo.dto.SesionUsuario;
 import com.example.demo.Persistencia.ContactoRepositorio;
 import com.example.demo.Persistencia.PersonaRepositorio;
 import com.example.demo.Seguridad.UsuarioActual;
+import com.example.demo.Servicio.CorreoServicio;
 
 /**
  * ContactoApiControlador — capa 3 (Controlador), API del formulario de contacto.
@@ -39,10 +41,13 @@ public class ContactoApiControlador {
 
     private final ContactoRepositorio mensajes;
     private final PersonaRepositorio personas;
+    private final CorreoServicio correo;
 
-    public ContactoApiControlador(ContactoRepositorio mensajes, PersonaRepositorio personas) {
+    public ContactoApiControlador(ContactoRepositorio mensajes, PersonaRepositorio personas,
+                                  CorreoServicio correo) {
         this.mensajes = mensajes;
         this.personas = personas;
+        this.correo = correo;
     }
 
     /** POST /api/contacto — guarda el mensaje del usuario autenticado. */
@@ -99,5 +104,37 @@ public class ContactoApiControlador {
                     .body(RespuestaApi.error("Mensaje no encontrado"));
         }
         return ResponseEntity.ok(RespuestaApi.ok(null, "Mensaje marcado como leido"));
+    }
+
+    /**
+     * POST /api/contacto/{id}/respuesta — el administrador responde el mensaje.
+     * La respuesta llega al correo de quien escribio y el mensaje queda como leido.
+     */
+    @PostMapping("/{id}/respuesta")
+    public ResponseEntity<RespuestaApi> responder(@PathVariable int id,
+                                                  @RequestBody Map<String, Object> cuerpo) {
+        String respuesta = PeticionUtil.texto(cuerpo, "respuesta");
+        String error = ValidacionUtil.largoEntre("respuesta", respuesta, 5, 2000);
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
+        }
+        Optional<MensajeContacto> original = mensajes.listar().stream()
+                .filter(m -> m.id_mensaje == id)
+                .findFirst();
+        if (original.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(RespuestaApi.error("Mensaje no encontrado"));
+        }
+        MensajeContacto m = original.get();
+        String texto = "Hola " + m.nombre + ",\n\n"
+                + respuesta + "\n\n"
+                + "Gracias por escribirnos.\nFlanBross\n\n"
+                + "----- Tu mensaje -----\n" + m.mensaje;
+        if (!correo.enviar(m.correo, "Respuesta a tu mensaje - FlanBross", texto)) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(RespuestaApi.error(
+                    "No se pudo enviar el correo. Revisa la configuración de Brevo en Render."));
+        }
+        mensajes.marcarLeido(id);
+        return ResponseEntity.ok(RespuestaApi.ok(null, "Respuesta enviada a " + m.correo));
     }
 }
