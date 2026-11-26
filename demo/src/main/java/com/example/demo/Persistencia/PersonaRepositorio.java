@@ -59,6 +59,15 @@ public interface PersonaRepositorio {
      */
     Empleado crearEmpleado(Empleado empleado, String contrasena);
 
+    /**
+     * Pasa un cliente a empleado: crea el empleado con sus datos y mueve su cuenta de
+     * acceso al nuevo rol (conserva la misma contrasena). El cliente queda inactivo pero
+     * no se borra, para no perder el historial de sus pedidos.
+     * Vacio si el cliente no existe o ya no tiene cuenta de cliente.
+     */
+    Optional<Empleado> convertirClienteEnEmpleado(int idCliente, int idRol, BigDecimal salario,
+                                                  String documento);
+
     boolean actualizarEmpleado(int idEmpleado, String nombre, BigDecimal salario, String estado);
 
     boolean desactivarEmpleado(int idEmpleado);

@@ -269,6 +269,40 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
     }
 
     @Override
+    public synchronized Optional<Empleado> convertirClienteEnEmpleado(int idCliente, int idRol,
+                                                                     BigDecimal salario, String documento) {
+        Optional<Cliente> encontrado = buscarCliente(idCliente);
+        Optional<Usuario> cuenta = usuarios.stream()
+                .filter(usuario -> usuario.id_cliente != null && usuario.id_cliente == idCliente)
+                .findFirst();
+        if (encontrado.isEmpty() || cuenta.isEmpty()) {
+            return Optional.empty();
+        }
+        Cliente cliente = encontrado.get();
+
+        Empleado empleado = new Empleado();
+        empleado.id_empleado = siguienteEmpleadoId++;
+        empleado.nombre = cliente.nombre;
+        empleado.apellido = cliente.apellido;
+        empleado.correo = cliente.correo;
+        empleado.telefono = cliente.telefono;
+        empleado.documento = documento;
+        empleado.salario = salario == null ? BigDecimal.ZERO : salario;
+        empleado.fecha_contratacion = java.time.LocalDate.now();
+        empleado.estado_empleado = "activo";
+        empleado.id_rol = idRol;
+        empleados.add(empleado);
+        completarRol(empleado);
+
+        Usuario usuario = cuenta.get();
+        usuario.id_cliente = null;
+        usuario.id_empleado = empleado.id_empleado;
+        usuario.id_rol = idRol;
+        cliente.estado_cliente = "inactivo";
+        return Optional.of(empleado);
+    }
+
+    @Override
     public synchronized boolean actualizarEmpleado(int idEmpleado, String nombre,
                                                    BigDecimal salario, String estado) {
         Optional<Empleado> encontrado = empleados.stream()

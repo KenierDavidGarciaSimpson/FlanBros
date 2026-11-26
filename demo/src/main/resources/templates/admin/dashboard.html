@@ -219,6 +219,33 @@
             <tbody id="tabla-clientes"><tr><td colspan="6" style="color:var(--texto-claro);padding:16px">Cargando...</td></tr></tbody>
           </table>
         </div>
+
+        <!-- Modal: pasar un cliente a empleado -->
+        <div id="modal-convertir" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center">
+          <div style="background:white;border-radius:16px;padding:32px;width:460px;max-width:95vw">
+            <h3 style="font-family:var(--fuente-titulo);font-size:22px;margin-bottom:8px;color:var(--chocolate)">Pasar a empleado</h3>
+            <p id="mc-nombre" style="color:var(--texto-claro);font-size:14px;margin-bottom:16px"></p>
+            <input type="hidden" id="mc-id">
+            <div class="grupo-campo">
+              <label class="label-campo">Rol</label>
+              <select id="mc-rol" class="input-campo">
+                <option value="2">Administrador</option>
+                <option value="3">Repostero</option>
+                <option value="4">Domiciliario</option>
+                <option value="5">Contador</option>
+              </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="grupo-campo"><label class="label-campo">Salario ($)</label><input id="mc-salario" type="number" min="0" class="input-campo" placeholder="1800000"></div>
+              <div class="grupo-campo"><label class="label-campo">Documento</label><input id="mc-documento" class="input-campo" maxlength="20" placeholder="CC / NIT"></div>
+            </div>
+            <small style="color:var(--texto-claro);font-size:12px;display:block;margin-bottom:12px">Entra con el mismo correo y la misma contraseña que usaba como cliente. Su cuenta de cliente queda inactiva, pero se conserva el historial de pedidos.</small>
+            <div style="display:flex;gap:10px">
+              <button class="btn-principal" style="flex:1;justify-content:center" onclick="confirmarConvertir()">Pasar a empleado</button>
+              <button class="btn-secundario" style="flex:1;justify-content:center" onclick="cerrarConvertir()">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ===== SECCIÓN: PAGOS ===== -->

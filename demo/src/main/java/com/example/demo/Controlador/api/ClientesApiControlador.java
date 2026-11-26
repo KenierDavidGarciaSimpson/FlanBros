@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,5 +78,24 @@ public class ClientesApiControlador {
         }
         return ResponseEntity.ok(RespuestaApi.ok(
                 personas.buscarCliente(idCliente).orElse(null), "Cliente actualizado"));
+    }
+
+    /**
+     * POST /api/clientes/{id}/empleado — pasa un cliente a empleado (solo administrador).
+     * Conserva su correo y su contrasena; el cliente queda inactivo con su historial.
+     */
+    @PostMapping("/{id}/empleado")
+    public ResponseEntity<RespuestaApi> convertirEnEmpleado(@PathVariable int id,
+                                                            @RequestBody Map<String, Object> cuerpo) {
+        int idRol = PeticionUtil.entero(cuerpo, "id_rol");
+        if (idRol < 2 || idRol > 5) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error("Elige un rol de empleado válido"));
+        }
+        return personas.convertirClienteEnEmpleado(id, idRol, PeticionUtil.decimal(cuerpo, "salario"),
+                        PeticionUtil.texto(cuerpo, "documento"))
+                .map(empleado -> ResponseEntity.ok(RespuestaApi.ok(empleado,
+                        "Ahora es empleado. Entra con el mismo correo y la misma contraseña")))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(RespuestaApi.error(
+                        "Ese cliente no existe o ya fue pasado a empleado")));
     }
 }

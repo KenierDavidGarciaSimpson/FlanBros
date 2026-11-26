@@ -262,6 +262,52 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
     }
 
     @Override
+    @Transactional
+    public Optional<Empleado> convertirClienteEnEmpleado(int idCliente, int idRol, BigDecimal salario,
+                                                         String documento) {
+        Optional<Cliente> encontrado = buscarCliente(idCliente);
+        Integer cuentas = jdbc.sql("SELECT COUNT(*) FROM usuario WHERE id_cliente = :cliente")
+                .param("cliente", idCliente).query(Integer.class).single();
+        if (encontrado.isEmpty() || cuentas == null || cuentas == 0) {
+            return Optional.empty();
+        }
+        Cliente cliente = encontrado.get();
+
+        KeyHolder llave = new GeneratedKeyHolder();
+        jdbc.sql("""
+                INSERT INTO empleado (nombre, apellido, documento, telefono, correo, salario,
+                                      fecha_contratacion, estado_empleado, id_rol)
+                VALUES (:nombre, :apellido, :documento, :telefono, :correo, :salario,
+                        :contratacion, 'activo', :rol)
+                """)
+                .param("nombre", cliente.nombre)
+                .param("apellido", cliente.apellido)
+                .param("documento", documento == null || documento.isBlank() ? null : documento)
+                .param("telefono", cliente.telefono)
+                .param("correo", normalizar(cliente.correo))
+                .param("salario", salario == null ? BigDecimal.ZERO : salario)
+                .param("contratacion", LocalDate.now())
+                .param("rol", idRol)
+                .update(llave, "id_empleado");
+        int idEmpleado = llave.getKey().intValue();
+
+        // La misma cuenta (correo y contrasena) pasa a ser del empleado, con su nuevo rol.
+        jdbc.sql("""
+                UPDATE usuario
+                   SET id_cliente = NULL, id_empleado = :empleado, id_rol = :rol
+                 WHERE id_cliente = :cliente
+                """)
+                .param("empleado", idEmpleado)
+                .param("rol", idRol)
+                .param("cliente", idCliente)
+                .update();
+        jdbc.sql("UPDATE cliente SET estado_cliente = 'inactivo' WHERE id_cliente = :cliente")
+                .param("cliente", idCliente)
+                .update();
+        return buscarEmpleado(idEmpleado);
+    }
+
+    @Override
     public boolean actualizarEmpleado(int idEmpleado, String nombre, BigDecimal salario, String estado) {
         return jdbc.sql("""
                 UPDATE empleado
