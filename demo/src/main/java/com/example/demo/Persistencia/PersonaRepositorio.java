@@ -70,6 +70,13 @@ public interface PersonaRepositorio {
 
     boolean actualizarEmpleado(int idEmpleado, String nombre, BigDecimal salario, String estado);
 
+    /**
+     * Edicion completa desde el panel: datos personales, salario y rol. El rol se cambia
+     * tambien en su cuenta de acceso, para que al volver a entrar tenga los permisos nuevos.
+     */
+    boolean editarEmpleado(int idEmpleado, String nombre, String apellido, String documento,
+                           String telefono, BigDecimal salario, int idRol);
+
     boolean desactivarEmpleado(int idEmpleado);
 
     /** Un empleado por id, para resolver el nombre del domiciliario de un envio. */

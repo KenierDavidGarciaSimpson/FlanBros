@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,11 +92,16 @@ public class ClientesApiControlador {
         if (idRol < 2 || idRol > 5) {
             return ResponseEntity.badRequest().body(RespuestaApi.error("Elige un rol de empleado válido"));
         }
-        return personas.convertirClienteEnEmpleado(id, idRol, PeticionUtil.decimal(cuerpo, "salario"),
-                        PeticionUtil.texto(cuerpo, "documento"))
-                .map(empleado -> ResponseEntity.ok(RespuestaApi.ok(empleado,
-                        "Ahora es empleado. Entra con el mismo correo y la misma contraseña")))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(RespuestaApi.error(
-                        "Ese cliente no existe o ya fue pasado a empleado")));
+        try {
+            return personas.convertirClienteEnEmpleado(id, idRol, PeticionUtil.decimal(cuerpo, "salario"),
+                            PeticionUtil.texto(cuerpo, "documento"))
+                    .map(empleado -> ResponseEntity.ok(RespuestaApi.ok(empleado,
+                            "Ahora es empleado. Entra con el mismo correo y la misma contraseña")))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(RespuestaApi.error(
+                            "Ese cliente no existe o ya fue pasado a empleado")));
+        } catch (DuplicateKeyException e) {
+            // La transaccion se deshace: el cliente sigue igual que antes.
+            return ResponseEntity.badRequest().body(RespuestaApi.error(EmpleadosApiControlador.mensajeDuplicado(e)));
+        }
     }
 }

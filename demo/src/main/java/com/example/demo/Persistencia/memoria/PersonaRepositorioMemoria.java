@@ -325,6 +325,34 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
     }
 
     @Override
+    public synchronized boolean editarEmpleado(int idEmpleado, String nombre, String apellido,
+                                               String documento, String telefono, BigDecimal salario,
+                                               int idRol) {
+        Optional<Empleado> encontrado = buscarEmpleado(idEmpleado);
+        if (encontrado.isEmpty()) {
+            return false;
+        }
+        Empleado empleado = encontrado.get();
+        if (nombre != null && !nombre.isBlank()) {
+            empleado.nombre = nombre;
+        }
+        if (apellido != null && !apellido.isBlank()) {
+            empleado.apellido = apellido;
+        }
+        empleado.documento = documento == null || documento.isBlank() ? null : documento;
+        empleado.telefono = telefono == null || telefono.isBlank() ? null : telefono;
+        if (salario != null) {
+            empleado.salario = salario;
+        }
+        empleado.id_rol = idRol;
+        completarRol(empleado);
+        usuarios.stream()
+                .filter(usuario -> usuario.id_empleado != null && usuario.id_empleado == idEmpleado)
+                .forEach(usuario -> usuario.id_rol = idRol);
+        return true;
+    }
+
+    @Override
     public synchronized boolean desactivarEmpleado(int idEmpleado) {
         return actualizarEmpleado(idEmpleado, null, null, "inactivo");
     }

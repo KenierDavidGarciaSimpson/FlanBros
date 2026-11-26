@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -90,19 +91,45 @@ public class EmpleadosApiControlador {
         empleado.fecha_contratacion = LocalDate.now();
         empleado.estado_empleado = "activo";
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(RespuestaApi.ok(personas.crearEmpleado(empleado, contrasena), "Empleado creado"));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(RespuestaApi.ok(personas.crearEmpleado(empleado, contrasena), "Empleado creado"));
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(mensajeDuplicado(e)));
+        }
     }
 
-    /** PUT /api/empleados — edicion de nombre, salario y estado. */
+    /** PUT /api/empleados — edicion de datos, salario y rol (el rol tambien cambia en su cuenta). */
     @PutMapping
     public ResponseEntity<RespuestaApi> actualizar(@RequestBody Map<String, Object> cuerpo) {
         int idEmpleado = PeticionUtil.entero(cuerpo, "id_empleado");
         BigDecimal salario = PeticionUtil.decimal(cuerpo, "salario");
-        String estado = PeticionUtil.texto(cuerpo, "estado_empleado", PeticionUtil.texto(cuerpo, "estado"));
+        int idRol = PeticionUtil.entero(cuerpo, "id_rol");
+        String nombre = PeticionUtil.texto(cuerpo, "nombre");
+        String apellido = PeticionUtil.texto(cuerpo, "apellido");
+        String telefono = PeticionUtil.texto(cuerpo, "telefono");
 
-        boolean actualizado = personas.actualizarEmpleado(idEmpleado,
-                PeticionUtil.texto(cuerpo, "nombre"), salario, estado);
+        String error = ValidacionUtil.primero(
+                ValidacionUtil.nombre("nombre", nombre),
+                apellido == null ? null : ValidacionUtil.nombre("apellido", apellido),
+                ValidacionUtil.telefono(telefono));
+        if (error != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(error));
+        }
+        if (idRol < 2 || idRol > 5) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error("Rol no válido para un empleado"));
+        }
+        if (salario != null && salario.signum() < 0) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error("El salario no puede ser negativo"));
+        }
+
+        boolean actualizado;
+        try {
+            actualizado = personas.editarEmpleado(idEmpleado, nombre, apellido,
+                    PeticionUtil.texto(cuerpo, "documento"), telefono, salario, idRol);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(mensajeDuplicado(e)));
+        }
         if (!actualizado) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(RespuestaApi.error("Empleado no encontrado"));
@@ -137,5 +164,17 @@ public class EmpleadosApiControlador {
                     .body(RespuestaApi.error("Empleado no encontrado"));
         }
         return ResponseEntity.ok(RespuestaApi.ok(null, "Empleado desactivado"));
+    }
+
+    /** Traduce un dato repetido en la base (correo o documento) a un mensaje claro. */
+    static String mensajeDuplicado(DuplicateKeyException e) {
+        String detalle = String.valueOf(e.getMessage());
+        if (detalle.contains("documento")) {
+            return "Ese documento ya está registrado en otro empleado";
+        }
+        if (detalle.contains("correo")) {
+            return "Ese correo ya está registrado";
+        }
+        return "Ya existe un registro con esos datos";
     }
 }

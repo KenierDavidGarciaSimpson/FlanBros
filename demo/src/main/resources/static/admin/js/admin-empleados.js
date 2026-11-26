@@ -38,6 +38,9 @@ function abrirModalEmpleado(e) {
     // La contraseña inicial solo se pide al crear; al editar no se toca.
     document.getElementById('me-contrasena').value  = '';
     document.getElementById('me-grupo-contrasena').style.display = e ? 'none' : 'block';
+    // El correo es su usuario para entrar: no se cambia al editar.
+    document.getElementById('me-correo').readOnly = !!e;
+    document.getElementById('me-correo').style.opacity = e ? '0.6' : '1';
     m.style.display = 'flex';
 }
 
@@ -82,7 +85,8 @@ function guardarEmpleado() {
         if (r.exito) {
             cerrarModalEmpleado();
             cargarEmpleadosAdmin();
-            mostrarToast(id ? 'Empleado actualizado' : 'Empleado creado');
+            mostrarToast(id ? 'Empleado actualizado. Si cambiaste el rol, debe cerrar sesión y volver a entrar.'
+                            : 'Empleado creado');
         } else {
             mostrarToast(r.mensaje, 'error');
         }

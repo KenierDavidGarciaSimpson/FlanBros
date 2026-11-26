@@ -324,6 +324,43 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
     }
 
     @Override
+    @Transactional
+    public boolean editarEmpleado(int idEmpleado, String nombre, String apellido, String documento,
+                                  String telefono, BigDecimal salario, int idRol) {
+        int filas = jdbc.sql("""
+                UPDATE empleado
+                   SET nombre    = COALESCE(:nombre, nombre),
+                       apellido  = COALESCE(:apellido, apellido),
+                       documento = :documento,
+                       telefono  = :telefono,
+                       salario   = COALESCE(:salario, salario),
+                       id_rol    = :rol
+                 WHERE id_empleado = :id
+                """)
+                .param("nombre", vacioANulo(nombre))
+                .param("apellido", vacioANulo(apellido))
+                .param("documento", vacioANulo(documento))
+                .param("telefono", vacioANulo(telefono))
+                .param("salario", salario)
+                .param("rol", idRol)
+                .param("id", idEmpleado)
+                .update();
+        if (filas == 0) {
+            return false;
+        }
+        // Mismo rol en la cuenta de acceso: de aqui sale el rol de la sesion al iniciar.
+        jdbc.sql("UPDATE usuario SET id_rol = :rol WHERE id_empleado = :id")
+                .param("rol", idRol)
+                .param("id", idEmpleado)
+                .update();
+        return true;
+    }
+
+    private static String vacioANulo(String texto) {
+        return texto == null || texto.isBlank() ? null : texto.trim();
+    }
+
+    @Override
     public boolean desactivarEmpleado(int idEmpleado) {
         return actualizarEmpleado(idEmpleado, null, null, "inactivo");
     }
