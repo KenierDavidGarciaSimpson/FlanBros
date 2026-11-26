@@ -280,6 +280,11 @@
               <div class="grupo-campo"><label class="label-campo">Teléfono</label><input id="me-telefono" class="input-campo" placeholder="+57 300 000 0000"></div>
             </div>
             <div class="grupo-campo"><label class="label-campo">Correo</label><input id="me-correo" class="input-campo" placeholder="correo@flanbross.co"></div>
+            <div class="grupo-campo" id="me-grupo-contrasena">
+              <label class="label-campo">Contraseña inicial</label>
+              <input id="me-contrasena" type="password" maxlength="72" class="input-campo" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+              <small style="color:var(--texto-claro);font-size:12px">Con este correo y esta contraseña el empleado entra al sistema.</small>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
               <div class="grupo-campo"><label class="label-campo">Salario ($)</label><input id="me-salario" type="number" class="input-campo" placeholder="1800000"></div>
               <div class="grupo-campo"><label class="label-campo">Fecha contratación</label><input id="me-fecha" type="date" class="input-campo"></div>
@@ -340,5 +345,6 @@ function buscarEnTabla(inputId, tablaId) {
   });
 }
 </script>
+<script src="/js/ver-contrasena.js"></script>
 </body>
 </html>

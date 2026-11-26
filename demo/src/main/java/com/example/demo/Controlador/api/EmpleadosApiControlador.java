@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Controlador.util.PeticionUtil;
+import com.example.demo.Controlador.util.ValidacionUtil;
 import com.example.demo.Modelo.Empleado;
 import com.example.demo.Modelo.dto.RespuestaApi;
 import com.example.demo.Persistencia.PersonaRepositorio;
@@ -61,6 +62,18 @@ public class EmpleadosApiControlador {
             return ResponseEntity.badRequest().body(RespuestaApi.error(
                     "Faltan datos obligatorios: nombre, apellido, correo e id_rol"));
         }
+        String contrasena = PeticionUtil.texto(cuerpo, "contrasena");
+        String errorDatos = ValidacionUtil.primero(
+                ValidacionUtil.nombre("nombre", nombre),
+                ValidacionUtil.nombre("apellido", apellido),
+                ValidacionUtil.correo(correo),
+                ValidacionUtil.contrasena(contrasena));
+        if (errorDatos != null) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error(errorDatos));
+        }
+        if (idRol < 2 || idRol > 5) {
+            return ResponseEntity.badRequest().body(RespuestaApi.error("Rol no válido para un empleado"));
+        }
         if (personas.existeCorreo(correo)) {
             return ResponseEntity.badRequest()
                     .body(RespuestaApi.error("Ese correo ya esta registrado"));
@@ -78,7 +91,7 @@ public class EmpleadosApiControlador {
         empleado.estado_empleado = "activo";
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(RespuestaApi.ok(personas.crearEmpleado(empleado), "Empleado creado"));
+                .body(RespuestaApi.ok(personas.crearEmpleado(empleado, contrasena), "Empleado creado"));
     }
 
     /** PUT /api/empleados — edicion de nombre, salario y estado. */

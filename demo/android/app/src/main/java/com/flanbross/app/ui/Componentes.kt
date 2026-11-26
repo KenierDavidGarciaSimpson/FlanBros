@@ -19,6 +19,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -79,14 +84,23 @@ fun CampoTexto(
     secreto: Boolean = false,
     lineas: Int = 1,
 ) {
+    // En los campos de contraseña, el botón Mostrar/Ocultar deja ver lo que se escribe.
+    var visible by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = valor,
         onValueChange = onCambio,
         label = { Text(etiqueta) },
         singleLine = lineas == 1,
         minLines = lineas,
-        keyboardOptions = KeyboardOptions(keyboardType = teclado),
-        visualTransformation = if (secreto) PasswordVisualTransformation() else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = if (secreto) KeyboardType.Password else teclado,
+        ),
+        visualTransformation = if (secreto && !visible) PasswordVisualTransformation() else VisualTransformation.None,
+        trailingIcon = if (secreto) {
+            { TextButton(onClick = { visible = !visible }) { Text(if (visible) "Ocultar" else "Mostrar") } }
+        } else {
+            null
+        },
         modifier = modifier.fillMaxWidth(),
     )
 }

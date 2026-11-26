@@ -35,6 +35,9 @@ function abrirModalEmpleado(e) {
     document.getElementById('me-salario').value     = e ? e.salario       : '';
     document.getElementById('me-fecha').value       = e ? (e.fecha_contratacion||'') : '';
     document.getElementById('me-rol').value         = e ? e.id_rol        : '2';
+    // La contraseña inicial solo se pide al crear; al editar no se toca.
+    document.getElementById('me-contrasena').value  = '';
+    document.getElementById('me-grupo-contrasena').style.display = e ? 'none' : 'block';
     m.style.display = 'flex';
 }
 
@@ -55,7 +58,19 @@ function guardarEmpleado() {
         id_rol:              parseInt(document.getElementById('me-rol').value)
     };
     if (!datos.nombre) { mostrarToast('El nombre es obligatorio', 'error'); return; }
-    if (id) { datos.id_empleado = parseInt(id); datos.estado_empleado = 'activo'; }
+    if (id) {
+        datos.id_empleado = parseInt(id);
+        datos.estado_empleado = 'activo';
+    } else {
+        datos.contrasena = document.getElementById('me-contrasena').value;
+        if (!datos.apellido) { mostrarToast('El apellido es obligatorio', 'error'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo.trim())) {
+            mostrarToast('Escribe un correo válido', 'error'); return;
+        }
+        if (datos.contrasena.length < 8) {
+            mostrarToast('La contraseña inicial debe tener al menos 8 caracteres', 'error'); return;
+        }
+    }
 
     fetch('/api/empleados', {
         method: id ? 'PUT' : 'POST',

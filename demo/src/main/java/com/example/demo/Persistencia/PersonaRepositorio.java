@@ -53,7 +53,11 @@ public interface PersonaRepositorio {
     /** Empleados con estado "activo" y el nombre de su rol. */
     List<Empleado> listarEmpleadosActivos();
 
-    Empleado crearEmpleado(Empleado empleado);
+    /**
+     * Crea el empleado y su cuenta de acceso (fila en usuario con el mismo rol),
+     * para que pueda iniciar sesion con su correo y la contrasena inicial.
+     */
+    Empleado crearEmpleado(Empleado empleado, String contrasena);
 
     boolean actualizarEmpleado(int idEmpleado, String nombre, BigDecimal salario, String estado);
 

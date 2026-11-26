@@ -249,13 +249,22 @@ public class PersonaRepositorioMemoria implements PersonaRepositorio {
     }
 
     @Override
-    public synchronized Empleado crearEmpleado(Empleado empleado) {
+    public synchronized Empleado crearEmpleado(Empleado empleado, String contrasena) {
         empleado.id_empleado = siguienteEmpleadoId++;
         if (empleado.estado_empleado == null || empleado.estado_empleado.isBlank()) {
             empleado.estado_empleado = "activo";
         }
         empleados.add(empleado);
         completarRol(empleado);
+
+        // Cuenta de acceso del empleado, con el mismo rol.
+        Usuario cuenta = new Usuario();
+        cuenta.id_usuario = siguienteUsuarioId++;
+        cuenta.id_rol = empleado.id_rol;
+        cuenta.id_empleado = empleado.id_empleado;
+        cuenta.correo = empleado.correo;
+        cuenta.contrasena_demo = contrasena;
+        usuarios.add(cuenta);
         return empleado;
     }
 

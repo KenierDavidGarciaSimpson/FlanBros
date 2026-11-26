@@ -225,7 +225,7 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
 
     @Override
     @Transactional
-    public Empleado crearEmpleado(Empleado empleado) {
+    public Empleado crearEmpleado(Empleado empleado, String contrasena) {
         String estado = empleado.estado_empleado == null || empleado.estado_empleado.isBlank()
                 ? "activo" : empleado.estado_empleado;
         KeyHolder llave = new GeneratedKeyHolder();
@@ -246,7 +246,19 @@ public class PersonaRepositorioJdbc implements PersonaRepositorio {
                 .param("estado", estado)
                 .param("rol", empleado.id_rol)
                 .update(llave, "id_empleado");
-        return buscarEmpleado(llave.getKey().intValue()).orElseThrow();
+        int idEmpleado = llave.getKey().intValue();
+
+        // Cuenta de acceso en la misma transaccion: si falla, tampoco queda el empleado.
+        jdbc.sql("""
+                INSERT INTO usuario (id_rol, id_empleado, correo, contrasena_hash)
+                VALUES (:rol, :empleado, :correo, :hash)
+                """)
+                .param("rol", empleado.id_rol)
+                .param("empleado", idEmpleado)
+                .param("correo", normalizar(empleado.correo))
+                .param("hash", codificador.encode(contrasena))
+                .update();
+        return buscarEmpleado(idEmpleado).orElseThrow();
     }
 
     @Override
