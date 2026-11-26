@@ -68,7 +68,12 @@ function renderizarPedidosCliente(pedidos) {
             + '<div class="item-pedido-fecha">' + formatearFecha(p.fecha_pedido) + '</div>'
             + '<span class="estado-badge estado-' + p.estado_pedido.replace('_','-') + '">' + etiquetaEstado(p.estado_pedido) + '</span>'
             + '</div>'
+            + '<div style="text-align:right">'
             + '<div class="item-pedido-precio">' + formatearPrecio(p.total_factura || p.total_pedido) + '</div>'
+            + (p.numero_factura
+                ? '<button type="button" class="btn-sm btn-sm-borde" style="margin-top:6px" onclick="verFactura(' + p.id_pedido + ')">Ver factura</button>'
+                : '')
+            + '</div>'
             + '</div>';
     }).join('');
 }

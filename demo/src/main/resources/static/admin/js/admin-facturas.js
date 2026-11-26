@@ -15,6 +15,7 @@ function cargarFacturasAdmin() {
                     + '<td>' + formatearPrecio(f.impuestos) + '</td>'
                     + '<td>' + formatearPrecio(f.total_factura) + '</td>'
                     + '<td><span class="estado-badge">' + f.estado_factura + '</span></td>'
+                    + '<td><button class="btn-sm btn-sm-principal" onclick="verFactura(' + f.id_pedido + ')">Ver factura</button></td>'
                     + '</tr>';
             }).join('');
         });
